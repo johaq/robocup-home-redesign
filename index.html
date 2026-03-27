@@ -7,17 +7,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0c10;
-    --surface: #12151c;
-    --border: rgba(255,255,255,0.08);
-    --accent: #00e5a0;
-    --accent2: #4d9fff;
-    --text: #f0f2f5;
-    --muted: #8a8f9a;
-    --font-head: 'Space Mono', monospace;
-    --font-body: 'DM Sans', sans-serif;
-  }
+:root {
+  --bg: #1e1f22;
+  --surface: #2b2d31;
+  --border: rgba(255,255,255,0.08);
+  --accent: #00e5a0;
+  --accent2: #4d9fff;
+  --text: #dbdee1;
+  --muted: #848891;
+  --font-head: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+[data-theme="light"] {
+  --bg: #ffffff;
+  --surface: #f2f3f5;
+  --border: rgba(0,0,0,0.08);
+  --accent: #00a875;
+  --accent2: #1a6fd4;
+  --text: #1a1b1e;
+  --muted: #5c5f66;
+}
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
 
   /* NAV */
