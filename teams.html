@@ -6,112 +6,11 @@
 <title>RoboCup@Home — Teams</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #1e1f22;
-    --surface: #2b2d31;
-    --border: rgba(255,255,255,0.08);
-    --accent: #00e5a0;
-    --accent2: #4d9fff;
-    --text: #dbdee1;
-    --muted: #848891;
-    --font-head: 'Space Mono', monospace;
-    --font-body: 'DM Sans', sans-serif;
-  }
-  [data-theme="light"] {
-    --bg: #ffffff;
-    --surface: #f2f3f5;
-    --border: rgba(0,0,0,0.08);
-    --accent: #00a875;
-    --accent2: #1a6fd4;
-    --text: #1a1b1e;
-    --muted: #5c5f66;
-  }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
-
-  /* NAV */
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: rgba(30,31,34,0.92); backdrop-filter: blur(10px); z-index: 100; }
-  [data-theme="light"] nav { background: rgba(255,255,255,0.92); }
-  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-  .nav-logo-text { font-family: var(--font-head); font-size: 13px; color: var(--accent); letter-spacing: 0.05em; line-height: 1.2; }
-  .nav-links { display: flex; gap: 2rem; list-style: none; }
-  .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color 0.2s; }
-  .nav-links a:hover, .nav-links a.active { color: var(--text); }
-  .nav-cta { background: var(--accent); color: #000; font-weight: 600; padding: 0.5rem 1.25rem; border-radius: 6px; text-decoration: none; font-size: 13px; font-family: var(--font-head); letter-spacing: 0.02em; transition: opacity 0.2s; }
-  .nav-cta:hover { opacity: 0.85; }
-
-  /* PAGE HEADER */
-  .page-header { padding: 4rem 3rem 2rem; border-bottom: 1px solid var(--border); }
-  .page-tag { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.18em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
-  .page-tag::before { content: ''; display: block; width: 30px; height: 1px; background: var(--accent); }
-  .page-title { font-family: var(--font-head); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 700; line-height: 1.1; margin-bottom: 0.75rem; }
-  .page-desc { color: var(--muted); font-size: 15px; max-width: 560px; }
-
-  /* MAP */
-  .map-section { padding: 3rem; }
-  #map { width: 100%; height: 560px; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-
-  /* TEAM LIST */
-  .teams-section { padding: 0 3rem 4rem; }
-  .section-label { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
-  .section-title { font-family: var(--font-head); font-size: 1.4rem; font-weight: 700; margin-bottom: 0; }
-  .teams-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; margin-top: 2rem; }
-  .team-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: border-color 0.2s, transform 0.2s; }
-  .team-card:hover { border-color: rgba(0,229,160,0.3); transform: translateY(-2px); }
-  .team-name { font-family: var(--font-head); font-size: 14px; font-weight: 700; margin-bottom: 4px; }
-  .team-institution { font-size: 13px; color: var(--muted); margin-bottom: 2px; }
-  .team-location { font-size: 12px; color: var(--muted); margin-bottom: 0.75rem; }
-  .team-links { display: flex; gap: 0.75rem; }
-  .team-link { font-size: 12px; color: var(--accent); text-decoration: none; font-family: var(--font-head); }
-  .team-link:hover { opacity: 0.8; }
-
-  /* FOOTER */
-  footer { border-top: 1px solid var(--border); padding: 2rem 3rem; display: flex; justify-content: space-between; align-items: center; }
-  .footer-copy { font-size: 13px; color: var(--muted); font-family: var(--font-head); }
-  .footer-links { display: flex; gap: 1.5rem; }
-  .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; }
-  .footer-links a:hover { color: var(--text); }
-
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    nav { padding: 1rem 1.5rem; }
-    .nav-links { display: none; }
-    .page-header { padding: 2rem 1.5rem 1.5rem; }
-    .map-section { padding: 1.5rem; }
-    #map { height: 400px; }
-    .teams-section { padding: 0 1.5rem 3rem; }
-    footer { flex-direction: column; gap: 1rem; text-align: center; padding: 1.5rem; }
-  }
-</style>
+<link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
-  <a href="index.html" class="nav-logo">
-    <div style="width:34px;height:34px;border-radius:6px;background:rgba(0,229,160,0.15);border:1px solid rgba(0,229,160,0.3);display:flex;align-items:center;justify-content:center;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="8" r="4" stroke="#00e5a0" stroke-width="1.5"/>
-        <rect x="7" y="14" width="10" height="7" rx="2" stroke="#00e5a0" stroke-width="1.5"/>
-        <line x1="9" y1="14" x2="8" y2="11" stroke="#00e5a0" stroke-width="1.5"/>
-        <line x1="15" y1="14" x2="16" y2="11" stroke="#00e5a0" stroke-width="1.5"/>
-      </svg>
-    </div>
-    <span class="nav-logo-text">RoboCup<br/>@Home</span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="index.html">About</a></li>
-    <li><a href="teams.html" class="active">Teams</a></li>
-    <li><a href="index.html#rules">Rules</a></li>
-    <li><a href="index.html#media">Media</a></li>
-    <li><a href="index.html#history">History</a></li>
-  </ul>
-  <div style="display:flex;align-items:center;gap:0.75rem;">
-    <button id="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? '' : 'light'; this.textContent = document.documentElement.dataset.theme === 'light' ? '☀️' : '🌙'" style="background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">🌙</button>
-    <a href="https://athome.robocup.org/call-for-participation/" class="nav-cta">Join 2026 →</a>
-  </div>
-</nav>
+<div id="navbar"></div>
 
 <!-- PAGE HEADER -->
 <div class="page-header">
@@ -133,80 +32,12 @@
   </div>
 </div>
 
-<!-- FOOTER -->
-<footer>
-  <div class="footer-copy">© 2026 RoboCup@Home · Part of the RoboCup Federation</div>
-  <div class="footer-links">
-    <a href="https://athome.robocup.org/rules/">Rules</a>
-    <a href="https://athome.robocup.org/committees/">Committees</a>
-    <a href="https://athome.robocup.org/sponsors/">Sponsors</a>
-    <a href="https://lists.robocup.org/mm/lists/robocup-athome.lists.robocup.org/">Contact</a>
-  </div>
-</footer>
+<div id="footer"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-<script>
-const TEAMS_URL = "https://docs.google.com/spreadsheets/d/1ff1rmnkY2Sg44vei5j0dZJsJzOrgXqlOVjVoW2G0H5k/gviz/tq?tqx=out:csv&sheet=Teams";
+<script src="assets/js/teams.js"></script>
+<script src="assets/js/main.js"></script>
 
-const map = L.map('map', { zoomControl: true, scrollWheelZoom: false }).setView([20, 10], 2);
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap © CARTO',
-  maxZoom: 18
-}).addTo(map);
-
-const markerIcon = L.divIcon({
-  className: '',
-  html: `<div style="width:12px;height:12px;border-radius:50%;background:#00e5a0;border:2px solid #fff;box-shadow:0 0 6px rgba(0,229,160,0.6);"></div>`,
-  iconSize: [12, 12],
-  iconAnchor: [6, 6]
-});
-
-Papa.parse(TEAMS_URL, {
-  download: true,
-  header: true,
-  complete: function(results) {
-    const grid = document.getElementById('teams-grid');
-    grid.innerHTML = '';
-
-    results.data.forEach(team => {
-      if (!team.team_name) return;
-
-      // Map pin
-      const lat = parseFloat(team.latitude);
-      const lng = parseFloat(team.longitude);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        const websiteLink = team.website ? `<a href="${team.website}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">Website ↗</a>` : '';
-        const tdpLink = team.tdp && team.tdp !== 'Placeholder' ? `<a href="${team.tdp}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">TDP ↗</a>` : '';
-        const links = [websiteLink, tdpLink].filter(Boolean).join(' &nbsp;·&nbsp; ');
-        const profileLink = `<a href="team.html?id=${team.team_id}" style="color:#00e5a0;font-family:monospace;font-size:12px;">View profile ↗</a>`;        const popup = `
-          <div style="font-family:'DM Sans',sans-serif;min-width:180px;">
-            <div style="font-weight:600;font-size:14px;margin-bottom:4px;">${team.team_name}</div>
-            <div style="font-size:12px;color:#666;margin-bottom:2px;">${team.institution}</div>
-            <div style="font-size:12px;color:#666;margin-bottom:8px;">${team.city}, ${team.country}</div>
-            <div style="font-size:12px;">${profileLink}</div>
-            <div style="font-size:12px;">${links}</div>
-          </div>`;
-        L.marker([lat, lng], { icon: markerIcon }).addTo(map).bindPopup(popup);
-      }
-
-      // Team card
-      const websiteLink = team.website ? `<a href="${team.website}" target="_blank" class="team-link">Website ↗</a>` : '';
-      const tdpLink = team.tdp && team.tdp !== 'Placeholder' ? `<a href="${team.tdp}" target="_blank" class="team-link">TDP ↗</a>` : '';
-
-      const card = document.createElement('div');
-      card.className = 'team-card';
-      card.innerHTML = `
-        <a href="team.html?id=${team.team_id}" style="text-decoration:none;color:inherit;">
-        <div class="team-name">${team.team_name}</div>
-        <div class="team-institution">${team.institution}</div>
-        <div class="team-location">${team.city}, ${team.country}</div>
-        <div class="team-links">${websiteLink}${tdpLink}</div>`;
-      grid.appendChild(card);
-    });
-  }
-});
-</script>
 </body>
 </html>
