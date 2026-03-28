@@ -1,3 +1,4 @@
+<style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #1e1f22;
@@ -200,7 +201,6 @@
 
   /* SLIDER */
   .slider-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-  input[type="range"] { accent-color: var(--accent); }
 
   /* HISTORY TIMELINE */
   .history-section { padding: 3rem; }
@@ -234,3 +234,4 @@
     .history-section { padding: 1.5rem; }
     .tl-places { gap: 0.75rem; }
   }
+</style>

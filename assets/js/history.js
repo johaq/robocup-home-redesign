@@ -14,7 +14,6 @@ const LEAGUE_LABELS = {
   DSPL: "Domestic Standard Platform League",
   SSPL: "Social Standard Platform League",
 };
-
 const LEAGUE_ORDER = ["OPL", "DSPL", "SSPL"];
 
 function medalClass(place) {
@@ -33,39 +32,56 @@ function placeLabel(place) {
   return `${n}th`;
 }
 
-async function load() {
-  const [competitions, results, teams] = await Promise.all([
-    fetchCSV(COMPETITIONS_URL),
-    fetchCSV(RESULTS_URL),
-    fetchCSV(TEAMS_URL),
-  ]);
+// Global state
+let allCompetitions = [];
+let resultsByComp = {};
+let teamMap = {};
+let activeLeague = "all";
+let activeCompType = "all";
 
-  // Build team lookup by id
-  const teamMap = {};
-  teams.forEach(t => { if (t.team_id) teamMap[t.team_id] = t; });
+const COMP_TYPES = {
+  rc: "RoboCup World Championship",
+  go: "German Open",
+  eo: "European Open",
+  po: "Portugal Open",
+  jo: "Japan Open",
+  bo: "Brazil Open",
+};
 
-  // Group results by competition_id
-  const resultsByComp = {};
-  results.forEach(r => {
-    if (!r.competition_id) return;
-    if (!resultsByComp[r.competition_id]) resultsByComp[r.competition_id] = [];
-    resultsByComp[r.competition_id].push(r);
+function getCompType(competition_id) {
+  const prefix = competition_id.replace(/[0-9]/g, "");
+  return COMP_TYPES[prefix] || "Other";
+}
+
+function renderTimeline() {
+  const timeline = document.getElementById("timeline");
+  timeline.innerHTML = "";
+
+  // Filter competitions
+  let filtered = allCompetitions.filter(c => {
+    if (activeCompType !== "all") {
+      const prefix = c.competition_id.replace(/[0-9]/g, "");
+      if (prefix !== activeCompType) return false;
+    }
+    // If league filter active, only show competitions that have results for that league
+    if (activeLeague !== "all") {
+      const compResults = resultsByComp[c.competition_id] || [];
+      if (!compResults.some(r => r.league === activeLeague)) return false;
+    }
+    return true;
   });
 
-  // Sort competitions newest first
-  const sorted = competitions
-    .filter(c => c.competition_id)
-    .sort((a, b) => parseInt(b.year) - parseInt(a.year));
+  if (filtered.length === 0) {
+    timeline.innerHTML = `<div class="tl-no-results" style="padding:2rem 0;">No competitions match the selected filters.</div>`;
+    return;
+  }
 
-  // Group competitions by year for the year labels
+  // Group by year
   const byYear = {};
-  sorted.forEach(c => {
+  filtered.forEach(c => {
     if (!byYear[c.year]) byYear[c.year] = [];
     byYear[c.year].push(c);
   });
-
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
 
   Object.keys(byYear)
     .sort((a, b) => parseInt(b) - parseInt(a))
@@ -81,7 +97,7 @@ async function load() {
       byYear[year].forEach(comp => {
         const compResults = resultsByComp[comp.competition_id] || [];
 
-        // Group results by league, sorted by place
+        // Group results by league
         const byLeague = {};
         compResults.forEach(r => {
           if (!byLeague[r.league]) byLeague[r.league] = [];
@@ -91,38 +107,33 @@ async function load() {
           byLeague[league].sort((a, b) => parseInt(a.place) - parseInt(b.place));
         });
 
-        // Only include leagues that have results
-        const leaguesPresent = LEAGUE_ORDER.filter(l => byLeague[l] && byLeague[l].length > 0);
+        // Apply league filter
+        const leaguesPresent = LEAGUE_ORDER.filter(l => {
+          if (activeLeague !== "all" && l !== activeLeague) return false;
+          return byLeague[l] && byLeague[l].length > 0;
+        });
 
         const card = document.createElement("div");
         card.className = "tl-card";
-
-        // Card header
         card.innerHTML = `
           <div class="tl-card-header">
             <div class="tl-comp-name">${comp.name}</div>
             <div class="tl-comp-loc">${comp.city}, ${comp.country}</div>
           </div>`;
 
-        // League rows
         if (leaguesPresent.length === 0) {
           card.innerHTML += `<div class="tl-no-results">No results recorded for this competition.</div>`;
         } else {
           leaguesPresent.forEach((league, i) => {
             const isLast = i === leaguesPresent.length - 1;
             const placements = byLeague[league].slice(0, 3);
-
             const placesHTML = placements.map(r => {
-              const team = teamMap[r.team_id];
+              const team = teamMap[String(r.team_id).trim()];
               const teamName = team ? team.team_name : r.team_id;
               const teamLink = team
-                ? `<a href="team.html?id=${r.team_id}" class="tl-team-link">${teamName}</a>`
+                ? `<a href="team.html?id=${r.team_id}&from=history" class="tl-team-link">${teamName}</a>`
                 : `<span class="tl-team-name">${teamName}</span>`;
-              return `
-                <div class="tl-place">
-                  <div class="tl-medal ${medalClass(r.place)}">${placeLabel(r.place)}</div>
-                  ${teamLink}
-                </div>`;
+              return `<div class="tl-place"><div class="tl-medal ${medalClass(r.place)}">${placeLabel(r.place)}</div>${teamLink}</div>`;
             }).join("");
 
             card.innerHTML += `
@@ -135,7 +146,6 @@ async function load() {
 
         const dot = document.createElement("div");
         dot.className = "tl-dot";
-
         const item = document.createElement("div");
         item.className = "tl-item";
         item.appendChild(dot);
@@ -145,6 +155,88 @@ async function load() {
 
       timeline.appendChild(yearBlock);
     });
+}
+
+function setLeague(league, btn) {
+  activeLeague = league;
+  document.querySelectorAll(".filter-btn-league").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderTimeline();
+}
+
+function setCompType(type, btn) {
+  activeCompType = type;
+  document.querySelectorAll(".filter-btn-comp").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  renderTimeline();
+}
+
+async function load() {
+  const [competitions, results, teams] = await Promise.all([
+    fetchCSV(COMPETITIONS_URL),
+    fetchCSV(RESULTS_URL),
+    fetchCSV(TEAMS_URL),
+  ]);
+
+  teams.forEach(t => { if (t.team_id) teamMap[String(t.team_id).trim()] = t; });
+  results.forEach(r => {
+    if (!r.competition_id) return;
+    if (!resultsByComp[r.competition_id]) resultsByComp[r.competition_id] = [];
+    resultsByComp[r.competition_id].push(r);
+  });
+
+  allCompetitions = competitions
+    .filter(c => c.competition_id)
+    .sort((a, b) => parseInt(b.year) - parseInt(a.year));
+
+  // Build filter UI
+  const filtersEl = document.getElementById("history-filters");
+
+  // Competition type filters
+  const compTypes = [...new Set(allCompetitions.map(c => c.competition_id.replace(/[0-9]/g, "")))];
+  const compRow = document.createElement("div");
+  compRow.className = "filter-row";
+  compRow.innerHTML = `<span class="filter-label">Competition</span>`;
+
+  const allCompBtn = document.createElement("button");
+  allCompBtn.className = "filter-btn filter-btn-comp active";
+  allCompBtn.textContent = "All";
+  allCompBtn.onclick = () => setCompType("all", allCompBtn);
+  compRow.appendChild(allCompBtn);
+
+  compTypes.forEach(prefix => {
+    const label = Object.keys(COMP_TYPES).includes(prefix) ? COMP_TYPES[prefix].replace(" Championship", "").replace("World ", "") : prefix;
+    const btn = document.createElement("button");
+    btn.className = "filter-btn filter-btn-comp";
+    btn.textContent = label;
+    btn.onclick = () => setCompType(prefix, btn);
+    compRow.appendChild(btn);
+  });
+
+  // League filters
+  const leagueRow = document.createElement("div");
+  leagueRow.className = "filter-row";
+  leagueRow.innerHTML = `<span class="filter-label">League</span>`;
+
+  const allLeagueBtn = document.createElement("button");
+  allLeagueBtn.className = "filter-btn filter-btn-league active";
+  allLeagueBtn.textContent = "All";
+  allLeagueBtn.onclick = () => setLeague("all", allLeagueBtn);
+  leagueRow.appendChild(allLeagueBtn);
+
+  Object.entries(LEAGUE_LABELS).forEach(([key, label]) => {
+    const btn = document.createElement("button");
+    btn.className = "filter-btn filter-btn-league";
+    btn.textContent = key;
+    btn.title = label;
+    btn.onclick = () => setLeague(key, btn);
+    leagueRow.appendChild(btn);
+  });
+
+  filtersEl.appendChild(compRow);
+  filtersEl.appendChild(leagueRow);
+
+  renderTimeline();
 }
 
 load();
