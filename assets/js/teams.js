@@ -31,7 +31,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 function updateMapAndGrid(minYear) {
   activeMinYear = minYear;
   document.getElementById("slider-label").textContent =
-    minYear <= 2006 ? "All time" : `Active since ${minYear}`;
+    minYear <= 2006 ? "All time" : `Last participation in ${minYear}`;
 
   const grid = document.getElementById('teams-grid');
   grid.innerHTML = '';
