@@ -1,5 +1,4 @@
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --bg: #1e1f22;
   --surface: #2b2d31;
@@ -201,6 +200,7 @@
 
   /* SLIDER */
   .slider-row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  input[type="range"] { accent-color: var(--accent); }
 
   /* HISTORY TIMELINE */
   .history-section { padding: 3rem; }
@@ -234,4 +234,41 @@
     .history-section { padding: 1.5rem; }
     .tl-places { gap: 0.75rem; }
   }
-</style>
+
+  /* RULES PAGE */
+  .rules-hero { padding: 4rem 3rem; border-bottom: 1px solid var(--border); }
+  .rules-hero-inner { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 1fr auto; gap: 4rem; align-items: center; }
+  .rules-hero-title { font-family: var(--font-head); font-size: clamp(1.4rem, 2.5vw, 2rem); font-weight: 700; margin: 0.5rem 0 1rem; }
+  .rules-hero-desc { color: var(--muted); font-size: 15px; line-height: 1.8; max-width: 500px; margin-bottom: 2rem; }
+  .rules-hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .rules-hero-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; min-width: 220px; }
+  .rules-doc-icon { width: 64px; height: 64px; border-radius: 12px; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+  .rules-doc-label { font-family: var(--font-head); font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .rules-doc-sub { font-size: 12px; color: var(--muted); }
+
+  .rules-cards-wrap { padding: 4rem 3rem; border-bottom: 1px solid var(--border); }
+  .rules-cards-section { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; max-width: 960px; margin: 0 auto; }
+  .rules-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; }
+  .rules-card-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+  .rules-icon-new { background: rgba(0,229,160,0.12); color: var(--accent); }
+  .rules-icon-existing { background: rgba(77,159,255,0.12); color: var(--accent2); }
+  .rules-card-tag { font-family: var(--font-head); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.4rem; }
+  .rules-card-title { font-family: var(--font-head); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; }
+  .rules-card-desc { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; }
+  .rules-card-actions { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+  .rules-card-note { font-size: 12px; color: var(--muted); line-height: 1.6; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+  .rules-criteria-section { padding: 4rem 3rem; }
+  .rules-criteria-inner { max-width: 960px; margin: 0 auto; }
+  .criteria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+  .criteria-item { display: flex; align-items: center; gap: 0.75rem; font-size: 14px; color: var(--text); padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .criteria-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  @media (max-width: 900px) {
+    .rules-hero-inner { grid-template-columns: 1fr; }
+    .rules-hero-card { display: none; }
+    .rules-cards-section { grid-template-columns: 1fr; }
+    .rules-cards-wrap { padding: 2rem 1.5rem; }
+    .rules-hero { padding: 2rem 1.5rem; }
+    .rules-criteria-section { padding: 2rem 1.5rem; }
+  }

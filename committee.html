@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RoboCup@Home — Committee</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<div class="page-header">
+  <div class="page-tag">Committees</div>
+  <div class="page-title">The people behind @Home.</div>
+  <p class="page-desc">RoboCup@Home is run by volunteers from the global robotics community. Meet the committees that keep the league running.</p>
+</div>
+
+<!-- CURRENT COMMITTEES -->
+<div class="committee-section">
+  <div class="committee-inner">
+    <div class="section-label">2025 / 2026</div>
+    <div class="committee-grid">
+
+      <div class="committee-card">
+        <div class="committee-card-header">
+          <div class="committee-card-title">Executive Committee</div>
+        </div>
+        <ul class="committee-list">
+          <li>Alexander Moriarty <span class="committee-affil">OTTO by Rockwell Automation, Canada</span></li>
+          <li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li>
+          <li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li>
+          <li>Katarzyna Pasternak <span class="committee-affil">University of Miami, USA</span></li>
+          <li>Matteo Leonetti <span class="committee-affil">King's College London, UK</span></li>
+          <li>Luis Contreras <span class="committee-affil">Tokyo Information Design Professional University, Japan</span></li>
+        </ul>
+      </div>
+
+      <div class="committee-card">
+        <div class="committee-card-header">
+          <div class="committee-card-title">Technical Committee</div>
+          <a href="mailto:rc-home-tc@lists.robocup.org" class="committee-email">rc-home-tc@lists.robocup.org</a>
+        </div>
+        <ul class="committee-list">
+          <li><span class="committee-role">Chair</span> Leroy Ruegemer <span class="committee-affil">Bielefeld University, Germany</span></li>
+          <li>Akinobu Mizutani <span class="committee-affil">Kyushu Institute of Technology, Japan</span></li>
+          <li>Fagner Pimentel <span class="committee-affil">Centro Universitario FEI, Brazil</span></li>
+          <li>Adam Golding <span class="committee-affil">UNSW Sydney, Australia</span></li>
+          <li>Tiago Ribeiro <span class="committee-affil">Universidade do Minho, Portugal</span></li>
+          <li>Taewoong Kang <span class="committee-affil">Pusan National University, South Korea</span></li>
+        </ul>
+      </div>
+
+      <div class="committee-card">
+        <div class="committee-card-header">
+          <div class="committee-card-title">Organizing Committee</div>
+          <a href="mailto:rc-home-oc@lists.robocup.org" class="committee-email">rc-home-oc@lists.robocup.org</a>
+        </div>
+        <ul class="committee-list">
+          <li><span class="committee-role">Chair</span> Vanessa Hassouna <span class="committee-affil">Bremen University, Germany</span></li>
+          <li><span class="committee-role">Chair</span> Kathrin Lammers <span class="committee-affil">Bielefeld University, Germany</span></li>
+          <li><span class="committee-role">Local Chair</span> Dongwoon Song <span class="committee-affil">Pusan National University, South Korea</span></li>
+          <li>Sansei Hori <span class="committee-affil">Tamagawa University, Japan</span></li>
+          <li>Alina Kawkin <span class="committee-affil">Bremen University, Germany</span></li>
+          <li>Gabriela Bassegio <span class="committee-affil">Centro Universitario FEI, Brazil</span></li>
+          <li>Hamsa Datta Perur <span class="committee-affil">Agile Robots, Germany</span></li>
+          <li>Marina Zanotta <span class="committee-affil">Universidade Federal do Rio Grande, Brazil</span></li>
+          <li>Leander von Seelstrang <span class="committee-affil">Bielefeld University, Germany</span></li>
+          <li>Jared Swift <span class="committee-affil">King's College London, UK</span></li>
+          <li>Fagner Pimentel <span class="committee-affil">Centro Universitario FEI, Brazil</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- HISTORICAL -->
+<div class="committee-history-wrap">
+  <div class="committee-inner">
+    <div class="section-label" style="margin-bottom:1.5rem;">Previous Committees</div>
+
+    <!-- Each year is a collapsible block -->
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2024</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Alexander Moriarty <span class="committee-affil">OTTO Motors by Rockwell Automation, Canada</span></li><li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Katarzyna Pasternak <span class="committee-affil">University of Miami, USA</span></li><li>Matteo Leonetti <span class="committee-affil">King's College London, UK</span></li><li>Luis Contreras <span class="committee-affil">Tamagawa University, Japan</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Vanessa Hassouna <span class="committee-affil">Bremen University, Germany</span></li><li>Akinobu Mizutani <span class="committee-affil">Kyushu Institute of Technology, Japan</span></li><li>Alina Hawkin <span class="committee-affil">Bremen University, Germany</span></li><li>Leroy Ruegemer <span class="committee-affil">Bielefeld University, Germany</span></li><li>Leander von Seelstrang <span class="committee-affil">Bielefeld University, Germany</span></li><li>Tiago Ribeiro <span class="committee-affil">Universidade do Minho, Portugal</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Alina Hawkin <span class="committee-affil">Bremen University, Germany</span></li><li><span class="committee-role">Chair</span> Kathrin Lammers <span class="committee-affil">Bielefeld University, Germany</span></li><li><span class="committee-role">Local Chair</span> Fagner Pimentel <span class="committee-affil">Centro Universitario FEI, Brazil</span></li><li>Adam Golding <span class="committee-affil">UNSW Sydney, Australia</span></li><li>Lim Song Chuan <span class="committee-affil">Tsinghua University, China</span></li><li>Sansei Hori <span class="committee-affil">Tamagawa University, Japan</span></li><li>Tomoya Shiba <span class="committee-affil">Kyushu Institute of Technology, Japan</span></li><li>Sven Wachsmuth <span class="committee-affil">Bielefeld University, Germany</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2023</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Alexander Moriarty <span class="committee-affil">PickNik Robotics, Canada</span></li><li>Hiroyuki Okada <span class="committee-affil">Tamagawa University, Japan</span></li><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Mauricio Matamoros <span class="committee-affil">University of Koblenz, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Peter van Dooren <span class="committee-affil">Eindhoven University of Technology, Netherlands</span></li><li>Matteo Leonetti <span class="committee-affil">King's College London, UK</span></li><li>Akinobu Mizutani <span class="committee-affil">Kyushu Institute of Technology, Japan</span></li><li>Katarzyna Pasternak <span class="committee-affil">University of Miami, USA</span></li><li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li><li>Fagner Pimentel <span class="committee-affil">Centro Universitario FEI, Brazil</span></li><li>Florian Lier <span class="committee-affil">Bosch Corporate Research, Germany</span></li><li>Luis Contreras <span class="committee-affil">Tamagawa University, Japan</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Mauricio Matamoros <span class="committee-affil">University of Koblenz, Germany</span></li><li><span class="committee-role">Local Chair</span> Alexandre Pauchet <span class="committee-affil">Normandy University, France</span></li><li>Maxime St-Pierre <span class="committee-affil">Canada</span></li><li>Nathalie Connolly <span class="committee-affil">Canada</span></li><li>Fabrice Jumel <span class="committee-affil">France</span></li><li>Oscar Fuentes-Casarrubias <span class="committee-affil">UNAM, Mexico</span></li><li>Adam Golding <span class="committee-affil">UNSW Sydney, Australia</span></li><li>Plinio Aquino <span class="committee-affil">Centro Universitario FEI, Brazil</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2022</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Alexander Moriarty <span class="committee-affil">Intrinsic an Alphabet Company, USA</span></li><li>Hiroyuki Okada <span class="committee-affil">Tamagawa University, Japan</span></li><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Mauricio Matamoros <span class="committee-affil">University of Koblenz, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Alex Mitrevski <span class="committee-affil">Germany</span></li><li>Fagner Pimentel <span class="committee-affil">Brazil</span></li><li>Katarzyna Pasternak <span class="committee-affil">USA</span></li><li>Matteo Leonetti <span class="committee-affil">King's College London, UK</span></li><li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Maxime St-Pierre <span class="committee-affil">Canada</span></li><li><span class="committee-role">Local Chair</span> Kanjanapan Sukvichai <span class="committee-affil">Kasetsart University, Thailand</span></li><li><span class="committee-role">Local Co-Chair</span> Pruittikorn Smithmaitrie <span class="committee-affil">Prince of Songkla University, Thailand</span></li><li>Nathalie Connolly <span class="committee-affil">Canada</span></li><li>Fabrice Jumel <span class="committee-affil">France</span></li><li>Oscar Fuentes-Casarrubias <span class="committee-affil">UNAM, Mexico</span></li><li>Rodrigo Salas <span class="committee-affil">Chile</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2020 – 2021</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Alexander Moriarty <span class="committee-affil">Boston Dynamics, USA</span></li><li>Hiroyuki Okada <span class="committee-affil">Tamagawa University, Japan</span></li><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Mauricio Matamoros <span class="committee-affil">University of Koblenz, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Carlos Quintero <span class="committee-affil">Rice University, Colombia</span></li><li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li><li>Luis Contreras <span class="committee-affil">Tamagawa University, Japan</span></li><li>Nathalie Connolly <span class="committee-affil">Hekaton Studio, Canada</span></li><li>Nick Walker <span class="committee-affil">University of Washington, USA</span></li><li>Pedro Peña <span class="committee-affil">University of Miami, USA</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Maxime St-Pierre <span class="committee-affil">Clearpath Robotics, Canada</span></li><li>Fagner Pimentel <span class="committee-affil">FEI University Center, Brazil</span></li><li>Florian Lier <span class="committee-affil">University of Bielefeld, Germany</span></li><li>Sven Wachsmuth <span class="committee-affil">University of Bielefeld, Germany</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2019</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Caleb Rascon <span class="committee-affil">UNAM, Mexico</span></li><li>Kai Chen <span class="committee-affil">USTC, China</span></li><li>Mauricio Matamoros <span class="committee-affil">University of Koblenz, Germany</span></li><li>Sven Wachsmuth <span class="committee-affil">Bielefeld University, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Alexander Moriarty <span class="committee-affil">Fetch Robotics, USA</span></li><li>Allison Henry <span class="committee-affil">USA</span></li><li>Johannes Kummert <span class="committee-affil">Bielefeld University, Germany</span></li><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Sammy Pfeiffer <span class="committee-affil">University of Technology Sydney, Australia</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Maxime St-Pierre <span class="committee-affil">Clearpath Robotics, Canada</span></li><li><span class="committee-role">Local Chair</span> Colm Flanagan <span class="committee-affil">Principal Logistics Technologies, Ireland</span></li><li>Fabrice Jumel <span class="committee-affil">Université de Lyon, France</span></li><li>Angelica Lim <span class="committee-affil">Canada</span></li><li>Jesus Savage <span class="committee-affil">University of Mexico, Mexico</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2018</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Kai Chen <span class="committee-affil">USTC, China</span></li><li>Dirk Holz <span class="committee-affil">University of Bonn, Germany</span></li><li>Caleb Rascon <span class="committee-affil">UNAM, Mexico</span></li><li>Sven Wachsmuth <span class="committee-affil">Bielefeld University, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Justin Hart <span class="committee-affil">University of Texas at Austin, USA</span></li><li>Raphael Memmesheimer <span class="committee-affil">University of Koblenz-Landau, Germany</span></li><li>Sammy Pfeiffer <span class="committee-affil">University of Technology Sydney, Australia</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Mauricio Matamoros <span class="committee-affil">University of Koblenz-Landau, Germany</span></li><li><span class="committee-role">Local Chair</span> Nathalie Connolly <span class="committee-affil">Concordia University, Canada</span></li><li>Alexander Moriarty <span class="committee-affil">Fetch Robotics, USA</span></li><li>Fabrice Jumel <span class="committee-affil">Université de Lyon, France</span></li><li>Jesus Savage <span class="committee-affil">UNAM, Mexico</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2017</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <div class="hist-committee-grid">
+          <div><div class="hist-committee-title">Executive Committee</div><ul class="committee-list"><li>Kai Chen <span class="committee-affil">USTC, China</span></li><li>Dirk Holz <span class="committee-affil">University of Bonn, Germany</span></li><li>Caleb Rascon <span class="committee-affil">UNAM, Mexico</span></li><li>Sven Wachsmuth <span class="committee-affil">Bielefeld University, Germany</span></li></ul></div>
+          <div><div class="hist-committee-title">Technical Committee</div><ul class="committee-list"><li>Loy Van Beek <span class="committee-affil">Eindhoven University of Technology, Netherlands</span></li><li>Kathrin Evers <span class="committee-affil">TU Dresden, Germany</span></li><li>Hideaki Nagano <span class="committee-affil">Tokyo City University, Japan</span></li><li>Rodrigo Ventura <span class="committee-affil">Instituto Superior Técnico, Portugal</span></li></ul></div>
+          <div><div class="hist-committee-title">Organizing Committee</div><ul class="committee-list"><li><span class="committee-role">Chair</span> Mauricio Matamoros <span class="committee-affil">UNAM, Mexico</span></li><li><span class="committee-role">Local Chair</span> Komei Sugiura <span class="committee-affil">NICT, Japan</span></li><li>Francisco Javier Rodriguez Lera <span class="committee-affil">University of Luxembourg</span></li><li>Raphael Memmesheimer <span class="committee-affil">University of Koblenz, Germany</span></li></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hist-year">
+      <button class="hist-year-btn" onclick="toggleYear(this)">
+        <span>2009 – 2016</span><span class="hist-chevron">+</span>
+      </button>
+      <div class="hist-year-body" hidden>
+        <p style="font-size:14px;color:var(--muted);padding:1.5rem 0;">Full committee records for 2009–2016 are available on the <a href="https://athome.robocup.org/committees/" target="_blank" style="color:var(--accent);">original RoboCup@Home website ↗</a>.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="footer"></div>
+<script src="assets/js/main.js"></script>
+<script>
+function toggleYear(btn) {
+  const body = btn.nextElementSibling;
+  const chevron = btn.querySelector('.hist-chevron');
+  const isHidden = body.hidden;
+  body.hidden = !isHidden;
+  chevron.textContent = isHidden ? '−' : '+';
+}
+</script>
+</body>
+</html>

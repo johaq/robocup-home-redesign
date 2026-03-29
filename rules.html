@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RoboCup@Home — Rules</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div id="navbar"></div>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="page-tag">Rules</div>
+  <div class="page-title">How to compete.</div>
+  <p class="page-desc">Everything you need to understand and participate in RoboCup@Home.</p>
+</div>
+
+<!-- RULEBOOK HERO -->
+<div class="rules-hero">
+  <div class="rules-hero-inner">
+    <div>
+      <div class="section-label">Official Rulebook</div>
+      <div class="rules-hero-title">Always up to date on GitHub.</div>
+      <p class="rules-hero-desc">The RoboCup@Home rulebook is maintained as an open source document. The latest release is available below. We encourage all teams to read it carefully and contribute to its ongoing development.</p>
+      <div class="rules-hero-actions">
+        <a href="https://github.com/RoboCupAtHome/RuleBook/releases/latest" target="_blank" class="btn-primary">View latest release ↗</a>
+        <a href="https://github.com/RoboCupAtHome/RuleBook" target="_blank" class="btn-secondary">View on GitHub</a>
+      </div>
+    </div>
+    <div class="rules-hero-card">
+      <div class="rules-doc-icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <rect x="6" y="4" width="24" height="32" rx="3" stroke="var(--accent)" stroke-width="1.5"/>
+          <line x1="12" y1="13" x2="28" y2="13" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="12" y1="19" x2="28" y2="19" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="12" y1="25" x2="22" y2="25" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="30" cy="30" r="8" fill="var(--bg)" stroke="var(--accent)" stroke-width="1.5"/>
+          <line x1="30" y1="26" x2="30" y2="34" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="26" y1="30" x2="34" y2="30" stroke="var(--accent)" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="rules-doc-label">RoboCup@Home Rulebook</div>
+      <div class="rules-doc-sub">Latest release · GitHub</div>
+      <a href="https://github.com/RoboCupAtHome/RuleBook/releases/latest/download/rulebook.pdf" target="_blank" class="btn-primary" style="margin-top:1.25rem;width:100%;justify-content:center;">Download PDF ↗</a>
+    </div>
+  </div>
+</div>
+
+<!-- TWO AUDIENCE CARDS -->
+<div class="rules-cards-wrap">
+  <div class="rules-cards-section">
+
+    <div class="rules-card">
+      <div class="rules-card-icon rules-icon-new">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="19" y1="3" x2="19" y2="9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="16" y1="6" x2="22" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="rules-card-tag">New teams</div>
+      <div class="rules-card-title">Just getting started?</div>
+      <p class="rules-card-desc">Before diving into the full rulebook, we recommend reading the starting guide first. It covers the basics of how the competition works, what equipment you need, and how to register.</p>
+      <div class="rules-card-actions">
+        <a href="starting-guide.html" class="btn-primary">Read the starting guide →</a>
+        <a href="https://github.com/RoboCupAtHome/RuleBook/issues" target="_blank" class="btn-secondary">Ask a question on GitHub ↗</a>
+      </div>
+      <div class="rules-card-note">Have a question about the rules? Open an issue on GitHub. The committee and community are there to help.</div>
+    </div>
+
+    <div class="rules-card">
+      <div class="rules-card-icon rules-icon-existing">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="16" cy="8" r="3.5" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M2 20c0-3.3 3.1-6 7-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M22 20c0-3.3-3.1-6-7-6s-7 2.7-7 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="rules-card-tag">Existing teams</div>
+      <div class="rules-card-title">Want to improve the rules?</div>
+      <p class="rules-card-desc">The rulebook evolves every year based on community feedback. If you have a suggestion for a new test, a clarification, or a change to existing rules, we welcome your input via pull request.</p>
+      <div class="rules-card-actions">
+        <a href="https://github.com/RoboCupAtHome/RuleBook/pulls" target="_blank" class="btn-primary">Open a pull request ↗</a>
+        <a href="https://github.com/RoboCupAtHome/RuleBook" target="_blank" class="btn-secondary">Browse the repository ↗</a>
+      </div>
+      <div class="rules-card-note">Changes are reviewed by the technical committee. The earlier in the year you propose, the better the chance of inclusion in the next release.</div>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="footer"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
