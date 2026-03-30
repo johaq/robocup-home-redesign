@@ -11,14 +11,24 @@
     </div>
     <span class="nav-logo-text">RoboCup<br/>@Home</span>
   </a>
-  <ul class="nav-links">
+  <ul class="nav-links" id="nav-links">
     <li><a href="index.html">About</a></li>
+    <li><a href="news.html">News</a></li>
     <li><a href="teams.html">Teams</a></li>
     <li><a href="history.html">History</a></li>
+    <li><a href="competitions.html">Competitions</a></li>
     <li><a href="rules.html">Rules</a></li>
-    <li><a href="https://athome.robocup.org/media/">Media</a></li>
+    <li><a href="media.html">Media</a></li>
     <li><a href="committee.html">Committees</a></li>
+    <li class="nav-mobile-only"><a href="https://athome.robocup.org/call-for-participation/" class="nav-cta" style="display:inline-block;margin-top:0.5rem;">Join 2026 →</a></li>
   </ul>
-<button id="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? '' : 'light'; this.textContent = document.documentElement.dataset.theme === 'light' ? '☀️' : '🌙'" style="background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;margin-right:0.75rem;">🌙</button>  <a href="https://athome.robocup.org/call-for-participation/" class="nav-cta">Join 2026 →</a>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <button id="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? '' : 'light'; this.textContent = document.documentElement.dataset.theme === 'light' ? '☀️' : '🌙'" style="background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">🌙</button>
+    <a href="https://athome.robocup.org/call-for-participation/" class="nav-cta nav-desktop-only">Join 2026 →</a>
+    <button id="nav-hamburger" aria-label="Toggle menu" onclick="document.getElementById('nav-links').classList.toggle('nav-open')" style="display:none;background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:6px;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0;">
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+    </button>
+  </div>
 </nav>
-
