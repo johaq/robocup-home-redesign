@@ -435,3 +435,37 @@
   .media-photo-tall { grid-row: span 1; }
   .media-gallery-header { flex-direction: column; align-items: flex-start; }
 }
+
+/* COMPETITION DETAIL PAGE */
+.comp-detail-back { padding: 1.25rem 3rem 0; max-width: 960px; margin: 0 auto; }
+.comp-detail-header { padding: 2.5rem 3rem; border-bottom: 1px solid var(--border); }
+.comp-detail-inner { max-width: 960px; margin: 0 auto; }
+.comp-detail-meta { display: flex; gap: 2.5rem; flex-wrap: wrap; margin-top: 1.25rem; }
+.comp-detail-body { padding: 3rem; }
+.comp-detail-block { margin-bottom: 3rem; }
+.comp-detail-block-title { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 1.25rem; }
+.comp-detail-leagues { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+.comp-detail-league { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem 1.5rem; min-width: 220px; flex: 1; }
+.comp-detail-league-title { font-family: var(--font-head); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 1rem; }
+.comp-detail-results-list { display: flex; flex-direction: column; gap: 0.6rem; }
+.comp-detail-result-row { display: flex; align-items: center; gap: 0.75rem; }
+.comp-detail-result-team { font-size: 14px; }
+.comp-detail-no-results { font-size: 13px; color: var(--muted); }
+.comp-detail-team-link { color: var(--text); text-decoration: none; }
+.comp-detail-team-link:hover { color: var(--accent); }
+.comp-detail-participants-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.5rem; }
+.comp-detail-participant { font-size: 13px; padding: 0.5rem 0.75rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+
+/* TIMELINE COMP LINK */
+.tl-comp-link { color: var(--text); text-decoration: none; }
+.tl-comp-link:hover { color: var(--accent); }
+
+/* PARTICIPATION ENTRY */
+.tl-participated { padding: 0.75rem 1.25rem; font-size: 12px; color: var(--muted); font-family: var(--font-head); letter-spacing: 0.05em; }
+
+@media (max-width: 900px) {
+  .comp-detail-back { padding: 1rem 1.5rem 0; }
+  .comp-detail-header { padding: 1.5rem; }
+  .comp-detail-body { padding: 1.5rem; }
+  .comp-detail-leagues { flex-direction: column; }
+}

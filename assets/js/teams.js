@@ -31,7 +31,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 function updateMapAndGrid(minYear) {
   activeMinYear = minYear;
   document.getElementById("slider-label").textContent =
-    minYear <= 2006 ? "All time" : `Last participation in ${minYear}`;
+    minYear <= 2006 ? "All time" : `Active since ${minYear}`;
 
   const grid = document.getElementById('teams-grid');
   grid.innerHTML = '';
@@ -74,18 +74,19 @@ async function load() {
     fetchCSV(COMPETITIONS_URL),
   ]);
 
-  // Build competition year lookup
+  // Build last active year per team from participations column
   const compYearMap = {};
   competitions.forEach(c => { if (c.competition_id) compYearMap[c.competition_id] = parseInt(c.year) || 0; });
 
-  // Build last active year per team
-  results.forEach(r => {
-    if (!r.team_id || !r.competition_id) return;
-    const year = compYearMap[r.competition_id] || 0;
-    const tid = String(r.team_id).trim();
-    if (!teamLastYear[tid] || year > teamLastYear[tid]) {
-      teamLastYear[tid] = year;
-    }
+  teams.filter(t => t.team_id && t.participations).forEach(t => {
+    const tid = String(t.team_id).trim();
+    const comps = t.participations.split(",").map(s => s.trim()).filter(Boolean);
+    comps.forEach(cid => {
+      const year = compYearMap[cid] || 0;
+      if (!teamLastYear[tid] || year > teamLastYear[tid]) {
+        teamLastYear[tid] = year;
+      }
+    });
   });
 
   allTeams = teams.filter(t => t.team_name);
@@ -116,7 +117,7 @@ async function load() {
     const websiteLink = team.website ? `<a href="${team.website}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">Website ↗</a>` : '';
     const tdpLink = team.tdp && team.tdp !== 'Placeholder' ? `<a href="${team.tdp}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">TDP ↗</a>` : '';
     const profileLink = `<a href="team.html?id=${tid}&from=teams" style="color:#00e5a0;font-family:monospace;font-size:12px;">View profile ↗</a>`;
-    const lastSeen = teamLastYear[tid] ? `Last competed: ${teamLastYear[tid]}` : '';
+    const lastSeen = teamLastYear[tid] ? `Last participated: ${teamLastYear[tid]}` : '';
     const links = [websiteLink, tdpLink].filter(Boolean).join(' &nbsp;·&nbsp; ');
 
     const popup = `

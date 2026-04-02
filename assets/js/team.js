@@ -8,8 +8,9 @@ const teamId = params.get('id');
 const fromPage = params.get('from');
 
 const BACK_LINKS = {
-  history: { href: 'history.html', label: '← Back to history' },
-  teams:   { href: 'teams.html',   label: '← Back to all teams' },
+  history:     { href: 'history.html', label: '← Back to history' },
+  teams:       { href: 'teams.html',   label: '← Back to all teams' },
+  competition: { href: `competition.html?id=${params.get('compId')}`, label: '← Back to competition' },
 };
 const backLink = BACK_LINKS[fromPage] || BACK_LINKS.teams;
 
@@ -41,74 +42,108 @@ function placeLabel(place) {
   return `${n}th`;
 }
 
-let allTeamResults = [];
+let allTeamResults = [];   // results rows for this team
+let allParticipations = []; // competition_ids from participations column
 let compMap = {};
 let activeLeague = "all";
+
+function compLink(compId, label) {
+  return `<a href="competition.html?id=${compId}&from=team&teamId=${teamId}" class="tl-comp-link">${label}</a>`;
+}
 
 function renderTeamTimeline() {
   const container = document.getElementById("team-timeline");
 
-  const filtered = activeLeague === "all"
+  // Build set of comp_ids where this team has a result
+  const resultCompIds = new Set(allTeamResults.map(r => r.competition_id));
+
+  // Participation-only entries: participated but NOT in results
+  const participationOnlyIds = allParticipations.filter(cid => !resultCompIds.has(cid));
+
+  // Apply league filter to results
+  const filteredResults = activeLeague === "all"
     ? allTeamResults
     : allTeamResults.filter(r => r.league === activeLeague);
 
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="no-results">No results match the selected filter.</div>`;
+  // When league filter is active, also show participation-only comps
+  // (they have no league, so always show them unless "all" hides them — keep them visible)
+  const showParticipationOnly = activeLeague === "all";
+
+  // Gather all competition IDs to show
+  const allCompIds = new Set([
+    ...filteredResults.map(r => r.competition_id),
+    ...(showParticipationOnly ? participationOnlyIds : []),
+  ]);
+
+  if (allCompIds.size === 0) {
+    container.innerHTML = `<div class="no-results">No history recorded yet.</div>`;
     return;
   }
 
-  // Group by year then competition
+  // Group by year
   const byYear = {};
-  filtered.forEach(r => {
-    const comp = compMap[r.competition_id] || {};
+  allCompIds.forEach(compId => {
+    const comp = compMap[compId] || {};
     const year = comp.year || "Unknown";
-    if (!byYear[year]) byYear[year] = {};
-    if (!byYear[year][r.competition_id]) byYear[year][r.competition_id] = [];
-    byYear[year][r.competition_id].push(r);
+    if (!byYear[year]) byYear[year] = [];
+    byYear[year].push(compId);
   });
 
   container.innerHTML = Object.keys(byYear)
     .sort((a, b) => parseInt(b) - parseInt(a))
     .map(year => {
-      const compsHTML = Object.keys(byYear[year]).map(compId => {
-        const comp = compMap[compId] || {};
-        const compName = comp.name || compId;
-        const location = comp.city && comp.country ? `${comp.city}, ${comp.country}` : "";
+      const compsHTML = byYear[year]
+        .sort((a, b) => {
+          // Sort by comp name within year
+          const na = (compMap[a] || {}).name || a;
+          const nb = (compMap[b] || {}).name || b;
+          return na.localeCompare(nb);
+        })
+        .map(compId => {
+          const comp = compMap[compId] || {};
+          const compName = comp.name || compId;
+          const location = comp.city && comp.country ? `${comp.city}, ${comp.country}` : "";
+          const hasResult = resultCompIds.has(compId);
 
-        // Group by league within this competition
-        const byLeague = {};
-        byYear[year][compId].forEach(r => {
-          if (!byLeague[r.league]) byLeague[r.league] = r;
-        });
+          let bodyHTML = "";
+          if (hasResult) {
+            // Show results grouped by league
+            const compResults = filteredResults.filter(r => r.competition_id === compId);
+            const byLeague = {};
+            compResults.forEach(r => { byLeague[r.league] = r; });
 
-        const leagueRows = LEAGUE_ORDER
-          .filter(l => byLeague[l])
-          .map((l, i, arr) => {
-            const r = byLeague[l];
-            const isLast = i === arr.length - 1;
-            return `
-              <div class="tl-league${isLast ? " tl-league-last" : ""}">
-                <div class="tl-league-name">${LEAGUE_LABELS[l] || l}</div>
-                <div class="tl-places">
-                  <div class="tl-place">
-                    <div class="tl-medal ${medalClass(r.place)}">${placeLabel(r.place)}</div>
-                  </div>
+            const leagueRows = LEAGUE_ORDER
+              .filter(l => byLeague[l])
+              .map((l, i, arr) => {
+                const r = byLeague[l];
+                const isLast = i === arr.length - 1;
+                return `
+                  <div class="tl-league${isLast ? " tl-league-last" : ""}">
+                    <div class="tl-league-name">${LEAGUE_LABELS[l] || l}</div>
+                    <div class="tl-places">
+                      <div class="tl-place">
+                        <div class="tl-medal ${medalClass(r.place)}">${placeLabel(r.place)}</div>
+                      </div>
+                    </div>
+                  </div>`;
+              }).join("");
+            bodyHTML = leagueRows || `<div class="tl-participated">Participated</div>`;
+          } else {
+            bodyHTML = `<div class="tl-participated">Participated</div>`;
+          }
+
+          return `
+            <div class="tl-item">
+              <div class="tl-dot"></div>
+              <div class="tl-card">
+                <div class="tl-card-header">
+                  <div class="tl-comp-name">${compLink(compId, compName)}</div>
+                  ${location ? `<div class="tl-comp-loc">${location}</div>` : ""}
                 </div>
-              </div>`;
-          }).join("");
-
-        return `
-          <div class="tl-item">
-            <div class="tl-dot"></div>
-            <div class="tl-card">
-              <div class="tl-card-header">
-                <div class="tl-comp-name">${compName}</div>
-                ${location ? `<div class="tl-comp-loc">${location}</div>` : ""}
+                ${bodyHTML}
               </div>
-              ${leagueRows}
-            </div>
-          </div>`;
-      }).join("");
+            </div>`;
+        }).join("");
 
       return `
         <div class="tl-year-block">
@@ -126,7 +161,6 @@ function setLeague(league, btn) {
 }
 
 async function load() {
-  // Set back link based on where the user came from
   const bl = document.getElementById('back-link');
   if (bl) { bl.href = backLink.href; bl.textContent = backLink.label; }
 
@@ -149,7 +183,8 @@ async function load() {
 
   document.title = `RoboCup@Home — ${team.team_name}`;
 
-  competitions.forEach(c => { compMap[c.competition_id] = c; });
+  competitions.forEach(c => { if (c.competition_id) compMap[c.competition_id] = c; });
+
   allTeamResults = results
     .filter(r => String(r.team_id).trim() === String(teamId).trim())
     .sort((a, b) => {
@@ -158,16 +193,21 @@ async function load() {
       return yb - ya;
     });
 
+  // Parse participations column
+  allParticipations = (team.participations || "")
+    .split(",")
+    .map(s => s.trim())
+    .filter(Boolean);
+
   // Build links
   const links = [];
   if (team.website) links.push(`<a href="${team.website}" target="_blank" class="team-link-btn primary">Website ↗</a>`);
   if (team.tdp && team.tdp !== 'Placeholder') links.push(`<a href="${team.tdp}" target="_blank" class="team-link-btn">Team Description Paper ↗</a>`);
   if (team.video) links.push(`<a href="${team.video}" target="_blank" class="team-link-btn">Video ↗</a>`);
 
-  // Alt names
   const altNames = team.alt_names ? `<div class="team-meta-item"><span class="team-meta-label">Also known as</span><span class="team-meta-value">${team.alt_names}</span></div>` : "";
 
-  // Build league filter
+  // Build league filter (only for leagues with results)
   const usedLeagues = [...new Set(allTeamResults.map(r => r.league))];
   let leagueFilterHTML = "";
   if (usedLeagues.length > 1) {
@@ -178,10 +218,10 @@ async function load() {
     leagueFilterHTML = `<div class="filter-row" style="margin-bottom:1.5rem;"><span class="filter-label">League</span>${btns.join("")}</div>`;
   }
 
-  // History section
-  const historySection = allTeamResults.length === 0
-    ? `<div class="no-results">No competition results recorded yet.</div>`
-    : `${leagueFilterHTML}<div class="timeline" id="team-timeline"></div>`;
+  const hasAnyHistory = allTeamResults.length > 0 || allParticipations.length > 0;
+  const historySection = hasAnyHistory
+    ? `${leagueFilterHTML}<div class="timeline" id="team-timeline"></div>`
+    : `<div class="no-results">No competition history recorded yet.</div>`;
 
   document.getElementById('team-content').innerHTML = `
     <div class="team-header">
@@ -211,7 +251,7 @@ async function load() {
       ${historySection}
     </div>`;
 
-  if (allTeamResults.length > 0) renderTeamTimeline();
+  if (hasAnyHistory) renderTeamTimeline();
 }
 
 load();

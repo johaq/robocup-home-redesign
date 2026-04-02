@@ -117,7 +117,7 @@ function renderTimeline() {
         card.className = "tl-card";
         card.innerHTML = `
           <div class="tl-card-header">
-            <div class="tl-comp-name">${comp.name}</div>
+            <div class="tl-comp-name"><a href="competition.html?id=${comp.competition_id}&from=history" class="tl-comp-link">${comp.name}</a></div>
             <div class="tl-comp-loc">${comp.city}, ${comp.country}</div>
           </div>`;
 
@@ -205,7 +205,7 @@ async function load() {
   compRow.appendChild(allCompBtn);
 
   compTypes.forEach(prefix => {
-    const label = Object.keys(COMP_TYPES).includes(prefix) ? COMP_TYPES[prefix].replace(" Championship", "").replace("World", "") : prefix;
+    const label = Object.keys(COMP_TYPES).includes(prefix) ? COMP_TYPES[prefix].replace(" Championship", "").replace("World ", "") : prefix;
     const btn = document.createElement("button");
     btn.className = "filter-btn filter-btn-comp";
     btn.textContent = label;
