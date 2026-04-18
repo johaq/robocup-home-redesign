@@ -1,0 +1,124 @@
+{
+  "testId": "pick_and_place",
+  "name": "Pick & Place Challenge",
+  "timeLimit": 7,
+  "sections": [
+    {
+      "id": "setup",
+      "heading": "Setup",
+      "items": [
+        {
+          "id": "navigate_table",
+          "type": "boolean",
+          "points": 15,
+          "label": "Navigate to the table"
+        },
+        {
+          "id": "recognize_object",
+          "type": "count",
+          "maxCount": 12,
+          "points": 10,
+          "label": "Correctly recognize an object"
+        },
+        {
+          "id": "perceive_shelf",
+          "type": "count",
+          "maxCount": 2,
+          "points": 30,
+          "label": "Perceive objects on a shelf and indicate the correct placement"
+        }
+      ]
+    },
+    {
+      "id": "picking",
+      "heading": "Picking",
+      "items": [
+        {
+          "id": "pick_object",
+          "type": "count",
+          "maxCount": 12,
+          "points": 50,
+          "label": "Picking up an object for transportation",
+          "modifiers": [
+            { "id": "first_pick_bonus", "type": "boolean", "points": 100, "label": "First Pick Bonus" },
+            { "id": "from_floor",       "type": "count",   "maxCount": 1, "points": 30,  "label": "From the floor" },
+            { "id": "cutlery",          "type": "count",   "maxCount": 2, "points": 50,  "label": "Cutlery" },
+            { "id": "plate",            "type": "count",   "maxCount": 1, "points": 100, "label": "Plate" },
+            { "id": "dishwasher_tab",   "type": "count",   "maxCount": 1, "points": 100, "label": "Dishwasher tab" }
+          ],
+          "penalties": [
+            { "id": "common_object_pick", "type": "fixed", "points": 20, "label": "Common object from auxiliary table" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "placing",
+      "heading": "Placing",
+      "items": [
+        {
+          "id": "place_object",
+          "type": "count",
+          "maxCount": 12,
+          "points": 40,
+          "label": "Place an object in its designated location",
+          "modifiers": [
+            { "id": "in_dishwasher",      "type": "count",   "maxCount": 3, "points": 70,  "label": "Correctly in the dishwasher" },
+            { "id": "next_to_similar",    "type": "count",   "maxCount": 2, "points": 20,  "label": "Next to similar objects in the cabinet" },
+            { "id": "dishwasher_tab_slot","type": "count",   "maxCount": 1, "points": 160, "label": "In the dishwasher tab slot inside the dishwasher" }
+          ],
+          "penalties": [
+            { "id": "breakfast_not_clean",   "type": "fixed", "points": 30, "label": "Area around breakfast items is not cleaned" },
+            { "id": "common_object_place",   "type": "fixed", "points": 20, "label": "Common object from auxiliary table" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extra_rewards",
+      "heading": "Extra Rewards",
+      "items": [
+        {
+          "id": "dishwasher_rack",
+          "type": "count",
+          "maxCount": 2,
+          "points": 100,
+          "label": "Pull or push the dishwasher rack"
+        },
+        {
+          "id": "dishwasher_door",
+          "type": "count",
+          "maxCount": 2,
+          "points": 200,
+          "label": "Open or close the dishwasher door without assistance"
+        },
+        {
+          "id": "open_milk",
+          "type": "boolean",
+          "points": 400,
+          "label": "Open milk container without assistance"
+        },
+        {
+          "id": "pour_cereal_milk",
+          "type": "count",
+          "maxCount": 2,
+          "points": 200,
+          "label": "Pour cereal or milk into the bowl without assistance"
+        }
+      ]
+    },
+    {
+      "id": "penalties",
+      "heading": "Penalties",
+      "items": [
+        { "id": "objects_dropped_placing", "type": "standalone_penalty", "maxCount": 12, "points": 40,  "label": "Objects thrown or dropped while placing" },
+        { "id": "breakfast_not_served",    "type": "standalone_penalty",                "points": 50,  "label": "Breakfast not served in a typical meal setting" },
+        { "id": "objects_dropped_floor",   "type": "standalone_penalty", "maxCount": 12, "points": 40,  "label": "Objects dropped on the floor" },
+        { "id": "spill_cereal_milk",       "type": "standalone_penalty", "maxCount": 2,  "points": 100, "label": "Spilling cereal and milk while pouring" },
+        { "id": "assistance_reposition",   "type": "standalone_penalty", "maxCount": 12, "points": 30,  "label": "Human assistance: object repositioned by a person" },
+        { "id": "assistance_handover",     "type": "standalone_penalty", "maxCount": 24, "points": 100, "label": "Human assistance: handover" },
+        { "id": "env_changes",             "type": "standalone_penalty",                "points": 40,  "label": "Human assistance: environment changes (per item)" }
+      ]
+    }
+  ]
+}

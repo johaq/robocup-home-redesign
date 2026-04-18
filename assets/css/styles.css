@@ -57,6 +57,35 @@
   .robot-stat { font-size: 12px; color: var(--muted); }
   .robot-stat strong { color: var(--text); font-family: var(--font-head); }
 
+  /* LIVE BANNER */
+  #live-banner {
+    background: linear-gradient(135deg, rgba(0,229,160,0.12) 0%, rgba(0,229,160,0.05) 100%);
+    border-bottom: 1px solid rgba(0,229,160,0.3);
+    padding: 20px 3rem;
+  }
+  .live-banner-inner { display: flex; align-items: center; gap: 16px; max-width: 1200px; margin: 0 auto; }
+  .live-banner-dot {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0; animation: pulse 2s infinite;
+    box-shadow: 0 0 8px rgba(0,229,160,0.6);
+  }
+  .live-banner-label {
+    font-family: var(--font-head); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--accent); flex-shrink: 0;
+  }
+  #live-banner-text {
+    font-family: var(--font-head); font-size: 16px; font-weight: 700;
+    color: var(--text); flex: 1; letter-spacing: -0.01em;
+  }
+  .live-banner-btn {
+    font-family: var(--font-head); font-size: 13px; font-weight: 700;
+    color: #000; background: var(--accent); text-decoration: none;
+    padding: 10px 22px; border-radius: 6px; white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .live-banner-btn:hover { opacity: 0.85; }
+  @media (max-width: 900px) { #live-banner { padding: 16px 1.5rem; } #live-banner-text { font-size: 14px; } }
+
   /* STATS */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }
   .stat-cell { padding: 2.5rem 3rem; border-right: 1px solid var(--border); }

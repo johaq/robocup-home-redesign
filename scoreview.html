@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Score View — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/scoring/scoreview.css">
+</head>
+<body>
+  <div id="loading">Loading…</div>
+
+  <div id="app" hidden>
+    <header id="view-header">
+      <a id="back-link" href="#" class="view-nav-link">← Back</a>
+      <div id="header-center">
+        <div id="test-name">—</div>
+        <div id="team-name">—</div>
+      </div>
+      <div id="total-display">
+        <span id="total-score">0</span>
+        <span class="total-label">pts</span>
+      </div>
+    </header>
+
+    <main id="view-body"></main>
+
+    <div id="notes-section" hidden>
+      <div class="notes-label">Notes</div>
+      <div id="notes-text" class="notes-text"></div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/scoring/scoreview.js"></script>
+</body>
+</html>

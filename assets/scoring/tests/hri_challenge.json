@@ -1,0 +1,128 @@
+{
+  "testId": "hri_challenge",
+  "name": "HRI Challenge",
+  "timeLimit": 6,
+  "sections": [
+    {
+      "id": "greeting",
+      "heading": "Greeting",
+      "items": [
+        {
+          "id": "detect_doorbell",
+          "type": "count",
+          "maxCount": 2,
+          "points": 30,
+          "label": "Detect the doorbell sound as a signal that a guest has arrived"
+        },
+        {
+          "id": "open_door",
+          "type": "count",
+          "maxCount": 2,
+          "points": 200,
+          "label": "Open the entrance door for a guest"
+        },
+        {
+          "id": "look_at_person",
+          "type": "count",
+          "maxCount": 2,
+          "points": 50,
+          "label": "Look at the person talking, when receiving a guest"
+        },
+        {
+          "id": "offer_seat",
+          "type": "count",
+          "maxCount": 2,
+          "points": 100,
+          "label": "Offer a free seat to the new guest"
+        },
+        {
+          "id": "look_nav_direction",
+          "type": "count",
+          "maxCount": 2,
+          "points": 15,
+          "label": "Look in the direction of navigation or at the navigation goal"
+        },
+        {
+          "id": "tell_visual_attribute",
+          "type": "count",
+          "maxCount": 4,
+          "points": 0,
+          "label": "Tell a visual attribute of the first guest to the second guest",
+          "modifiers": [
+            { "id": "correct_attribute", "type": "fixed", "points": 20, "label": "Correct attribute" }
+          ],
+          "penalties": [
+            { "id": "incorrect_attribute", "type": "fixed", "points": 20, "label": "Incorrect attribute" }
+          ]
+        },
+        {
+          "id": "no_unnecessary_questions",
+          "type": "count",
+          "maxCount": 4,
+          "points": 15,
+          "label": "Not asking non-essential questions to confirm or correct information"
+        }
+      ]
+    },
+    {
+      "id": "introduction",
+      "heading": "Introduction",
+      "items": [
+        {
+          "id": "say_name_drink",
+          "type": "count",
+          "maxCount": 4,
+          "points": 30,
+          "label": "Say name and favorite drink of each guest (during introduction)"
+        },
+        {
+          "id": "look_correct_guest",
+          "type": "count",
+          "maxCount": 2,
+          "points": 50,
+          "label": "While introducing guests, look to the correct guest while talking about the other guest"
+        }
+      ]
+    },
+    {
+      "id": "guiding",
+      "heading": "Guiding",
+      "items": [
+        {
+          "id": "grab_bag",
+          "type": "boolean",
+          "points": 50,
+          "label": "Grab the bag via natural handover from the guest"
+        },
+        {
+          "id": "follow_host",
+          "type": "boolean",
+          "points": 200,
+          "label": "Following the host to the bag drop area",
+          "penalties": [
+            { "id": "drop_bag",            "type": "fixed", "points": 50,  "label": "Drop the bag while following the host" },
+            { "id": "rediscover_operator", "type": "fixed", "points": 50,  "label": "Rediscovering the operator by natural interaction" },
+            { "id": "ask_operator_wait",   "type": "fixed", "points": 50,  "label": "Asking the operator to wait" },
+            { "id": "physical_guidance",   "type": "fixed", "points": 150, "label": "Guiding the robot with physical contact (take by the hand)" }
+          ]
+        },
+        {
+          "id": "drop_bag_area",
+          "type": "boolean",
+          "points": 50,
+          "label": "Drop the bag in the correct area"
+        }
+      ]
+    },
+    {
+      "id": "penalties",
+      "heading": "Penalties",
+      "items": [
+        { "id": "wrong_guest_info",   "type": "standalone_penalty", "maxCount": 4, "points": 40,  "label": "Wrong guest information was memorized" },
+        { "id": "alternative_hri",    "type": "standalone_penalty", "maxCount": 6, "points": 20,  "label": "Alternative HRI" },
+        { "id": "not_acknowledging",  "type": "standalone_penalty", "maxCount": 2, "points": 200, "label": "Not acknowledging people" },
+        { "id": "ask_place_bag",      "type": "standalone_penalty", "maxCount": 1, "points": 25,  "label": "Ask the guest to place the bag somewhere on the robot" }
+      ]
+    }
+  ]
+}

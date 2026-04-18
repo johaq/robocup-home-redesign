@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>Score Sheet — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/scoring/scoresheet.css">
+</head>
+<body>
+  <div id="loading">Loading…</div>
+
+  <div id="app" hidden>
+    <header id="sheet-header">
+      <a id="back-link" class="sheet-nav-link">← Back</a>
+      <div id="header-left">
+        <span id="test-name">—</span>
+        <span id="team-name">—</span>
+      </div>
+      <div id="header-right">
+        <div id="main-timer-wrap">
+          <span id="timer">—</span>
+          <div class="timer-ctrl-btns">
+            <button id="timer-start-btn" class="timer-ctrl-btn" title="Start / Pause">▶</button>
+            <button id="timer-reset-btn" class="timer-ctrl-btn" title="Reset">↺</button>
+          </div>
+        </div>
+        <div id="total-display">
+          <span id="total-score">0</span>
+          <span class="total-label">pts</span>
+        </div>
+        <div id="team-nav">
+          <a id="prev-team-link" class="sheet-nav-link" hidden>← Prev</a>
+          <a id="next-team-link" class="sheet-nav-link" hidden>Next →</a>
+        </div>
+      </div>
+    </header>
+
+    <div id="aux-timers">
+      <div class="aux-timer-card">
+        <div class="aux-timer-label">30 sec rule</div>
+        <span class="aux-timer-display" id="timer-30s">0:30</span>
+        <div class="timer-ctrl-btns">
+          <button class="timer-ctrl-btn" id="t30-start" title="Start / Pause">▶</button>
+          <button class="timer-ctrl-btn" id="t30-reset"  title="Reset">↺</button>
+        </div>
+      </div>
+      <div class="aux-timer-card">
+        <div class="aux-timer-label">1 min restart</div>
+        <span class="aux-timer-display" id="timer-1min">1:00</span>
+        <div class="timer-ctrl-btns">
+          <button class="timer-ctrl-btn" id="t1m-start" title="Start / Pause">▶</button>
+          <button class="timer-ctrl-btn" id="t1m-reset"  title="Reset">↺</button>
+        </div>
+      </div>
+    </div>
+
+    <main id="sheet-body"></main>
+
+    <footer id="sheet-footer">
+      <textarea id="notes" placeholder="Notes for this run…"></textarea>
+      <div id="footer-actions">
+        <span id="save-status"></span>
+        <button id="reset-btn" class="btn-reset" title="Reset score sheet">↺ Reset</button>
+        <button id="submit-btn">Submit Score Sheet</button>
+      </div>
+    </footer>
+
+    <div id="reset-confirm" class="reset-confirm" hidden>
+      <div class="reset-confirm-box">
+        <p>Reset this score sheet? All scores and notes will be cleared.</p>
+        <div class="reset-confirm-actions">
+          <button id="reset-confirm-ok" class="btn-reset-ok">Reset</button>
+          <button id="reset-confirm-cancel" class="btn-reset-cancel">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/scoring/scoresheet.js"></script>
+</body>
+</html>

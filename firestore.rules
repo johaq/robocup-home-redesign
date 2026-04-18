@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── HELPERS ──────────────────────────────────────────────────────
+    // Admin: signed in with email (not anonymous)
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email != null;
+    }
+
+    // Any authenticated session (anonymous referee or email admin)
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // ── TEAMS ─────────────────────────────────────────────────────────
+    // Public read (used by public site, admin team search).
+    // Admin-only write.
+    match /teams/{teamId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // ── COMPETITIONS ──────────────────────────────────────────────────
+    // Public read (liveview, event overview, dashboard).
+    // Admin-only write (create, edit, delete competitions).
+    match /competitions/{compId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+
+      // Tests: public read, admin write
+      match /tests/{testId} {
+        allow read:  if true;
+        allow write: if isAdmin();
+      }
+
+      // Slots: public read, admin write
+      match /slots/{slotId} {
+        allow read:  if true;
+        allow write: if isAdmin();
+      }
+
+      // Runs: public read (liveview needs scores + timer state),
+      //       any signed-in user can write (anonymous refs save scores).
+      match /runs/{runId} {
+        allow read:  if true;
+        allow write: if isSignedIn();
+      }
+    }
+  }
+}

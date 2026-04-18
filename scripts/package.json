@@ -1,0 +1,11 @@
+{
+  "name": "robocup-migration",
+  "type": "module",
+  "scripts": {
+    "migrate": "node migrate.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "papaparse": "^5.4.1"
+  }
+}

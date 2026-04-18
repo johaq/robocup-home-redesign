@@ -1,0 +1,6 @@
+[
+  { "id": "hri_challenge",  "name": "HRI Challenge"        },
+  { "id": "pick_and_place", "name": "Pick & Place Challenge"},
+  { "id": "doing_laundry",  "name": "Doing Laundry"        },
+  { "id": "gpsr",           "name": "GPSR"                 }
+]

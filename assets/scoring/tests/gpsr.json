@@ -1,0 +1,79 @@
+{
+  "testId": "gpsr",
+  "name": "GPSR",
+  "timeLimit": 7,
+  "sections": [
+    {
+      "id": "main_goal",
+      "heading": "Main Goal",
+      "items": [
+        {
+          "id": "understand_command",
+          "type": "count",
+          "maxCount": 3,
+          "points": 80,
+          "label": "Understand the spoken command",
+          "penalties": [
+            { "id": "custom_operator", "type": "fixed", "points": 20,  "label": "Using a custom operator" },
+            { "id": "rephrasing",      "type": "fixed", "points": 30,  "label": "Request a rephrasing" }
+          ]
+        },
+        {
+          "id": "demonstrate_plan",
+          "type": "count",
+          "maxCount": 3,
+          "points": 100,
+          "label": "Demonstrate a plan has been generated"
+        },
+        {
+          "id": "solve_command_1",
+          "type": "boolean",
+          "points": 250,
+          "label": "Solving the first command"
+        },
+        {
+          "id": "solve_command_2",
+          "type": "boolean",
+          "points": 250,
+          "label": "Solving the second command"
+        },
+        {
+          "id": "solve_command_3",
+          "type": "boolean",
+          "points": 250,
+          "label": "Solving the third command"
+        },
+        {
+          "id": "partial_solution_note",
+          "type": "info",
+          "label": "Solving part of a command will apply a percentage penalty according to similar scores in other tests. Note in the remarks below."
+        }
+      ]
+    },
+    {
+      "id": "extra_rewards",
+      "heading": "Extra Rewards",
+      "items": [
+        {
+          "id": "interleaved_bonus",
+          "type": "boolean",
+          "points": 200,
+          "label": "Interleaved Task Bonus"
+        }
+      ]
+    },
+    {
+      "id": "penalties",
+      "heading": "Penalties",
+      "items": [
+        {
+          "id": "bypass_speech",
+          "type": "standalone_penalty",
+          "maxCount": 3,
+          "points": 50,
+          "label": "Bypassing speech recognition"
+        }
+      ]
+    }
+  ]
+}

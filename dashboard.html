@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Referee Dashboard — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/scoring/dashboard.css">
+</head>
+<body>
+  <div id="navbar"></div>
+  <header id="topbar">
+    <div id="comp-name">RoboCup@Home</div>
+    <div id="topbar-sub">Referee Dashboard</div>
+  </header>
+
+  <!-- Competition picker (shown when no ?competition= param) -->
+  <div id="screen-picker" hidden>
+    <div class="section-label">Select Competition</div>
+    <div id="comp-list"></div>
+  </div>
+
+  <!-- PIN screen -->
+  <div id="screen-pin" hidden>
+    <div class="pin-card">
+      <div class="pin-title">Referee Access</div>
+      <div class="pin-sub">Enter the referee PIN for <strong id="pin-comp-name"></strong></div>
+      <form id="pin-form">
+        <input type="text" id="pin-input" class="pin-input" placeholder="PIN" autocomplete="off" autocapitalize="none">
+        <div id="pin-error" class="pin-error" hidden>Incorrect PIN.</div>
+        <button type="submit" class="btn-primary" style="width:100%">Enter</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Slot list -->
+  <div id="screen-slots" hidden>
+    <div id="filter-bar" hidden>
+      <div id="arena-filter" class="filter-row"></div>
+      <div id="referee-filter" class="filter-row"></div>
+    </div>
+    <div id="slot-groups"></div>
+  </div>
+
+  <div id="loading">Loading…</div>
+
+  <script src="assets/js/main.js"></script>
+  <script type="module" src="assets/scoring/dashboard.js"></script>
+</body>
+</html>

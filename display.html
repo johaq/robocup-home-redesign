@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>Live Score Display — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/scoring/display.css">
+</head>
+<body>
+
+  <!-- Initial auth loading -->
+  <div id="screen-loading" class="centered-screen">
+    <span>Connecting…</span>
+  </div>
+
+  <!-- Step 1: Pick competition -->
+  <div id="screen-comp" class="picker-screen" hidden>
+    <div class="picker-wrap">
+      <div class="picker-heading">Live Display</div>
+      <div class="picker-sub">Select a competition</div>
+      <div id="comp-list" class="picker-list"></div>
+    </div>
+  </div>
+
+  <!-- Step 2: Pick arena -->
+  <div id="screen-arena" class="picker-screen" hidden>
+    <div class="picker-wrap">
+      <button class="picker-back" id="back-to-comp">← Back</button>
+      <div class="picker-heading" id="arena-comp-name">—</div>
+      <div class="picker-sub">Select an arena</div>
+      <div id="arena-list" class="picker-list"></div>
+    </div>
+  </div>
+
+  <!-- Waiting for an active run -->
+  <div id="screen-waiting" hidden>
+    <div id="waiting-arena-badge"></div>
+    <div id="waiting-msg">Waiting for an active run…</div>
+    <button class="picker-back" id="change-arena-btn">← Change Arena</button>
+  </div>
+
+  <!-- Live display -->
+  <div id="screen-live" hidden>
+    <div id="run-status-bar" hidden>
+      <span id="run-status-text">Run complete — waiting for next run</span>
+    </div>
+    <header id="display-header">
+      <div id="display-meta">
+        <span id="display-arena-badge" class="arena-badge"></span>
+        <span id="display-test-name">—</span>
+      </div>
+      <div id="display-team-name">—</div>
+      <button class="picker-back" id="live-change-btn">← Arena</button>
+    </header>
+
+    <div id="big-cards">
+      <div class="big-card" id="score-card">
+        <div class="big-card-label">Score</div>
+        <div class="big-card-value" id="live-score">0</div>
+        <div class="big-card-unit">pts</div>
+      </div>
+      <div class="big-card" id="timer-card">
+        <div class="big-card-label">Time</div>
+        <div class="big-card-value" id="live-timer">—</div>
+        <div class="big-card-unit" id="timer-status"></div>
+      </div>
+    </div>
+
+    <div id="feed-section">
+      <div id="feed-heading">Scoring Activity</div>
+      <div id="feed-list"></div>
+      <div id="feed-empty">Waiting for scoring actions…</div>
+    </div>
+  </div>
+
+  <script type="module" src="assets/scoring/display.js"></script>
+</body>
+</html>

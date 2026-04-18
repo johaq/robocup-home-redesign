@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Migrate to Firestore — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 48px 24px;
+    }
+    .container { width: 100%; max-width: 640px; display: flex; flex-direction: column; gap: 24px; }
+    h1 { font-family: 'Space Mono', monospace; font-size: 1.3rem; color: #00e5a0; }
+    p  { color: #8a8a9a; line-height: 1.6; font-size: 0.95rem; }
+    .warning {
+      background: rgba(255,200,0,0.07);
+      border: 1px solid rgba(255,200,0,0.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 0.9rem;
+      color: #ffd666;
+      line-height: 1.5;
+    }
+    button {
+      padding: 14px 28px;
+      background: #00e5a0;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      align-self: flex-start;
+    }
+    button:disabled { background: #8a8a9a; cursor: default; }
+    #log {
+      background: #0f0f1a;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      min-height: 200px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .ok  { color: #00e5a0; }
+    .err { color: #ff6b6b; }
+    .dim { color: #8a8a9a; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Migrate Google Sheets → Firestore</h1>
+  <p>One-time migration of teams, competitions, and participations/results from the Google Sheet into Firestore. Safe to run again — all writes are idempotent.</p>
+  <div class="warning">
+    ⚠ Firestore must be in test mode (allow read/write: if true) for this to work.
+    Lock down the rules again after migrating.
+  </div>
+  <button id="run-btn">Run Migration</button>
+  <div id="log" hidden></div>
+</div>
+
+<script type="module">
+import { db } from './assets/scoring/firebase.js';
+import {
+  doc, writeBatch, collection
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+const SHEET_ID = '1ff1rmnkY2Sg44vei5j0dZJsJzOrgXqlOVjVoW2G0H5k';
+
+// ── LOGGING ───────────────────────────────────────────────────────────────────
+
+const logEl = document.getElementById('log');
+
+function log(msg, cls = '') {
+  logEl.hidden = false;
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// ── CSV FETCH + PARSE ─────────────────────────────────────────────────────────
+
+async function fetchSheet(name) {
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(name)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch sheet "${name}": ${res.status}`);
+  return parseCSV(await res.text());
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = splitCSVLine(lines[0]);
+  return lines.slice(1).map(line => {
+    const vals = splitCSVLine(line);
+    const row = {};
+    headers.forEach((h, i) => row[h.trim()] = (vals[i] ?? '').trim());
+    return row;
+  }).filter(row => Object.values(row).some(v => v));
+}
+
+function splitCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQuote && line[i + 1] === '"') { cur += '"'; i++; }
+      else inQuote = !inQuote;
+    } else if (ch === ',' && !inQuote) {
+      result.push(cur); cur = '';
+    } else {
+      cur += ch;
+    }
+  }
+  result.push(cur);
+  return result;
+}
+
+// ── BATCH WRITE ───────────────────────────────────────────────────────────────
+
+async function batchWrite(entries) {
+  const CHUNK = 500;
+  for (let i = 0; i < entries.length; i += CHUNK) {
+    const batch = writeBatch(db);
+    for (const { ref, data } of entries.slice(i, i + CHUNK)) {
+      batch.set(ref, data);
+    }
+    await batch.commit();
+  }
+}
+
+const splitList = str => str ? str.split(',').map(s => s.trim()).filter(Boolean) : [];
+
+// ── TEAMS ─────────────────────────────────────────────────────────────────────
+
+async function migrateTeams(rows) {
+  log('Teams…', 'dim');
+  const entries = rows.flatMap(row => {
+    const id = String(row.team_id ?? '').trim();
+    if (!id) return [];
+    return [{
+      ref: doc(db, 'teams', id),
+      data: {
+        id,
+        name:        row.team_name?.trim()     || '',
+        institution: row.institution?.trim()   || '',
+        country:     row.country?.trim()       || '',
+        city:        row.city?.trim()          || '',
+        lat:         parseFloat(row.latitude)  || null,
+        lng:         parseFloat(row.longitude) || null,
+        website:     row.website?.trim()       || '',
+        tdp:         row.tdp?.trim()           || '',
+        video:       row.video?.trim()         || '',
+        contact:     row.contact?.trim()       || '',
+        altNames:    splitList(row.alt_names),
+        parentTeams: splitList(row.parent_teams),
+      }
+    }];
+  });
+  await batchWrite(entries);
+  log(`✓ ${entries.length} teams`, 'ok');
+}
+
+// ── COMPETITIONS ──────────────────────────────────────────────────────────────
+
+async function migrateCompetitions(rows) {
+  log('Competitions…', 'dim');
+  const entries = rows.flatMap(row => {
+    const id = String(row.competition_id ?? '').trim();
+    if (!id) return [];
+    return [{
+      ref: doc(db, 'competitions', id),
+      data: {
+        id,
+        name:    row.name?.trim()    || '',
+        year:    parseInt(row.year)  || null,
+        city:    row.city?.trim()    || '',
+        country: row.country?.trim() || '',
+      }
+    }];
+  });
+  await batchWrite(entries);
+  log(`✓ ${entries.length} competitions`, 'ok');
+}
+
+// ── PARTICIPATIONS ────────────────────────────────────────────────────────────
+
+async function migrateParticipations(teamRows, resultRows) {
+  log('Participations…', 'dim');
+  const entries = new Map();
+
+  for (const row of resultRows) {
+    const teamId = String(row.team_id ?? '').trim();
+    const compId = String(row.competition_id ?? '').trim();
+    if (!teamId || !compId) continue;
+    const key = `${teamId}_${compId}`;
+    entries.set(key, {
+      ref: doc(db, 'participations', key),
+      data: {
+        teamId,
+        competitionId: compId,
+        league: row.league?.trim() || null,
+        place:  parseInt(row.place) || null,
+      }
+    });
+  }
+
+  for (const row of teamRows) {
+    const teamId = String(row.team_id ?? '').trim();
+    if (!teamId) continue;
+    for (const compId of splitList(row.participations)) {
+      const key = `${teamId}_${compId}`;
+      if (!entries.has(key)) {
+        entries.set(key, {
+          ref: doc(db, 'participations', key),
+          data: { teamId, competitionId: compId, league: null, place: null }
+        });
+      }
+    }
+  }
+
+  await batchWrite([...entries.values()]);
+  log(`✓ ${entries.size} participation records`, 'ok');
+}
+
+// ── MAIN ──────────────────────────────────────────────────────────────────────
+
+document.getElementById('run-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('run-btn');
+  btn.disabled = true;
+  logEl.innerHTML = '';
+
+  try {
+    log('Fetching sheets…', 'dim');
+    const [teamRows, compRows, resultRows] = await Promise.all([
+      fetchSheet('Teams'),
+      fetchSheet('Competitions'),
+      fetchSheet('Results'),
+    ]);
+    log(`Fetched — Teams: ${teamRows.length}, Competitions: ${compRows.length}, Results: ${resultRows.length}`, 'dim');
+
+    await migrateTeams(teamRows);
+    await migrateCompetitions(compRows);
+    await migrateParticipations(teamRows, resultRows);
+
+    log('', '');
+    log('Migration complete.', 'ok');
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+    console.error(err);
+    btn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

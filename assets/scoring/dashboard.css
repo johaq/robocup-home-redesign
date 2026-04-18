@@ -1,0 +1,291 @@
+[hidden] { display: none !important; }
+
+:root {
+  --penalty: #ff6b6b;
+  --radius:  8px;
+  --touch:   52px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+
+/* ── TOPBAR ──────────────────────────────────────────────────────── */
+
+#topbar {
+  background: var(--surface);
+  border-bottom: 2px solid var(--accent);
+  padding: 14px 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+#comp-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+#topbar-sub {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ── LOADING ─────────────────────────────────────────────────────── */
+
+#loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  font-family: 'Space Mono', monospace;
+  color: var(--muted);
+}
+
+/* ── PIN SCREEN ──────────────────────────────────────────────────── */
+
+#screen-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 60px);
+  padding: 24px;
+}
+
+.pin-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.pin-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.pin-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.pin-sub strong { color: var(--text); }
+
+.pin-input {
+  width: 100%;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-bottom: 12px;
+  box-sizing: border-box;
+}
+
+.pin-error {
+  font-size: 13px;
+  color: var(--penalty);
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+/* ── COMPETITION PICKER ──────────────────────────────────────────── */
+
+#screen-picker {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 4px 0 8px;
+}
+
+.comp-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color 0.15s;
+  min-height: var(--touch);
+}
+
+.comp-item:hover { border-color: var(--accent); }
+.comp-item-name  { flex: 1; font-weight: 600; }
+.comp-item-sub   { font-size: 0.85rem; color: var(--muted); }
+.comp-item-arrow { color: var(--muted); }
+
+/* ── FILTER BAR ──────────────────────────────────────────────────── */
+
+#filter-bar {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 14px 16px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ── SLOT GROUPS ─────────────────────────────────────────────────── */
+
+#screen-slots {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.day-group { display: flex; flex-direction: column; gap: 10px; }
+
+.day-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.day-label.today { color: var(--accent); }
+
+/* ── SLOT CARD ───────────────────────────────────────────────────── */
+
+.slot-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.slot-card.open { border-color: rgba(0,229,160,0.3); }
+
+.slot-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  cursor: pointer;
+  min-height: var(--touch);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slot-time {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--accent);
+  flex-shrink: 0;
+  min-width: 48px;
+}
+
+.slot-info { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.slot-test { font-weight: 600; font-size: 0.95rem; }
+.slot-meta { font-size: 0.8rem; color: var(--muted); }
+
+.slot-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.slot-chevron {
+  color: var(--muted);
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.slot-card.open .slot-chevron { transform: rotate(180deg); }
+
+/* Progress dots */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.dot.draft     { background: #f0a500; border-color: #f0a500; }
+.dot.submitted { background: var(--accent); border-color: var(--accent); }
+
+/* ── TEAM LIST ───────────────────────────────────────────────────── */
+
+.team-list {
+  border-top: 1px solid var(--border);
+  display: none;
+  flex-direction: column;
+}
+
+.slot-card.open .team-list { display: flex; }
+
+.team-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  min-height: var(--touch);
+  transition: background 0.1s;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.team-row:last-child { border-bottom: none; }
+.team-row:hover      { background: rgba(255,255,255,0.03); }
+.team-row:active     { background: rgba(255,255,255,0.06); }
+
+.team-order {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  width: 24px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.team-name { flex: 1; font-weight: 500; }
+
+.run-status {
+  font-size: 0.8rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.status-pending   { color: var(--muted);   background: rgba(255,255,255,0.05); }
+.status-draft     { color: #f0a500;      background: rgba(240,165,0,0.12);   }
+.status-submitted { color: var(--accent);background: rgba(0,229,160,0.12);   }
+
+.open-icon { color: var(--muted); flex-shrink: 0; }

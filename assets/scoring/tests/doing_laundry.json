@@ -1,0 +1,131 @@
+{
+  "testId": "doing_laundry",
+  "name": "Doing Laundry",
+  "timeLimit": 7,
+  "sections": [
+    {
+      "id": "main_goal",
+      "heading": "Main Goal",
+      "items": [
+        {
+          "id": "navigate_laundry",
+          "type": "boolean",
+          "points": 15,
+          "label": "Navigating to the laundry area"
+        },
+        {
+          "id": "pickup_clothing",
+          "type": "boolean",
+          "points": 100,
+          "label": "Picking up a piece of clothing from the basket",
+          "penalties": [
+            {
+              "id": "pickup_multiple",
+              "type": "fixed",
+              "points": 100,
+              "label": "Picking up multiple at once"
+            }
+          ]
+        },
+        {
+          "id": "fold_clothing",
+          "type": "boolean",
+          "points": 800,
+          "label": "Folding a piece of clothing",
+          "penalties": [
+            {
+              "id": "fold_flatten",
+              "type": "fixed",
+              "points": 200,
+              "label": "Human assistance: Flattening/Arranging clothing before folding"
+            },
+            {
+              "id": "fold_pct",
+              "type": "percentage",
+              "label": "Human assistance during folding (% of item score)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "extra_rewards",
+      "heading": "Extra Rewards",
+      "items": [
+        {
+          "id": "open_washer_door",
+          "type": "boolean",
+          "points": 300,
+          "label": "Opening the washing machine door"
+        },
+        {
+          "id": "remove_from_washer",
+          "type": "boolean",
+          "points": 300,
+          "label": "Removing one or more pieces of clothing from the washing machine",
+          "penalties": [
+            {
+              "id": "clothing_floor",
+              "type": "fixed",
+              "points": 200,
+              "label": "The clothing touches the floor"
+            }
+          ]
+        },
+        {
+          "id": "basket_transport",
+          "type": "boolean",
+          "points": 300,
+          "label": "Using the basket for transportation",
+          "penalties": [
+            {
+              "id": "laundry_dropped",
+              "type": "fixed",
+              "points": 200,
+              "label": "Laundry is dropped or otherwise lost during transportation"
+            }
+          ]
+        },
+        {
+          "id": "fold_additional",
+          "type": "count",
+          "maxCount": 5,
+          "points": 400,
+          "label": "Folding additional clothes (per item)",
+          "penalties": [
+            {
+              "id": "fold_add_flatten",
+              "type": "fixed",
+              "points": 200,
+              "label": "Human assistance: Flattening/Arranging clothing before folding"
+            },
+            {
+              "id": "fold_add_pct",
+              "type": "percentage",
+              "label": "Human assistance during folding (% of item score)"
+            }
+          ]
+        },
+        {
+          "id": "stack_folded",
+          "type": "count",
+          "maxCount": 6,
+          "points": 100,
+          "label": "Stacking folded clothes neatly (per item)"
+        }
+      ]
+    },
+    {
+      "id": "penalties",
+      "heading": "Penalties",
+      "items": [
+        {
+          "id": "env_changes",
+          "type": "standalone_penalty",
+          "points": 40,
+          "label": "Human assistance: environment changes (per item)"
+        }
+      ]
+    }
+  ]
+}
