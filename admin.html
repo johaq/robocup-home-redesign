@@ -227,7 +227,7 @@
       <div id="test-list" class="test-list"></div>
       <label class="test-upload-btn">
         + Upload .tex scoresheet
-        <input type="file" id="test-file-input" accept=".tex" style="display:none">
+        <input type="file" id="test-file-input" accept=".tex" style="display:none" multiple>
       </label>
     </div>
 
@@ -272,9 +272,13 @@
           <div id="test-preview-title" class="test-preview-title"></div>
           <div id="test-preview-meta"  class="test-preview-meta"></div>
         </div>
-        <button class="btn-icon" id="test-preview-close" title="Close">×</button>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn-ghost btn-sm" id="test-preview-json-toggle">{ } JSON</button>
+          <button class="btn-icon" id="test-preview-close" title="Close">×</button>
+        </div>
       </div>
       <div id="test-preview-body" class="test-preview-body"></div>
+      <pre id="test-preview-json" class="test-preview-json" hidden></pre>
       <div id="test-preview-actions" class="test-preview-actions" hidden>
         <button class="btn-primary" id="test-preview-save">Add to competition</button>
         <button class="btn-ghost"   id="test-preview-cancel">Cancel</button>

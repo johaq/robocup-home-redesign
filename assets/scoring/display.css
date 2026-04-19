@@ -240,6 +240,11 @@ body {
   flex-shrink: 0;
 }
 
+/* When restart card is visible, shift to 3-column layout */
+#big-cards:has(#restart-card:not([hidden])) {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
 .big-card {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -263,6 +268,15 @@ body {
 }
 
 #timer-card.expired::before { background: var(--penalty); }
+
+/* Restart card */
+.restart-card::before                       { background: #ffa03c; }
+.restart-card.running::before               { background: #ffa03c; }
+.restart-card.expired::before               { background: var(--muted); }
+.restart-card .big-card-value               { color: #ffa03c; }
+.restart-card.running .big-card-value       { color: #ffa03c; }
+.restart-card.expired .big-card-value,
+.restart-card.restart-taken .big-card-value { color: var(--muted); }
 
 .big-card-label {
   font-family: 'Space Mono', monospace;

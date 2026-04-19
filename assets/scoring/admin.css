@@ -363,6 +363,17 @@ select option { background: #1e1f22; }
   font-size: 0.85rem;
 }
 
+.arena-chip-input {
+  background: var(--bg);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 0.85rem;
+  padding: 1px 4px;
+  width: 90px;
+  outline: none;
+}
+
 .arena-chip-remove {
   background: none;
   border: none;
@@ -743,6 +754,29 @@ select option { background: #1e1f22; }
 
 .sched-slot-del:hover { color: var(--penalty); background: rgba(255,107,107,0.08); }
 
+.sched-slot-drag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 23px; /* don't overlap delete button */
+  height: 10px;
+  cursor: grab;
+  z-index: 6;
+}
+.sched-slot-drag:active { cursor: grabbing; }
+.sched-slot-drag::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 3px;
+  background: var(--accent);
+  opacity: 0.2;
+  border-radius: 2px;
+  margin: 3px auto 0;
+}
+.sched-slot-block:hover .sched-slot-drag::after { opacity: 0.45; }
+.sched-slot-block.sched-slot-dragging { opacity: 0.75; box-shadow: 0 4px 16px rgba(0,0,0,0.4); z-index: 20; }
+
 .sched-slot-resize {
   position: absolute;
   bottom: 0;
@@ -896,6 +930,19 @@ select option { background: #1e1f22; }
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+.test-preview-json {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 16px 20px;
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  color: var(--muted);
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .test-preview-section { display: flex; flex-direction: column; gap: 6px; }

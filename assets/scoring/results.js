@@ -60,16 +60,23 @@ function renderOverall(submitted) {
     return;
   }
 
-  // Aggregate by team
-  const totals = {};
+  // Aggregate by team: best run per test, summed across tests
+  const bestByTeamTest = {}; // `${teamId}__${testId}` → run
   for (const run of submitted) {
+    const { teamId, testId, totalScore } = run;
+    if (!teamId || !testId) continue;
+    const key = `${teamId}__${testId}`;
+    if (!bestByTeamTest[key] || (totalScore || 0) > (bestByTeamTest[key].totalScore || 0)) {
+      bestByTeamTest[key] = run;
+    }
+  }
+  const totals = {};
+  for (const run of Object.values(bestByTeamTest)) {
     const { teamId, teamName, testId, totalScore } = run;
-    if (!teamId) continue;
     if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, byTest: {} };
     totals[teamId].total += totalScore || 0;
     const tName = tests.find(t => t.id === testId)?.name || testId || '—';
-    if (!totals[teamId].byTest[tName]) totals[teamId].byTest[tName] = 0;
-    totals[teamId].byTest[tName] += totalScore || 0;
+    totals[teamId].byTest[tName] = totalScore || 0;
   }
 
   const ranked = Object.entries(totals)
@@ -99,7 +106,7 @@ function renderOverall(submitted) {
               </td>
               ${testNames.map(n => {
                 const tid = tests.find(t => t.name === n)?.id;
-                const run = tid ? submitted.find(r => r.teamId === entry.teamId && r.testId === tid) : null;
+                const run = tid ? bestByTeamTest[`${entry.teamId}__${tid}`] : null;
                 const score = entry.byTest[n];
                 if (score === undefined) return `<td class="col-test">—</td>`;
                 if (!run) return `<td class="col-test">${score}</td>`;

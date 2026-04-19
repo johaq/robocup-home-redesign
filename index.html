@@ -11,16 +11,6 @@
 
 <div id="navbar"></div>
 
-<!-- LIVE COMPETITION BANNER (shown dynamically if a competition is ongoing) -->
-<div id="live-banner" hidden>
-  <div class="live-banner-inner">
-    <span class="live-banner-dot"></span>
-    <span class="live-banner-label">Live now</span>
-    <span id="live-banner-text"></span>
-    <a id="live-banner-link" href="#" class="live-banner-btn" target="_blank" rel="noopener">Follow live →</a>
-  </div>
-</div>
-
 <!-- HERO -->
 <section class="hero">
   <div>
@@ -122,25 +112,6 @@
 
 <div id="footer"></div>
 <script src="assets/js/main.js"></script>
-<script type="module">
-  import { db, ensureAuth } from './assets/scoring/firebase.js';
-  import { getDocs, collection } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
-  (async () => {
-    try {
-      await ensureAuth();
-      const snap = await getDocs(collection(db, 'competitions'));
-      const today = new Intl.DateTimeFormat('sv').format(new Date()); // YYYY-MM-DD in local tz
-      const live = snap.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .find(c => c.active && c.startDate && c.endDate
-                && c.startDate <= today && today <= c.endDate);
-      if (!live) return;
-      document.getElementById('live-banner-text').textContent =
-        `${live.name} is happening right now.`;
-      document.getElementById('live-banner-link').href = `event.html?id=${live.id}`;
-      document.getElementById('live-banner').hidden = false;
-    } catch (_) { /* non-critical, banner just stays hidden */ }
-  })();
-</script>
+<script type="module" src="assets/js/banner.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { db, ensureAuth } from './firebase.js';
+import { db, ensureRefereeAuth } from './firebase.js';
 import {
   doc, getDoc, setDoc, deleteDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
@@ -29,10 +29,13 @@ let timerHandles = [];
 // Whether the run has been marked as draft — reset so the next timer start re-triggers it
 let draftMarked = false;
 
+// Restart timer state synced to Firestore for live display
+let restartTaken = false;
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
 async function init() {
-  await ensureAuth();
+  await ensureRefereeAuth();
 
   // Load test definition — competition-specific first, then static fallback
   const testDocSnap = await getDoc(doc(db, 'competitions', competitionId, 'tests', testId));
@@ -50,8 +53,9 @@ async function init() {
   let alreadySubmitted = false;
   if (snap.exists()) {
     const data = snap.data();
-    scores = data.scores || {};
-    feed   = data.feed   || [];
+    scores       = data.scores       || {};
+    feed         = data.feed         || [];
+    restartTaken = data.restartTaken || false;
     document.getElementById('notes').value = data.notes || '';
     if (data.status === 'submitted') { lockForm(); alreadySubmitted = true; }
   }
@@ -134,15 +138,23 @@ async function init() {
       }
     );
     getMainTimerElapsed = mainHandle.getElapsed;
+    const restartSync = async state => {
+      if (state.startedAt !== null || state.elapsedBeforePause > 0) restartTaken = true;
+      try { await setDoc(runRef, { restartState: state, restartTaken }, { merge: true }); } catch (_) {}
+    };
     timerHandles = [
       mainHandle,
-      makeTimer(30,  document.getElementById('timer-30s'),  document.getElementById('t30-start'), document.getElementById('t30-reset'),  5),
-      makeTimer(60,  document.getElementById('timer-1min'), document.getElementById('t1m-start'), document.getElementById('t1m-reset'), 10),
+      makeTimer(30,  document.getElementById('timer-30s'),  document.getElementById('t30-start'), document.getElementById('t30-reset'),  5, restartSync),
+      makeTimer(60,  document.getElementById('timer-1min'), document.getElementById('t1m-start'), document.getElementById('t1m-reset'), 10, restartSync),
     ];
   } else {
+    const restartSync = async state => {
+      if (state.startedAt !== null || state.elapsedBeforePause > 0) restartTaken = true;
+      try { await setDoc(runRef, { restartState: state, restartTaken }, { merge: true }); } catch (_) {}
+    };
     timerHandles = [
-      makeTimer(30,  document.getElementById('timer-30s'),  document.getElementById('t30-start'), document.getElementById('t30-reset'),  5),
-      makeTimer(60,  document.getElementById('timer-1min'), document.getElementById('t1m-start'), document.getElementById('t1m-reset'), 10),
+      makeTimer(30,  document.getElementById('timer-30s'),  document.getElementById('t30-start'), document.getElementById('t30-reset'),  5, restartSync),
+      makeTimer(60,  document.getElementById('timer-1min'), document.getElementById('t1m-start'), document.getElementById('t1m-reset'), 10, restartSync),
     ];
   }
 
@@ -629,10 +641,19 @@ function updateTotal() {
 
 function scheduleSave(feedEvent) {
   if (feedEvent && feedEvent.delta !== 0) {
-    const elapsed = getMainTimerElapsed();
-    const entry = { label: feedEvent.label, delta: feedEvent.delta, t: Date.now() };
-    if (elapsed !== null) entry.elapsed = elapsed;
-    feed = [entry, ...feed].slice(0, 30);
+    // Cancel-out: if the most recent feed entry has the same label and the exact
+    // opposite delta, the user is simply undoing their last action — remove it
+    // instead of appending a new entry.
+    if (feed.length > 0
+        && feed[0].label === feedEvent.label
+        && feed[0].delta === -feedEvent.delta) {
+      feed = feed.slice(1);
+    } else {
+      const elapsed = getMainTimerElapsed();
+      const entry = { label: feedEvent.label, delta: feedEvent.delta, t: Date.now() };
+      if (elapsed !== null) entry.elapsed = elapsed;
+      feed = [entry, ...feed].slice(0, 30);
+    }
   }
   setSaveStatus('Saving…');
   clearTimeout(saveTimer);
@@ -649,6 +670,7 @@ async function saveRun(status) {
       testName: testDef.name,
       scores,
       feed,
+      restartTaken,
       notes:      document.getElementById('notes').value,
       totalScore: calculateTotal(),
       status,

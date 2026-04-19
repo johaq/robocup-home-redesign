@@ -175,7 +175,7 @@ function renderInfo() {
   if (teams.length) {
     teamsEl.innerHTML = `<div class="comp-teams-grid">${
       teams.map(t =>
-        `<a href="team.html?id=${encodeURIComponent(t.teamId)}" class="comp-team-chip">${t.teamName}</a>`
+        `<a href="team.html?id=${encodeURIComponent(t.teamId)}&from=event&compId=${compId}" class="comp-team-chip">${t.teamName}</a>`
       ).join('')
     }</div>`;
   } else {
@@ -286,13 +286,21 @@ function renderLeaderboard() {
   const submittedRuns = Object.values(runs).filter(r => r.status === 'submitted');
   if (!submittedRuns.length) { section.hidden = true; return; }
 
-  // Aggregate scores per team using the pre-computed totalScore field
-  const totals = {}; // teamId → { teamName, total, runCount }
+  // Aggregate scores per team: best run per test, summed across tests
+  const bestByTeamTest = {}; // `${teamId}__${testId}` → { teamName, score }
   for (const run of submittedRuns) {
-    const { teamId, teamName, totalScore } = run;
-    if (!teamId) continue;
-    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, runCount: 0 };
-    totals[teamId].total    += totalScore || 0;
+    const { teamId, teamName, testId, totalScore } = run;
+    if (!teamId || !testId) continue;
+    const key = `${teamId}__${testId}`;
+    if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
+      bestByTeamTest[key] = { teamId, teamName: teamName || teamId, testId, score: totalScore || 0 };
+    }
+  }
+  const totals = {}; // teamId → { teamName, total, runCount }
+  for (const best of Object.values(bestByTeamTest)) {
+    const { teamId, teamName, score } = best;
+    if (!totals[teamId]) totals[teamId] = { teamName, total: 0, runCount: 0 };
+    totals[teamId].total    += score;
     totals[teamId].runCount += 1;
   }
 
@@ -313,7 +321,7 @@ function renderLeaderboard() {
       <div class="comp-lb-row">
         <div class="comp-lb-rank">${medal || (i + 1)}</div>
         <div class="comp-lb-team">
-          <a href="team.html?id=${encodeURIComponent(entry.teamId)}" class="comp-lb-team-name">${entry.teamName}</a>
+          <a href="team.html?id=${encodeURIComponent(entry.teamId)}&from=event&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
           <div class="comp-lb-bar-wrap">
             <div class="comp-lb-bar" style="width:${pct}%"></div>
           </div>

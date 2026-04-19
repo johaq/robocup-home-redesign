@@ -194,6 +194,9 @@ function teardownListeners() {
   clearInterval(timerInterval);
   timerInterval = null;
   timerState    = null;
+  clearInterval(restartInterval);
+  restartInterval = null;
+  restartState    = null;
 }
 
 function checkActiveRun() {
@@ -222,6 +225,9 @@ function checkActiveRun() {
     clearInterval(timerInterval);
     timerInterval = null;
     timerState    = null;
+    clearInterval(restartInterval);
+    restartInterval = null;
+    restartState    = null;
   }
 
   if (activeRunId) {
@@ -276,6 +282,7 @@ function renderRun(data) {
   document.getElementById('display-team-name').textContent = data.teamName || '—';
   updateScore(data.totalScore ?? 0);
   updateTimerState(data.timerState ?? null);
+  updateRestartState(data.restartState ?? null, data.restartTaken ?? false);
   updateFeed(data.feed ?? []);
 }
 
@@ -338,6 +345,55 @@ function renderTimer() {
 
 function fmt(s) {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+// ── RESTART TIMER ─────────────────────────────────────────────────────────────
+
+let restartInterval = null;
+let restartState    = null;
+
+function updateRestartState(state, taken) {
+  restartState = state;
+  const card   = document.getElementById('restart-card');
+  const valEl  = document.getElementById('restart-timer');
+  const statEl = document.getElementById('restart-status');
+
+  if (!taken && !state) {
+    card.hidden = true;
+    clearInterval(restartInterval);
+    restartInterval = null;
+    return;
+  }
+
+  card.hidden = false;
+  card.classList.toggle('restart-taken', taken && (!state || (state.startedAt === null && state.elapsedBeforePause === 0)));
+
+  if (!restartInterval) {
+    restartInterval = setInterval(renderRestartTimer, 500);
+  }
+  renderRestartTimer();
+
+  function renderRestartTimer() {
+    if (!restartState) {
+      valEl.textContent  = '↩';
+      statEl.textContent = taken ? 'Used' : '';
+      card.classList.remove('running', 'expired');
+      return;
+    }
+    const { initialSecs, startedAt, elapsedBeforePause } = restartState;
+    const isRunning = startedAt !== null;
+    let elapsed = elapsedBeforePause || 0;
+    if (isRunning) elapsed += (Date.now() - startedAt) / 1000;
+    const remaining = Math.max(0, initialSecs - elapsed);
+    valEl.textContent  = fmt(Math.round(remaining));
+    card.classList.toggle('running', isRunning && remaining > 0);
+    card.classList.toggle('expired', remaining === 0);
+    statEl.textContent = remaining === 0 ? 'Done'
+                       : isRunning       ? 'Running'
+                       : elapsed > 0     ? 'Paused'
+                       : taken           ? 'Used'
+                       :                   '';
+  }
 }
 
 // ── FEED ──────────────────────────────────────────────────────────────────────

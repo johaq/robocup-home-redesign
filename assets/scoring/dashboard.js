@@ -1,4 +1,4 @@
-import { db, ensureAuth } from './firebase.js';
+import { db, ensureRefereeAuth, signOut, auth } from './firebase.js';
 import {
   collection, doc, getDoc, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
@@ -19,7 +19,17 @@ const today = new Date().toISOString().slice(0, 10);  // YYYY-MM-DD
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
 async function init() {
-  await ensureAuth();
+  await ensureRefereeAuth();
+
+  // Show sign-out button and wire it up
+  const signOutBtn = document.getElementById('ref-signout-btn');
+  if (signOutBtn) {
+    signOutBtn.hidden = false;
+    signOutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.reload();
+    };
+  }
 
   if (!competitionId) {
     await showCompetitionPicker();

@@ -17,8 +17,10 @@ let showInactive           = false;  // competitions filter
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
 async function init() {
-  // Wait for Firebase Auth to settle (avoids flash of login screen on reload)
-  const user = await new Promise(resolve => onAuthStateChanged(auth, resolve));
+  // authStateReady() waits until persistent auth state is fully loaded,
+  // avoiding a flash of the login screen when the admin reloads the page.
+  await auth.authStateReady();
+  const user = auth.currentUser;
 
   if (user?.email) {
     showAdminApp();
@@ -303,6 +305,7 @@ async function showCompetitions(afterFn) {
   newBtn.onclick = () => {
     editingCompId = null;
     document.getElementById('comp-form-title').textContent = 'New Competition';
+    document.querySelector('#comp-form .form-actions .btn-primary').textContent = 'Create';
     document.getElementById('comp-id-field').hidden = false;
     document.getElementById('comp-id').required = true;
     form.reset();
@@ -442,6 +445,7 @@ async function toggleCompActive(comp) {
 function startEditCompetition(comp) {
   editingCompId = comp.id;
   document.getElementById('comp-form-title').textContent = `Edit — ${comp.id}`;
+  document.querySelector('#comp-form .form-actions .btn-primary').textContent = 'Save Changes';
   document.getElementById('comp-id-field').hidden = true;
   document.getElementById('comp-id').required = false;
   document.getElementById('comp-name').value       = comp.name       || '';
@@ -546,19 +550,62 @@ async function loadArenas() {
   const snap = await getDoc(doc(db, 'competitions', currentCompetitionId));
   currentCompArenas = snap.data()?.arenas || [];
 
+  // Enable/disable the schedule button based on arena count
+  const schedBtn = document.getElementById('new-slot-btn');
+  if (schedBtn) {
+    schedBtn.disabled = currentCompArenas.length === 0;
+    schedBtn.title    = currentCompArenas.length === 0
+      ? 'Add at least one arena before editing the schedule'
+      : '';
+  }
+
   const chipsEl = document.getElementById('arena-chips');
   if (!currentCompArenas.length) {
     chipsEl.innerHTML = '<span style="color:var(--muted);font-size:0.85rem">No arenas added yet.</span>';
   } else {
-    chipsEl.innerHTML = currentCompArenas.map(a => `
-      <span class="arena-chip">
-        ${a}
-        <button class="arena-chip-remove" data-arena="${a}" title="Remove">×</button>
-      </span>
-    `).join('');
-    chipsEl.querySelectorAll('.arena-chip-remove').forEach(btn => {
-      btn.addEventListener('click', () => removeArena(btn.dataset.arena));
-    });
+    chipsEl.innerHTML = '';
+    for (const a of currentCompArenas) {
+      const chip = document.createElement('span');
+      chip.className = 'arena-chip';
+
+      const nameSpan = document.createElement('span');
+      nameSpan.className = 'arena-chip-name';
+      nameSpan.textContent = a;
+      nameSpan.title = 'Click to rename';
+      nameSpan.style.cursor = 'text';
+
+      nameSpan.addEventListener('click', () => {
+        // Replace the name span with an inline input
+        const inp = document.createElement('input');
+        inp.className = 'arena-chip-input';
+        inp.value = a;
+        chip.replaceChild(inp, nameSpan);
+        inp.focus();
+        inp.select();
+
+        async function commit() {
+          const newName = inp.value.trim();
+          chip.replaceChild(nameSpan, inp);
+          if (!newName || newName === a) return;
+          await renameArena(a, newName);
+        }
+        inp.addEventListener('blur', commit);
+        inp.addEventListener('keydown', e => {
+          if (e.key === 'Enter')  { e.preventDefault(); inp.blur(); }
+          if (e.key === 'Escape') { inp.value = a; inp.blur(); }
+        });
+      });
+
+      const removeBtn = document.createElement('button');
+      removeBtn.className = 'arena-chip-remove';
+      removeBtn.title = 'Remove';
+      removeBtn.textContent = '×';
+      removeBtn.addEventListener('click', () => removeArena(a));
+
+      chip.appendChild(nameSpan);
+      chip.appendChild(removeBtn);
+      chipsEl.appendChild(chip);
+    }
   }
 }
 
@@ -573,7 +620,35 @@ async function addArena() {
   await loadArenas();
 }
 
+async function renameArena(oldName, newName) {
+  if (currentCompArenas.includes(newName)) {
+    alert(`Arena "${newName}" already exists.`);
+    await loadArenas(); // re-render to restore chip
+    return;
+  }
+
+  // Update the arena list on the competition doc
+  const newArenas = currentCompArenas.map(a => a === oldName ? newName : a);
+  await updateDoc(doc(db, 'competitions', currentCompetitionId), { arenas: newArenas });
+
+  // Update all slots that reference the old arena name
+  const slotsSnap = await getDocs(collection(db, 'competitions', currentCompetitionId, 'slots'));
+  const batch = writeBatch(db);
+  slotsSnap.docs.forEach(d => {
+    if (d.data().arena === oldName) batch.update(d.ref, { arena: newName });
+  });
+  await batch.commit();
+  await loadArenas();
+}
+
 async function removeArena(name) {
+  // Check if any slots are assigned to this arena
+  const slotsSnap = await getDocs(collection(db, 'competitions', currentCompetitionId, 'slots'));
+  const assigned  = slotsSnap.docs.filter(d => d.data().arena === name);
+  if (assigned.length) {
+    alert(`Cannot remove arena "${name}" — ${assigned.length} slot${assigned.length !== 1 ? 's are' : ' is'} assigned to it. Move or delete those slots first.`);
+    return;
+  }
   await updateDoc(doc(db, 'competitions', currentCompetitionId), {
     arenas: currentCompArenas.filter(a => a !== name)
   });
@@ -620,18 +695,28 @@ function renderTestList() {
 
 // pendingTestData holds a parsed test object waiting for user confirmation
 let pendingTestData = null;
+let pendingFileQueue = []; // remaining files to process after current preview
 
 async function handleTestFileUpload(e) {
-  const file = e.target.files[0];
-  e.target.value = '';   // reset so same file can be re-uploaded
-  if (!file) return;
+  const files = Array.from(e.target.files);
+  e.target.value = '';   // reset so same files can be re-uploaded
+  if (!files.length) return;
 
+  pendingFileQueue = files.slice(1);
+  await processNextTexFile(files[0]);
+}
+
+async function processNextTexFile(file) {
+  if (!file) return;
   const text = await file.text();
   let parsed;
   try {
     parsed = convertTexToTest(text, file.name);
   } catch (err) {
     alert(`Could not parse "${file.name}":\n${err.message}`);
+    // Try next file in queue
+    const next = pendingFileQueue.shift();
+    if (next) await processNextTexFile(next);
     return;
   }
 
@@ -640,14 +725,28 @@ async function handleTestFileUpload(e) {
 }
 
 function showTestPreview(test, isUpload) {
-  const overlay  = document.getElementById('test-preview-overlay');
-  const title    = document.getElementById('test-preview-title');
-  const meta     = document.getElementById('test-preview-meta');
-  const body     = document.getElementById('test-preview-body');
-  const actions  = document.getElementById('test-preview-actions');
-  const saveBtn  = document.getElementById('test-preview-save');
-  const cancelBtn = document.getElementById('test-preview-cancel');
-  const closeBtn  = document.getElementById('test-preview-close');
+  const overlay     = document.getElementById('test-preview-overlay');
+  const title       = document.getElementById('test-preview-title');
+  const meta        = document.getElementById('test-preview-meta');
+  const body        = document.getElementById('test-preview-body');
+  const jsonEl      = document.getElementById('test-preview-json');
+  const jsonToggle  = document.getElementById('test-preview-json-toggle');
+  const actions     = document.getElementById('test-preview-actions');
+  const saveBtn     = document.getElementById('test-preview-save');
+  const cancelBtn   = document.getElementById('test-preview-cancel');
+  const closeBtn    = document.getElementById('test-preview-close');
+
+  // Reset JSON toggle state
+  body.hidden = false;
+  jsonEl.hidden = true;
+  jsonToggle.textContent = '{ } JSON';
+  jsonToggle.onclick = () => {
+    const showingJson = !jsonEl.hidden;
+    jsonEl.hidden  = showingJson;
+    body.hidden    = !showingJson;
+    jsonToggle.textContent = showingJson ? '{ } JSON' : '⊙ Visual';
+    if (!jsonEl.hidden) jsonEl.textContent = JSON.stringify(test, null, 2);
+  };
 
   title.textContent = test.name;
   const itemCount = (test.sections || []).reduce((n, s) => n + s.items.length, 0);
@@ -691,15 +790,19 @@ function showTestPreview(test, isUpload) {
       pendingTestData = null;
       overlay.hidden = true;
       await loadTests();
+      const next = pendingFileQueue.shift();
+      if (next) await processNextTexFile(next);
     };
-    cancelBtn.onclick = () => {
+    cancelBtn.onclick = async () => {
       pendingTestData = null;
       overlay.hidden = true;
+      const next = pendingFileQueue.shift();
+      if (next) await processNextTexFile(next);
     };
   }
 
-  closeBtn.onclick = () => { overlay.hidden = true; pendingTestData = null; };
-  overlay.onclick  = e => { if (e.target === overlay) { overlay.hidden = true; pendingTestData = null; } };
+  closeBtn.onclick = () => { overlay.hidden = true; pendingTestData = null; pendingFileQueue = []; };
+  overlay.onclick  = e => { if (e.target === overlay) { overlay.hidden = true; pendingTestData = null; pendingFileQueue = []; } };
 
   overlay.hidden = false;
 }
@@ -824,12 +927,38 @@ async function addCompTeam(team) {
   if (compTeams.some(t => t.teamId === team.teamId)) return;
   compTeams = [...compTeams, team];
   await updateDoc(doc(db, 'competitions', currentCompetitionId), { participatingTeams: compTeams });
+
+  // Add team to all existing test slots that don't already have them
+  const slotsSnap = await getDocs(collection(db, 'competitions', currentCompetitionId, 'slots'));
+  const batch = writeBatch(db);
+  slotsSnap.docs.forEach(d => {
+    const slot = d.data();
+    if ((slot.type || 'test') !== 'test') return;
+    const teams = slot.teams || [];
+    if (teams.some(t => t.teamId === team.teamId)) return;
+    batch.update(d.ref, {
+      teams: [...teams, { teamId: team.teamId, teamName: team.teamName, order: teams.length + 1 }]
+    });
+  });
+  await batch.commit();
   renderCompTeamChips();
 }
 
 async function removeCompTeam(teamId) {
   compTeams = compTeams.filter(t => t.teamId !== teamId);
   await updateDoc(doc(db, 'competitions', currentCompetitionId), { participatingTeams: compTeams });
+
+  // Remove team from all slots (and their associated runs)
+  const slotsSnap = await getDocs(collection(db, 'competitions', currentCompetitionId, 'slots'));
+  const batch = writeBatch(db);
+  slotsSnap.docs.forEach(d => {
+    const slot  = d.data();
+    const teams = (slot.teams || []).filter(t => t.teamId !== teamId);
+    if (teams.length !== (slot.teams || []).length) {
+      batch.update(d.ref, { teams });
+    }
+  });
+  await batch.commit();
   renderCompTeamChips();
 }
 
@@ -1300,6 +1429,7 @@ function renderSlotBlock(slot) {
   block.dataset.slotId = slot.id;
   block.style.cssText = `top:${top}px; height:${height}px;`;
   block.innerHTML = `
+    <div class="sched-slot-drag" title="Drag to move"></div>
     <div class="sched-slot-inner">
       <div class="sched-slot-name">${name}</div>
       <div class="sched-slot-meta">${slot.time}${teamMeta}</div>
@@ -1327,6 +1457,72 @@ function renderSlotBlock(slot) {
   block.querySelector('.sched-slot-inner').addEventListener('click', () => {
     if (type !== 'test') return;  // inspection / poster / other: no action yet
     showSlotTeams(slot.id, name, slot, () => showSchedule(schedState.compId, schedState.compName));
+  });
+
+  // ── DRAG HANDLE (move) ────────────────────────────────────────────────────────
+  const dragHandle = block.querySelector('.sched-slot-drag');
+  let dragStartY = 0, dragStartTop = 0;
+
+  dragHandle.addEventListener('mousedown', e => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragStartY   = e.clientY;
+    dragStartTop = parseInt(block.style.top) || 0;
+    let targetColEl = block.parentElement; // track which column the block is in
+    block.classList.add('sched-slot-dragging');
+
+    function onMove(ev) {
+      const delta   = ev.clientY - dragStartY;
+      const rawTop  = dragStartTop + delta;
+      const snapped = Math.max(0, Math.round(rawTop / SCHED.CELL_H) * SCHED.CELL_H);
+      block.style.top = snapped + 'px';
+
+      // Detect column under cursor (temporarily disable pointer-events on block)
+      block.style.pointerEvents = 'none';
+      const under = document.elementFromPoint(ev.clientX, ev.clientY);
+      block.style.pointerEvents = '';
+      const col = under?.closest('.sched-day-col');
+      if (col && col !== targetColEl) {
+        col.appendChild(block);
+        targetColEl = col;
+      }
+    }
+
+    async function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup',   onUp);
+      block.classList.remove('sched-slot-dragging');
+
+      const topPx       = parseInt(block.style.top) || 0;
+      const newStartMin = schedState.openMin + (topPx / SCHED.CELL_H) * 30;
+      const newTime     = minutesToTime(newStartMin);
+
+      // Parse new date + arena from the column we landed in
+      const colId    = targetColEl.dataset.colId || '';
+      const sepIdx   = colId.indexOf('__');
+      const newDate  = sepIdx >= 0 ? colId.slice(0, sepIdx) : colId;
+      const newArena = sepIdx >= 0 ? colId.slice(sepIdx + 2) : '';
+
+      // Update meta display
+      const metaEl = block.querySelector('.sched-slot-meta');
+      if (metaEl) {
+        const teamPart = slot.teams?.length ? ` · ${slot.teams.length} team${slot.teams.length !== 1 ? 's' : ''}` : '';
+        metaEl.textContent = newTime + teamPart;
+      }
+
+      const updateData = { time: newTime, date: newDate };
+      if (schedState.arenas.length) updateData.arena = newArena;
+      await updateDoc(
+        doc(db, 'competitions', schedState.compId, 'slots', slot.id),
+        updateData
+      );
+      slot.time  = newTime;
+      slot.date  = newDate;
+      if (schedState.arenas.length) slot.arena = newArena;
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup',   onUp);
   });
 
   // ── RESIZE HANDLE ────────────────────────────────────────────────────────────

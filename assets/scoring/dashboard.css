@@ -289,3 +289,59 @@ body {
 .status-submitted { color: var(--accent);background: rgba(0,229,160,0.12);   }
 
 .open-icon { color: var(--muted); flex-shrink: 0; }
+
+/* ── REFEREE LOGIN OVERLAY ─────────────────────────────────────── */
+.ref-login-overlay {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+.ref-login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px 36px;
+  width: 100%; max-width: 360px;
+}
+.ref-login-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+}
+.ref-login-sub {
+  font-size: 13px; color: var(--muted);
+  margin-bottom: 28px;
+}
+.ref-login-input {
+  display: block; width: 100%; box-sizing: border-box;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text);
+  font-size: 14px; padding: 10px 12px;
+  margin-bottom: 12px; outline: none;
+}
+.ref-login-input:focus { border-color: var(--accent); }
+.ref-login-error {
+  font-size: 13px; color: var(--penalty);
+  margin-bottom: 10px;
+}
+.ref-login-btn {
+  display: block; width: 100%;
+  background: var(--accent); color: #000;
+  border: none; border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px; font-weight: 700;
+  padding: 12px; cursor: pointer;
+  margin-top: 4px; transition: opacity 0.15s;
+}
+.ref-login-btn:hover   { opacity: 0.88; }
+.ref-login-btn:disabled { opacity: 0.5; cursor: default; }
+
+/* Sign-out button in topbar */
+.ref-signout-btn {
+  background: none; border: 1px solid var(--border);
+  border-radius: 6px; color: var(--muted);
+  font-size: 12px; padding: 5px 10px; cursor: pointer;
+  margin-left: auto;
+}
+.ref-signout-btn:hover { color: var(--text); border-color: var(--text); }

@@ -11,6 +11,20 @@
   <link rel="stylesheet" href="assets/scoring/scoresheet.css">
 </head>
 <body>
+  <!-- Referee login overlay — shown if not signed in with email -->
+  <div id="referee-login-overlay" class="ref-login-overlay" hidden>
+    <div class="ref-login-card">
+      <div class="ref-login-title">Referee Sign In</div>
+      <div class="ref-login-sub">RoboCup@Home Scoring</div>
+      <form id="referee-login-form">
+        <input type="email"    id="referee-login-email"    class="ref-login-input" placeholder="Email" required autocomplete="email">
+        <input type="password" id="referee-login-password" class="ref-login-input" placeholder="Password" required autocomplete="current-password">
+        <div id="referee-login-error" class="ref-login-error" hidden></div>
+        <button type="submit" id="referee-login-btn" class="ref-login-btn">Sign in</button>
+      </form>
+    </div>
+  </div>
+
   <div id="loading">Loading…</div>
 
   <div id="app" hidden>
