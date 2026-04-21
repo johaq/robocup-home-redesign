@@ -8,11 +8,14 @@ const competitionId = params.get('competition');
 
 let slots         = {};   // slotId → slot data
 let runs          = {};   // runId  → run data
+let inspections   = {};   // teamId → inspection data
+let compTeams     = [];   // [{teamId, teamName}] for the competition
 let expandedSlots = new Set();
 let availableTests = [];
 let filterArena   = null;
 let filterReferee = null;
 let currentCompId = null;
+let hasInspectionSlot = false;
 
 const today = new Date().toISOString().slice(0, 10);  // YYYY-MM-DD
 
@@ -135,31 +138,81 @@ async function showDashboard(compId) {
     }
   }
 
-  // Auto-expand slots happening today
-  const slotsSnap = await getDocs(collection(db, 'competitions', compId, 'slots'));
-  slotsSnap.docs.forEach(d => {
-    const slot = d.data();
-    if (slot.date === today) expandedSlots.add(d.id);
+  // Real-time listeners
+  onSnapshot(doc(db, 'competitions', compId), snap => {
+    compTeams = snap.data()?.participatingTeams || [];
+    renderInspectionPanel(compId);
   });
 
-  // Real-time listeners
   onSnapshot(collection(db, 'competitions', compId, 'slots'), snap => {
     slots = {};
     snap.docs.forEach(d => { slots[d.id] = { id: d.id, ...d.data() }; });
+    hasInspectionSlot = snap.docs.some(d => d.data().type === 'inspection');
     renderFilters();
+    renderInspectionPanel(compId);
     renderSlots(compId);
   });
 
   onSnapshot(collection(db, 'competitions', compId, 'runs'), snap => {
     runs = {};
     snap.docs.forEach(d => { runs[d.id] = d.data(); });
+    renderInspectionPanel(compId);
     renderSlots(compId);
+  });
+
+  onSnapshot(collection(db, 'competitions', compId, 'inspections'), snap => {
+    inspections = {};
+    snap.docs.forEach(d => { inspections[d.id] = d.data(); });
+    renderInspectionPanel(compId);
   });
 
   document.getElementById('screen-slots').hidden = false;
 }
 
 // ── RENDERING ─────────────────────────────────────────────────────────────────
+
+function renderInspectionPanel(compId) {
+  const panel = document.getElementById('inspection-panel');
+  if (!panel) return;
+
+  if (!hasInspectionSlot || compTeams.length === 0) {
+    panel.hidden = true;
+    return;
+  }
+
+  panel.hidden = false;
+  const list = panel.querySelector('.insp-panel-teams');
+  list.innerHTML = '';
+
+  for (const team of compTeams) {
+    const insp = inspections[team.teamId];
+    const result = insp?.result || null;
+    const submitted = insp?.submitted || false;
+
+    let statusText = 'Not inspected';
+    let statusClass = 'status-pending';
+    if (submitted && result === 'pass') { statusText = 'Passed'; statusClass = 'status-submitted'; }
+    else if (submitted && result === 'fail') { statusText = 'Failed'; statusClass = 'status-draft'; }
+    else if (insp) { statusText = 'In progress'; statusClass = 'status-draft'; }
+
+    const params = new URLSearchParams({
+      competition: compId,
+      team:        team.teamId,
+      teamName:    team.teamName,
+      back:        window.location.href
+    });
+
+    const row = document.createElement('a');
+    row.className = 'team-row';
+    row.href = `inspection.html?${params}`;
+    row.innerHTML = `
+      <span class="team-name">${team.teamName}</span>
+      <span class="run-status ${statusClass}">${statusText}</span>
+      <span class="open-icon">›</span>
+    `;
+    list.appendChild(row);
+  }
+}
 
 function renderFilters() {
   const all      = Object.values(slots);
@@ -201,7 +254,7 @@ function renderSlots(compId) {
   container.innerHTML = '';
 
   const sorted = Object.values(slots)
-    .filter(s => (s.type || 'test') === 'test'
+    .filter(s => ['test', 'inspection'].includes(s.type || 'test')
               && (!filterArena   || s.arena   === filterArena)
               && (!filterReferee || s.referee === filterReferee))
     .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
@@ -243,7 +296,11 @@ function renderSlots(compId) {
 }
 
 function renderSlotCard(slot, compId) {
-  const testName = availableTests.find(t => t.id === slot.testId)?.name || slot.testId;
+  const type     = slot.type || 'test';
+  const testName = type === 'inspection' ? 'Robot Inspection'
+                 : type === 'poster'     ? 'Poster Session'
+                 : type === 'other'      ? (slot.label || 'Other')
+                 : availableTests.find(t => t.id === slot.testId)?.name || slot.testId;
   const teams    = slot.teams || [];
   const isOpen   = expandedSlots.has(slot.id);
 
@@ -257,8 +314,8 @@ function renderSlotCard(slot, compId) {
   card.className = 'slot-card' + (isOpen ? ' open' : '');
   card.dataset.slotId = slot.id;
 
-  // Progress dots (one per team)
-  const dots = teamStatuses.map(s =>
+  // Progress dots (one per team) — not shown for inspection slots
+  const dots = type === 'inspection' ? '' : teamStatuses.map(s =>
     `<span class="dot ${s === 'pending' ? '' : s}"></span>`
   ).join('');
 
@@ -288,23 +345,35 @@ function renderSlotCard(slot, compId) {
     teamList.innerHTML = '<div style="padding:12px 16px;color:var(--muted);font-size:0.85rem">No teams assigned.</div>';
   } else {
     teams.forEach((team, idx) => {
-      const status   = teamStatuses[idx];
-      const runId    = `${slot.id}_${team.teamId}`;
-      const params   = new URLSearchParams({
+      const isInspection = type === 'inspection';
+      const p = new URLSearchParams({
         competition: compId,
         slot:        slot.id,
         team:        team.teamId,
         teamName:    team.teamName,
-        test:        slot.testId
+        ...(isInspection ? { back: window.location.href } : { test: slot.testId })
       });
+
+      let statusHtml = '';
+      if (isInspection) {
+        const insp = inspections[team.teamId];
+        if (insp?.submitted && insp.result === 'pass') {
+          statusHtml = '<span class="run-status status-submitted">Passed</span>';
+        } else if (insp?.submitted && insp.result === 'fail') {
+          statusHtml = '<span class="run-status status-draft">Failed</span>';
+        }
+      } else {
+        const status = teamStatuses[idx];
+        statusHtml = `<span class="run-status status-${status}">${statusLabel(status)}</span>`;
+      }
 
       const row = document.createElement('a');
       row.className = 'team-row';
-      row.href      = `scoresheet.html?${params}`;
+      row.href      = isInspection ? `inspection.html?${p}` : `scoresheet.html?${p}`;
       row.innerHTML = `
         <span class="team-order">${idx + 1}</span>
         <span class="team-name">${team.teamName}</span>
-        <span class="run-status status-${status}">${statusLabel(status)}</span>
+        ${statusHtml}
         <span class="open-icon">›</span>
       `;
       teamList.appendChild(row);

@@ -37,10 +37,12 @@ export async function ensureAuth() {
 // Returns a Promise that resolves once an email-authenticated session exists.
 // Rejects if no login UI element is available.
 export async function ensureRefereeAuth() {
-  await auth.authStateReady();
+  await new Promise(resolve => {
+    const unsub = onAuthStateChanged(auth, () => { unsub(); resolve(); });
+  });
+
   if (auth.currentUser?.email) return auth.currentUser;
 
-  // Not signed in with email — wait for login via a shared login overlay
   return new Promise((resolve, reject) => {
     const overlay  = document.getElementById('referee-login-overlay');
     const form     = document.getElementById('referee-login-form');
@@ -49,29 +51,37 @@ export async function ensureRefereeAuth() {
     const btn      = document.getElementById('referee-login-btn');
     const errorEl  = document.getElementById('referee-login-error');
 
-    if (!overlay) { reject(new Error('No login overlay found')); return; }
+    if (!overlay || !form) { reject(new Error('No login overlay found')); return; }
+
+    // Prevent any programmatic form.submit() calls (e.g. from password managers)
+    form.submit = () => {};
     overlay.hidden = false;
 
-    form.onsubmit = async e => {
+    form.addEventListener('submit', function handler(e) {
       e.preventDefault();
-      errorEl.hidden = true;
-      btn.disabled   = true;
+      if (btn.disabled) return;
+
+      errorEl.hidden  = true;
+      btn.disabled    = true;
       btn.textContent = 'Signing in…';
-      try {
-        const cred = await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
-        overlay.hidden = true;
-        resolve(cred.user);
-      } catch (err) {
-        errorEl.textContent = err.code === 'auth/invalid-credential'
-          || err.code === 'auth/wrong-password'
-          || err.code === 'auth/user-not-found'
-          ? 'Incorrect email or password.'
-          : 'Sign-in failed. Check your connection.';
-        errorEl.hidden  = false;
-        btn.disabled    = false;
-        btn.textContent = 'Sign in';
-      }
-    };
+
+      signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value)
+        .then(cred => {
+          form.removeEventListener('submit', handler);
+          overlay.hidden = true;
+          resolve(cred.user);
+        })
+        .catch(err => {
+          const badCreds = ['auth/invalid-credential', 'auth/invalid-login-credentials',
+                            'auth/wrong-password', 'auth/user-not-found'];
+          errorEl.textContent = badCreds.includes(err.code)
+            ? 'Incorrect email or password.'
+            : `Sign-in failed: ${err.code}`;
+          errorEl.hidden  = false;
+          btn.disabled    = false;
+          btn.textContent = 'Sign in';
+        });
+    });
   });
 }
 

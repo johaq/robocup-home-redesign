@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-store">
+  <title>Robot Inspection — RoboCup@Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/scoring/inspection.css">
+</head>
+<body>
+  <!-- Referee login overlay -->
+  <div id="referee-login-overlay" class="ref-login-overlay" hidden>
+    <div class="ref-login-card">
+      <div class="ref-login-title">Referee Sign In</div>
+      <div class="ref-login-sub">RoboCup@Home Scoring</div>
+      <form id="referee-login-form">
+        <input type="email"    id="referee-login-email"    class="ref-login-input" placeholder="Email" required autocomplete="email">
+        <input type="password" id="referee-login-password" class="ref-login-input" placeholder="Password" required autocomplete="current-password">
+        <div id="referee-login-error" class="ref-login-error" hidden></div>
+        <button type="submit" id="referee-login-btn" class="ref-login-btn">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="loading">Loading…</div>
+
+  <div id="app" hidden>
+    <header id="insp-header">
+      <a id="back-link" class="sheet-nav-link" href="dashboard.html">← Back</a>
+      <div id="insp-title-wrap">
+        <div id="insp-team-name">—</div>
+        <div id="insp-subtitle">Robot Inspection</div>
+      </div>
+      <div id="save-status" class="save-status"></div>
+      <div id="insp-nav" class="sheet-nav-btns"></div>
+    </header>
+
+    <div id="insp-body">
+
+      <!-- CRITERIA SECTION -->
+      <section class="insp-section">
+        <div class="insp-section-title">Criteria</div>
+
+        <div class="insp-check-item" data-field="collisionAvoidance">
+          <div class="insp-check-box"></div>
+          <div class="insp-check-label">Collision Avoidance</div>
+        </div>
+        <div class="insp-check-item" data-field="loudnessOfVoice">
+          <div class="insp-check-box"></div>
+          <div class="insp-check-label">Loudness of Voice</div>
+        </div>
+        <div class="insp-check-item" data-field="appearanceCheck">
+          <div class="insp-check-box"></div>
+          <div class="insp-check-label">Appearance Check</div>
+        </div>
+      </section>
+
+      <!-- REGISTRATION SECTION -->
+      <section class="insp-section">
+        <div class="insp-section-title">Registration</div>
+
+        <div class="insp-field">
+          <label class="insp-label">External Devices</label>
+          <div class="insp-label-hint">List all external devices (wireless controllers, laptops, etc.)</div>
+          <textarea id="field-externalDevices" class="insp-textarea" rows="3" placeholder="e.g. Laptop Dell XPS, Xbox controller, Raspberry Pi…"></textarea>
+        </div>
+
+        <div class="insp-field">
+          <label class="insp-label">Start Button</label>
+          <div class="insp-label-hint">Describe location and appearance for the referee</div>
+          <textarea id="field-startButton" class="insp-textarea" rows="2" placeholder="e.g. Green button on the right side of the torso, labeled START"></textarea>
+        </div>
+
+        <div class="insp-field">
+          <label class="insp-label">Custom Containers</label>
+          <div class="insp-label-hint">Describe any custom containers or props the team brings</div>
+          <textarea id="field-customContainers" class="insp-textarea" rows="2" placeholder="e.g. Custom red bin with lid, tray with markers…"></textarea>
+        </div>
+
+        <div class="insp-field">
+          <label class="insp-label">Emergency Button</label>
+          <div class="insp-label-hint">Location and any notes (e.g. requires extra force)</div>
+          <textarea id="field-emergencyButton" class="insp-textarea" rows="2" placeholder="e.g. Red button on the back, requires firm press"></textarea>
+        </div>
+      </section>
+
+      <!-- NOTES -->
+      <section class="insp-section">
+        <div class="insp-section-title">Additional Notes</div>
+        <textarea id="field-notes" class="insp-textarea" rows="3" placeholder="Any other observations…"></textarea>
+      </section>
+
+    </div><!-- /#insp-body -->
+
+    <footer id="insp-footer">
+      <div id="insp-result-wrap">
+        <span id="insp-result-label">Result</span>
+        <div id="insp-result-btns">
+          <button id="btn-pass" class="insp-result-btn pass">✓ Pass</button>
+          <button id="btn-fail" class="insp-result-btn fail">✗ Fail</button>
+        </div>
+      </div>
+      <button id="submit-btn" class="btn-primary insp-submit" disabled>Submit Inspection</button>
+    </footer>
+  </div>
+
+  <script type="module" src="assets/scoring/inspection.js"></script>
+</body>
+</html>

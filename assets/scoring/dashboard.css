@@ -345,3 +345,41 @@ body {
   margin-left: auto;
 }
 .ref-signout-btn:hover { color: var(--text); border-color: var(--text); }
+
+/* ── INSPECTION PANEL ────────────────────────────────────────────── */
+
+.insp-panel {
+  margin: 16px 16px 0;
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.insp-panel-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,229,160,0.05);
+}
+
+.insp-panel-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.insp-panel-hint {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.insp-panel-teams {
+  display: flex;
+  flex-direction: column;
+}

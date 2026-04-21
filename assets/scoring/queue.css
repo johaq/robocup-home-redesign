@@ -1,0 +1,320 @@
+/* ── BASE ────────────────────────────────────────────────────────── */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+#loading {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ── HEADER ──────────────────────────────────────────────────────── */
+
+#queue-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-wrap: wrap;
+}
+
+#queue-title-wrap { flex: 1; min-width: 0; }
+
+#queue-comp-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+#queue-subtitle {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+#queue-arena-filter {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.queue-arena-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.queue-arena-btn.active,
+.queue-arena-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── BODY ────────────────────────────────────────────────────────── */
+
+#queue-body {
+  padding: 20px;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+#queue-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.queue-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* ── SLOT CARDS ──────────────────────────────────────────────────── */
+
+.queue-slot-card {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.queue-slot-card.current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.queue-slot-card.next {
+  border-color: rgba(0,229,160,0.3);
+}
+
+.queue-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+/* ── BADGES ──────────────────────────────────────────────────────── */
+
+.queue-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.badge-now  { background: var(--accent); color: #000; }
+.badge-next { background: rgba(0,229,160,0.15); color: var(--accent); border: 1px solid var(--accent); }
+.badge-soon { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+
+.queue-slot-time {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.queue-slot-test {
+  font-size: 0.95rem;
+  color: var(--text);
+  flex: 1;
+}
+
+.queue-slot-arena {
+  font-size: 0.8rem;
+  color: var(--muted);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  flex-shrink: 0;
+}
+
+/* ── TEAM ROWS ───────────────────────────────────────────────────── */
+
+.queue-teams {
+  display: flex;
+  flex-direction: column;
+}
+
+.queue-no-teams {
+  padding: 14px 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.queue-team-row {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+}
+
+.queue-team-row:last-child { border-bottom: none; }
+
+.queue-team-row.done { opacity: 0.5; }
+
+.queue-team-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.queue-team-order {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  width: 20px;
+  flex-shrink: 0;
+}
+
+.queue-team-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  flex: 1;
+}
+
+.queue-run-status {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  padding: 3px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.status-pending   { color: var(--muted);   background: rgba(255,255,255,0.04); }
+.status-draft     { color: #ffa03c;         background: rgba(255,160,60,0.12); }
+.status-submitted { color: var(--accent);   background: rgba(0,229,160,0.12); }
+
+/* ── INSPECTION SUMMARY ──────────────────────────────────────────── */
+
+.queue-insp-summary {
+  margin-top: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.02);
+}
+
+.insp-result-badge {
+  display: block;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.insp-result-badge.pass { color: var(--accent); }
+.insp-result-badge.fail { color: var(--penalty); }
+
+.insp-detail {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+
+.insp-detail:last-child { border-bottom: none; }
+
+.insp-detail-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding-top: 1px;
+}
+
+.insp-detail-value {
+  color: var(--text);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── UPCOMING ────────────────────────────────────────────────────── */
+
+.queue-upcoming-section {
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.queue-upcoming-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.queue-upcoming-row {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+}
+.queue-upcoming-row:last-child { border-bottom: none; }
+
+.queue-upcoming-time {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  flex-shrink: 0;
+  width: 50px;
+}
+
+.queue-upcoming-test {
+  font-size: 0.85rem;
+  color: var(--text);
+  flex-shrink: 0;
+  width: 150px;
+}
+
+.queue-upcoming-teams {
+  font-size: 0.85rem;
+  color: var(--muted);
+  flex: 1;
+}
+
+/* ── COMP PICKER ─────────────────────────────────────────────────── */
+
+.queue-comp-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: border-color 0.15s;
+}
+.queue-comp-item:hover { border-color: var(--accent); }

@@ -47,6 +47,12 @@ service cloud.firestore {
         allow read:  if true;
         allow write: if isReferee();
       }
+
+      // Inspections: public read (queue view), referee write.
+      match /inspections/{teamId} {
+        allow read:  if true;
+        allow write: if isReferee();
+      }
     }
   }
 }

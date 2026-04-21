@@ -494,13 +494,15 @@ async function saveCompetition() {
 
 async function deleteCompetition(comp) {
   const confirmed = window.confirm(
-    `Delete "${comp.name}" (${comp.id})?\n\nThis will permanently remove all slots and scores for this competition. This cannot be undone.`
+    `Delete "${comp.name}" (${comp.id})?\n\nThis will permanently remove all slots, scores, tests, and inspections for this competition. This cannot be undone.`
   );
   if (!confirmed) return;
 
-  // Delete subcollections before the parent doc
+  // Delete all subcollections before the parent doc
   await deleteSubcollection('competitions', comp.id, 'slots');
   await deleteSubcollection('competitions', comp.id, 'runs');
+  await deleteSubcollection('competitions', comp.id, 'tests');
+  await deleteSubcollection('competitions', comp.id, 'inspections');
   await deleteDoc(doc(db, 'competitions', comp.id));
   await loadCompetitions();
 }
@@ -1374,7 +1376,47 @@ function buildGridDOM(days, arenas, openMin, closeMin) {
 }
 
 async function handleScheduleDrop(slotType, testId, label, col, startMinutes) {
-  // Only auto-populate teams for regular test slots
+  const arenas = schedState.arenas;
+  const isMultiArena = ['test', 'inspection'].includes(slotType) && arenas.length > 1 && compTeams.length;
+
+  if (isMultiArena) {
+    // Shuffle teams and split evenly across all arenas
+    const shuffled = [...compTeams].sort(() => Math.random() - 0.5);
+    const n = arenas.length;
+    const batch = writeBatch(db);
+    const created = [];
+
+    arenas.forEach((arena, i) => {
+      // Slice this arena's share of teams
+      const start = Math.floor((i / n) * shuffled.length);
+      const end   = Math.floor(((i + 1) / n) * shuffled.length);
+      const arenaTeams = shuffled.slice(start, end)
+        .map((t, j) => ({ teamId: t.teamId, teamName: t.teamName, order: j + 1 }));
+
+      const slotData = {
+        type:            slotType,
+        testId:          testId || null,
+        label:           label  || null,
+        date:            col.day,
+        time:            minutesToTime(startMinutes),
+        arena,
+        league:          '',
+        referee:         '',
+        teams:           arenaTeams,
+        durationMinutes: 60,
+        status:          'pending'
+      };
+      const ref = doc(collection(db, 'competitions', schedState.compId, 'slots'));
+      batch.set(ref, slotData);
+      created.push({ id: ref.id, ...slotData });
+    });
+
+    await batch.commit();
+    created.forEach(s => renderSlotBlock(s));
+    return;
+  }
+
+  // Single slot (one arena, or non-test type)
   const teams = (slotType === 'test' && compTeams.length)
     ? [...compTeams].sort(() => Math.random() - 0.5)
         .map((t, i) => ({ teamId: t.teamId, teamName: t.teamName, order: i + 1 }))
@@ -1455,7 +1497,7 @@ function renderSlotBlock(slot) {
   });
 
   block.querySelector('.sched-slot-inner').addEventListener('click', () => {
-    if (type !== 'test') return;  // inspection / poster / other: no action yet
+    if (!['test', 'inspection'].includes(type)) return;
     showSlotTeams(slot.id, name, slot, () => showSchedule(schedState.compId, schedState.compName));
   });
 
