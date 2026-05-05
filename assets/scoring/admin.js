@@ -308,6 +308,8 @@ async function showCompetitions(afterFn) {
     document.querySelector('#comp-form .form-actions .btn-primary').textContent = 'Create';
     document.getElementById('comp-id-field').hidden = false;
     document.getElementById('comp-id').required = true;
+    document.getElementById('comp-podium-section').hidden = true;
+    document.getElementById('comp-podium-list').innerHTML = '';
     form.reset();
     form.hidden = false;
     newBtn.hidden = true;
@@ -315,6 +317,8 @@ async function showCompetitions(afterFn) {
 
   cancelBtn.onclick = () => {
     editingCompId = null;
+    document.getElementById('comp-podium-section').hidden = true;
+    document.getElementById('comp-podium-list').innerHTML = '';
     form.hidden = true;
     newBtn.hidden = false;
     form.reset();
@@ -458,9 +462,59 @@ function startEditCompetition(comp) {
   document.getElementById('comp-timezone').value    = comp.timezone    || '';
   document.getElementById('comp-stream-url').value  = comp.streamUrl   || '';
   document.getElementById('comp-referee-pin').value = comp.refereePin  || '';
+
+  const podiumSection = document.getElementById('comp-podium-section');
+  if (!comp.adminCreated) {
+    podiumSection.hidden = false;
+    renderPodiumList(comp.podium || []);
+  } else {
+    podiumSection.hidden = true;
+    document.getElementById('comp-podium-list').innerHTML = '';
+  }
+
   document.getElementById('comp-form').hidden = false;
   document.getElementById('new-comp-btn').hidden = true;
   document.getElementById('comp-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function renderPodiumList(entries) {
+  document.getElementById('comp-podium-list').innerHTML = '';
+  entries.forEach(e => addPodiumRow(e));
+}
+
+function addPodiumRow(entry = {}) {
+  const list = document.getElementById('comp-podium-list');
+  const row  = document.createElement('div');
+  row.className = 'podium-entry';
+  row.style.cssText = 'display:flex;gap:6px;align-items:center';
+  row.innerHTML = `
+    <input class="podium-place" type="number" min="1" max="99" value="${entry.place || ''}" placeholder="#" style="width:52px">
+    <select class="podium-league" style="flex-shrink:0">
+      <option value="OPL"  ${(entry.league || 'OPL') === 'OPL'  ? 'selected' : ''}>OPL</option>
+      <option value="DSPL" ${entry.league === 'DSPL' ? 'selected' : ''}>DSPL</option>
+      <option value="SSPL" ${entry.league === 'SSPL' ? 'selected' : ''}>SSPL</option>
+    </select>
+    <input class="podium-team-name" type="text" value="${entry.teamName || ''}" placeholder="Team name" style="flex:1">
+    <input class="podium-team-id"   type="text" value="${entry.teamId   || ''}" placeholder="Team ID (optional)" style="width:140px">
+    <button type="button" class="btn-icon danger">×</button>
+  `;
+  row.querySelector('.btn-icon').onclick = () => row.remove();
+  list.appendChild(row);
+}
+
+document.getElementById('add-podium-btn').addEventListener('click', () => addPodiumRow());
+
+function readPodiumFromForm() {
+  return [...document.querySelectorAll('#comp-podium-list .podium-entry')]
+    .map(row => ({
+      place:    parseInt(row.querySelector('.podium-place').value)    || 0,
+      league:   row.querySelector('.podium-league').value,
+      teamName: row.querySelector('.podium-team-name').value.trim(),
+      teamId:   row.querySelector('.podium-team-id').value.trim(),
+    }))
+    .filter(e => e.teamName && e.place)
+    .map(e => ({ ...e, teamId: e.teamId || e.teamName }))
+    .sort((a, b) => a.place - b.place);
 }
 
 async function saveCompetition() {
@@ -478,7 +532,11 @@ async function saveCompetition() {
   if (!name) return;
 
   if (editingCompId) {
-    await updateDoc(doc(db, 'competitions', editingCompId), { name, city, country, year, active, startDate, endDate, timezone, streamUrl, refereePin });
+    const update = { name, city, country, year, active, startDate, endDate, timezone, streamUrl, refereePin };
+    if (!document.getElementById('comp-podium-section').hidden) {
+      update.podium = readPodiumFromForm();
+    }
+    await updateDoc(doc(db, 'competitions', editingCompId), update);
   } else {
     const id = document.getElementById('comp-id').value.trim();
     if (!id) return;

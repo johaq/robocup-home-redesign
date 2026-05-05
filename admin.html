@@ -149,6 +149,11 @@
         </label>
         <div class="field-hint">Active competitions appear in the referee dashboard and live display.</div>
       </div>
+      <div class="field" id="comp-podium-section" hidden>
+        <label>Podium <span class="hint">(legacy competitions without run data)</span></label>
+        <div id="comp-podium-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+        <button type="button" id="add-podium-btn" class="btn-ghost" style="font-size:0.8rem;padding:4px 10px">+ Add entry</button>
+      </div>
       <div class="form-actions">
         <button type="submit" class="btn-primary">Create</button>
         <button type="button" class="btn-ghost" id="cancel-comp-btn">Cancel</button>

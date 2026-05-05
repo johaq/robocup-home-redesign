@@ -21,7 +21,7 @@ import {
         <span class="live-banner-dot"></span>
         <span class="live-banner-label">Live now</span>
         <span id="live-banner-text">${live.name} is happening right now.</span>
-        <a id="live-banner-link" href="event.html?id=${live.id}" class="live-banner-btn">Follow live →</a>
+        <a id="live-banner-link" href="competition.html?id=${live.id}" class="live-banner-btn">Follow live →</a>
       </div>
     `;
 

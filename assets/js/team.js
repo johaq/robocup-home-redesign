@@ -11,7 +11,7 @@ const BACK_LINKS = {
   history:     { href: 'history.html', label: '← Back to history' },
   teams:       { href: 'teams.html',   label: '← Back to all teams' },
   competition: { href: `competition.html?id=${params.get('compId')}`, label: '← Back to competition' },
-  event:       { href: `event.html?id=${params.get('compId')}`, label: '← Back to competition' },
+  event:       { href: `competition.html?id=${params.get('compId')}`, label: '← Back to competition' },
 };
 const backLink = BACK_LINKS[fromPage] || BACK_LINKS.teams;
 

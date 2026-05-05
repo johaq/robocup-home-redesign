@@ -27,7 +27,7 @@ async function init() {
 
   document.title = `Results — ${comp.name}`;
   document.getElementById('results-comp-title').textContent = comp.name;
-  document.getElementById('results-back-link').href = `event.html?id=${compId}`;
+  document.getElementById('results-back-link').href = `competition.html?id=${compId}`;
 
   const testsSnap = await getDocs(collection(db, 'competitions', compId, 'tests'));
   tests = testsSnap.docs.map(d => ({ id: d.id, ...d.data() }));

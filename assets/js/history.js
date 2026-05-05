@@ -1,153 +1,135 @@
-const SHEET_ID = "1ff1rmnkY2Sg44vei5j0dZJsJzOrgXqlOVjVoW2G0H5k";
-const RESULTS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Results`;
-const COMPETITIONS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Competitions`;
-const TEAMS_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=Teams`;
-
-function fetchCSV(url) {
-  return new Promise((resolve) => {
-    Papa.parse(url, { download: true, header: true, complete: (r) => resolve(r.data) });
-  });
-}
+import { db, ensureAuth } from '../scoring/firebase.js';
+import {
+  collection, getDocs
+} from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
 const LEAGUE_LABELS = {
-  OPL:  "Open Platform League",
-  DSPL: "Domestic Standard Platform League",
-  SSPL: "Social Standard Platform League",
+  OPL:  'Open Platform League',
+  DSPL: 'Domestic Standard Platform League',
+  SSPL: 'Social Standard Platform League',
 };
-const LEAGUE_ORDER = ["OPL", "DSPL", "SSPL"];
+
+const COMP_TYPES = {
+  rc: 'RoboCup World Championship',
+  go: 'German Open',
+  eo: 'European Open',
+  po: 'Portugal Open',
+  jo: 'Japan Open',
+  bo: 'Brazil Open',
+};
 
 function medalClass(place) {
-  const n = parseInt(place);
-  if (n === 1) return "m-gold";
-  if (n === 2) return "m-silver";
-  if (n === 3) return "m-bronze";
-  return "m-other";
+  if (place === 1) return 'm-gold';
+  if (place === 2) return 'm-silver';
+  if (place === 3) return 'm-bronze';
+  return 'm-other';
 }
 
 function placeLabel(place) {
-  const n = parseInt(place);
-  if (n === 1) return "1st";
-  if (n === 2) return "2nd";
-  if (n === 3) return "3rd";
-  return `${n}th`;
+  if (place === 1) return '1st';
+  if (place === 2) return '2nd';
+  if (place === 3) return '3rd';
+  return `${place}th`;
 }
 
-// Global state
-let allCompetitions = [];
-let resultsByComp = {};
-let teamMap = {};
-let activeLeague = "all";
-let activeCompType = "all";
-
-const COMP_TYPES = {
-  rc: "RoboCup World Championship",
-  go: "German Open",
-  eo: "European Open",
-  po: "Portugal Open",
-  jo: "Japan Open",
-  bo: "Brazil Open",
-};
-
-function getCompType(competition_id) {
-  const prefix = competition_id.replace(/[0-9]/g, "");
-  return COMP_TYPES[prefix] || "Other";
+function compTypePrefix(id) {
+  return id.replace(/[0-9]/g, '');
 }
+
+// ── STATE ─────────────────────────────────────────────────────────
+
+let allCompetitions = [];   // [{id, name, city, country, year, ...}]
+let podiumByComp   = {};    // compId → [{place, teamId, teamName}]
+let teamMap        = {};    // teamId → {name, ...}
+let activeCompType = 'all';
+
+// ── RENDER ────────────────────────────────────────────────────────
 
 function renderTimeline() {
-  const timeline = document.getElementById("timeline");
-  timeline.innerHTML = "";
+  const timeline = document.getElementById('timeline');
+  timeline.innerHTML = '';
 
-  // Filter competitions
-  let filtered = allCompetitions.filter(c => {
-    if (activeCompType !== "all") {
-      const prefix = c.competition_id.replace(/[0-9]/g, "");
-      if (prefix !== activeCompType) return false;
-    }
-    // If league filter active, only show competitions that have results for that league
-    if (activeLeague !== "all") {
-      const compResults = resultsByComp[c.competition_id] || [];
-      if (!compResults.some(r => r.league === activeLeague)) return false;
-    }
+  const filtered = allCompetitions.filter(c => {
+    if (activeCompType !== 'all' && compTypePrefix(c.id) !== activeCompType) return false;
     return true;
   });
 
-  if (filtered.length === 0) {
-    timeline.innerHTML = `<div class="tl-no-results" style="padding:2rem 0;">No competitions match the selected filters.</div>`;
+  if (!filtered.length) {
+    timeline.innerHTML = '<div style="padding:2rem 0;color:var(--muted)">No competitions match the selected filters.</div>';
     return;
   }
 
   // Group by year
   const byYear = {};
   filtered.forEach(c => {
-    if (!byYear[c.year]) byYear[c.year] = [];
-    byYear[c.year].push(c);
+    const y = c.year || '?';
+    if (!byYear[y]) byYear[y] = [];
+    byYear[y].push(c);
   });
 
   Object.keys(byYear)
     .sort((a, b) => parseInt(b) - parseInt(a))
     .forEach(year => {
-      const yearBlock = document.createElement("div");
-      yearBlock.className = "tl-year-block";
+      const yearBlock = document.createElement('div');
+      yearBlock.className = 'tl-year-block';
 
-      const yearLabel = document.createElement("div");
-      yearLabel.className = "tl-year-label";
+      const yearLabel = document.createElement('div');
+      yearLabel.className = 'tl-year-label';
       yearLabel.textContent = year;
       yearBlock.appendChild(yearLabel);
 
       byYear[year].forEach(comp => {
-        const compResults = resultsByComp[comp.competition_id] || [];
+        const podium = podiumByComp[comp.id] || [];
 
-        // Group results by league
-        const byLeague = {};
-        compResults.forEach(r => {
-          if (!byLeague[r.league]) byLeague[r.league] = [];
-          byLeague[r.league].push(r);
-        });
-        Object.keys(byLeague).forEach(league => {
-          byLeague[league].sort((a, b) => parseInt(a.place) - parseInt(b.place));
-        });
+        const card = document.createElement('div');
+        card.className = 'tl-card';
 
-        // Apply league filter
-        const leaguesPresent = LEAGUE_ORDER.filter(l => {
-          if (activeLeague !== "all" && l !== activeLeague) return false;
-          return byLeague[l] && byLeague[l].length > 0;
-        });
-
-        const card = document.createElement("div");
-        card.className = "tl-card";
+        const loc = [comp.city, comp.country].filter(Boolean).join(', ');
         card.innerHTML = `
           <div class="tl-card-header">
-            <div class="tl-comp-name"><a href="competition.html?id=${comp.competition_id}&from=history" class="tl-comp-link">${comp.name}</a></div>
-            <div class="tl-comp-loc">${comp.city}, ${comp.country}</div>
+            <div class="tl-comp-name">
+              <a href="competition.html?id=${comp.id}&from=history" class="tl-comp-link">${comp.name}</a>
+            </div>
+            ${loc ? `<div class="tl-comp-loc">${loc}</div>` : ''}
           </div>`;
 
-        if (leaguesPresent.length === 0) {
-          card.innerHTML += `<div class="tl-no-results">No results recorded for this competition.</div>`;
+        if (!podium.length) {
+          card.innerHTML += `<div class="tl-no-results">No results recorded yet.</div>`;
         } else {
-          leaguesPresent.forEach((league, i) => {
-            const isLast = i === leaguesPresent.length - 1;
-            const placements = byLeague[league].slice(0, 3);
-            const placesHTML = placements.map(r => {
-              const team = teamMap[String(r.team_id).trim()];
-              const teamName = team ? team.team_name : r.team_id;
-              const teamLink = team
-                ? `<a href="team.html?id=${r.team_id}&from=history" class="tl-team-link">${teamName}</a>`
-                : `<span class="tl-team-name">${teamName}</span>`;
-              return `<div class="tl-place"><div class="tl-medal ${medalClass(r.place)}">${placeLabel(r.place)}</div>${teamLink}</div>`;
-            }).join("");
+          // Group by league; entries without a league go under 'OPL'
+          const byLeague = {};
+          for (const entry of podium) {
+            const league = entry.league || 'OPL';
+            if (!byLeague[league]) byLeague[league] = [];
+            byLeague[league].push(entry);
+          }
+          const leagues = Object.keys(byLeague);
+          const multiLeague = leagues.length > 1;
 
-            card.innerHTML += `
-              <div class="tl-league${isLast ? " tl-league-last" : ""}">
-                <div class="tl-league-name">${LEAGUE_LABELS[league] || league}</div>
-                <div class="tl-places">${placesHTML}</div>
+          const leaguesHTML = leagues.map((league, i) => {
+            const isLast = i === leagues.length - 1;
+            const placesHTML = byLeague[league].map(entry => {
+              const team = teamMap[String(entry.teamId)];
+              const teamName = team?.name || entry.teamName || entry.teamId;
+              const teamLink = `<a href="team.html?id=${encodeURIComponent(entry.teamId)}&from=history" class="tl-team-link">${teamName}</a>`;
+              return `<div class="tl-place">
+                <div class="tl-medal ${medalClass(entry.place)}">${placeLabel(entry.place)}</div>
+                ${teamLink}
               </div>`;
-          });
+            }).join('');
+            return `<div class="tl-league${isLast ? ' tl-league-last' : ''}">
+              ${multiLeague ? `<div class="tl-league-name">${LEAGUE_LABELS[league] || league}</div>` : ''}
+              <div class="tl-places">${placesHTML}</div>
+            </div>`;
+          }).join('');
+
+          card.innerHTML += leaguesHTML;
         }
 
-        const dot = document.createElement("div");
-        dot.className = "tl-dot";
-        const item = document.createElement("div");
-        item.className = "tl-item";
+        const dot  = document.createElement('div');
+        dot.className = 'tl-dot';
+        const item = document.createElement('div');
+        item.className = 'tl-item';
         item.appendChild(dot);
         item.appendChild(card);
         yearBlock.appendChild(item);
@@ -157,86 +139,103 @@ function renderTimeline() {
     });
 }
 
-function setLeague(league, btn) {
-  activeLeague = league;
-  document.querySelectorAll(".filter-btn-league").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  renderTimeline();
+// ── COMPUTE PODIUM FROM RUNS ──────────────────────────────────────
+
+function computePodium(runs) {
+  // Best run per (team, test), summed across tests
+  const bestByTeamTest = {};
+  for (const run of runs) {
+    if (run.status !== 'submitted') continue;
+    const { teamId, teamName, testId, totalScore } = run;
+    if (!teamId || !testId) continue;
+    const key = `${teamId}__${testId}`;
+    if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
+      bestByTeamTest[key] = { teamId, teamName: teamName || teamId, score: totalScore || 0 };
+    }
+  }
+
+  const totals = {};
+  for (const { teamId, teamName, score } of Object.values(bestByTeamTest)) {
+    if (!totals[teamId]) totals[teamId] = { teamName, total: 0 };
+    totals[teamId].total += score;
+  }
+
+  return Object.entries(totals)
+    .sort(([, a], [, b]) => b.total - a.total)
+    .slice(0, 3)
+    .map(([teamId, { teamName }], i) => ({ place: i + 1, teamId, teamName }));
 }
 
-function setCompType(type, btn) {
-  activeCompType = type;
-  document.querySelectorAll(".filter-btn-comp").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  renderTimeline();
-}
+// ── LOAD ──────────────────────────────────────────────────────────
 
 async function load() {
-  const [competitions, results, teams] = await Promise.all([
-    fetchCSV(COMPETITIONS_URL),
-    fetchCSV(RESULTS_URL),
-    fetchCSV(TEAMS_URL),
+  await ensureAuth();
+
+  // Load competitions and teams in parallel
+  const [compsSnap, teamsSnap] = await Promise.all([
+    getDocs(collection(db, 'competitions')),
+    getDocs(collection(db, 'teams')),
   ]);
 
-  teams.forEach(t => { if (t.team_id) teamMap[String(t.team_id).trim()] = t; });
-  results.forEach(r => {
-    if (!r.competition_id) return;
-    if (!resultsByComp[r.competition_id]) resultsByComp[r.competition_id] = [];
-    resultsByComp[r.competition_id].push(r);
-  });
+  teamsSnap.docs.forEach(d => { teamMap[d.id] = d.data(); });
 
-  allCompetitions = competitions
-    .filter(c => c.competition_id)
-    .sort((a, b) => parseInt(b.year) - parseInt(a.year));
+  allCompetitions = compsSnap.docs
+    .map(d => ({ id: d.id, ...d.data() }))
+    .filter(c => c.name)
+    .sort((a, b) => {
+      if (a.adminCreated !== b.adminCreated) return a.adminCreated ? -1 : 1;
+      return (b.year || 0) - (a.year || 0);
+    });
 
-  // Build filter UI
-  const filtersEl = document.getElementById("history-filters");
+  // Load runs for all competitions in parallel to compute podiums
+  await Promise.all(allCompetitions.map(async comp => {
+    // Use stored podium if available (set by admin after competition ends)
+    if (comp.podium?.length) {
+      podiumByComp[comp.id] = comp.podium;
+      return;
+    }
+    // Otherwise compute from runs
+    const runsSnap = await getDocs(collection(db, 'competitions', comp.id, 'runs'));
+    const runs = runsSnap.docs.map(d => d.data());
+    const podium = computePodium(runs);
+    if (podium.length) podiumByComp[comp.id] = podium;
+  }));
 
-  // Competition type filters
-  const compTypes = [...new Set(allCompetitions.map(c => c.competition_id.replace(/[0-9]/g, "")))];
-  const compRow = document.createElement("div");
-  compRow.className = "filter-row";
-  compRow.innerHTML = `<span class="filter-label">Competition</span>`;
+  // Build competition type filter
+  const filtersEl = document.getElementById('history-filters');
+  const prefixes  = [...new Set(allCompetitions.map(c => compTypePrefix(c.id)))].filter(Boolean);
 
-  const allCompBtn = document.createElement("button");
-  allCompBtn.className = "filter-btn filter-btn-comp active";
-  allCompBtn.textContent = "All";
-  allCompBtn.onclick = () => setCompType("all", allCompBtn);
-  compRow.appendChild(allCompBtn);
+  const compRow = document.createElement('div');
+  compRow.className = 'filter-row';
+  compRow.innerHTML = '<span class="filter-label">Competition</span>';
 
-  compTypes.forEach(prefix => {
-    const label = Object.keys(COMP_TYPES).includes(prefix) ? COMP_TYPES[prefix].replace(" Championship", "").replace("World ", "") : prefix;
-    const btn = document.createElement("button");
-    btn.className = "filter-btn filter-btn-comp";
+  const allBtn = document.createElement('button');
+  allBtn.className = 'filter-btn filter-btn-comp active';
+  allBtn.textContent = 'All';
+  allBtn.onclick = () => { activeCompType = 'all'; setActive(compRow, allBtn, 'filter-btn-comp'); renderTimeline(); };
+  compRow.appendChild(allBtn);
+
+  prefixes.forEach(prefix => {
+    const label = COMP_TYPES[prefix]
+      ? COMP_TYPES[prefix].replace('World Championship', 'WC').replace(' Open', '')
+      : prefix;
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn filter-btn-comp';
     btn.textContent = label;
-    btn.onclick = () => setCompType(prefix, btn);
+    btn.title = COMP_TYPES[prefix] || prefix;
+    btn.onclick = () => { activeCompType = prefix; setActive(compRow, btn, 'filter-btn-comp'); renderTimeline(); };
     compRow.appendChild(btn);
   });
 
-  // League filters
-  const leagueRow = document.createElement("div");
-  leagueRow.className = "filter-row";
-  leagueRow.innerHTML = `<span class="filter-label">League</span>`;
-
-  const allLeagueBtn = document.createElement("button");
-  allLeagueBtn.className = "filter-btn filter-btn-league active";
-  allLeagueBtn.textContent = "All";
-  allLeagueBtn.onclick = () => setLeague("all", allLeagueBtn);
-  leagueRow.appendChild(allLeagueBtn);
-
-  Object.entries(LEAGUE_LABELS).forEach(([key, label]) => {
-    const btn = document.createElement("button");
-    btn.className = "filter-btn filter-btn-league";
-    btn.textContent = key;
-    btn.title = label;
-    btn.onclick = () => setLeague(key, btn);
-    leagueRow.appendChild(btn);
-  });
-
   filtersEl.appendChild(compRow);
-  filtersEl.appendChild(leagueRow);
 
+  document.getElementById('loading')?.remove();
   renderTimeline();
 }
 
-load();
+function setActive(row, activeBtn, cls) {
+  row.querySelectorAll('.' + cls).forEach(b => b.classList.remove('active'));
+  activeBtn.classList.add('active');
+}
+
+load().catch(err => console.error('History load error:', err));

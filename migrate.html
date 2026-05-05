@@ -65,20 +65,64 @@
 <body>
 <div class="container">
   <h1>Migrate Google Sheets → Firestore</h1>
-  <p>One-time migration of teams, competitions, and participations/results from the Google Sheet into Firestore. Safe to run again — all writes are idempotent.</p>
-  <div class="warning">
-    ⚠ Firestore must be in test mode (allow read/write: if true) for this to work.
-    Lock down the rules again after migrating.
+
+  <!-- LOGIN -->
+  <div id="login-section">
+    <p>Sign in with your admin account to enable writes.</p>
+    <form id="login-form" style="display:flex;flex-direction:column;gap:10px;max-width:320px">
+      <input id="login-email"    type="email"    placeholder="Email"    required style="padding:10px 12px;background:#0f0f1a;border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#e0e0e0;font-size:0.9rem">
+      <input id="login-password" type="password" placeholder="Password" required style="padding:10px 12px;background:#0f0f1a;border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#e0e0e0;font-size:0.9rem">
+      <button type="submit" style="align-self:flex-start">Sign in</button>
+      <div id="login-error" style="color:#ff6b6b;font-size:0.85rem" hidden></div>
+    </form>
   </div>
-  <button id="run-btn">Run Migration</button>
+
+  <!-- MIGRATION ACTIONS (shown after login) -->
+  <div id="migration-section" hidden>
+    <div id="login-status" style="color:#00e5a0;font-size:0.85rem;margin-bottom:8px"></div>
+    <p>One-time migration of teams, competitions, and participations/results from the Google Sheet into Firestore. Safe to run again — all writes are idempotent.</p>
+    <button id="run-btn">Run Full Migration</button>
+    <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+    <h1>Step 2 — Backfill History</h1>
+    <p>Writes <code>podium</code> and <code>participatingTeams</code> onto existing Firestore competition docs from the Google Sheet. Skips competitions with <code>adminCreated: true</code>. Safe to re-run.</p>
+    <button id="backfill-btn">Backfill History Data</button>
+  </div>
+
   <div id="log" hidden></div>
 </div>
 
 <script type="module">
-import { db } from './assets/scoring/firebase.js';
+import { db, auth, signInWithEmailAndPassword, onAuthStateChanged } from './assets/scoring/firebase.js';
 import {
-  doc, writeBatch, collection
+  doc, getDocs, writeBatch, collection
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+
+onAuthStateChanged(auth, user => {
+  if (user?.email) {
+    document.getElementById('login-section').hidden   = true;
+    document.getElementById('migration-section').hidden = false;
+    document.getElementById('login-status').textContent = `Signed in as ${user.email}`;
+  } else {
+    document.getElementById('login-section').hidden   = false;
+    document.getElementById('migration-section').hidden = true;
+  }
+});
+
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const email    = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errorEl  = document.getElementById('login-error');
+  errorEl.hidden = true;
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (err) {
+    errorEl.textContent = 'Invalid email or password.';
+    errorEl.hidden = false;
+  }
+});
 
 const SHEET_ID = '1ff1rmnkY2Sg44vei5j0dZJsJzOrgXqlOVjVoW2G0H5k';
 
@@ -241,6 +285,142 @@ async function migrateParticipations(teamRows, resultRows) {
 }
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
+
+// ── BACKFILL HISTORY ──────────────────────────────────────────────────────────
+
+async function backfillHistory(compRows, teamRows, resultRows) {
+  log('Reading existing Firestore competitions…', 'dim');
+  const snap = await getDocs(collection(db, 'competitions'));
+  const adminCreatedIds = new Set(
+    snap.docs.filter(d => d.data().adminCreated).map(d => d.id)
+  );
+  if (adminCreatedIds.size) {
+    log(`Skipping adminCreated: ${[...adminCreatedIds].join(', ')}`, 'dim');
+  }
+
+  // Team name lookup
+  const teamNameMap = {};
+  for (const row of teamRows) {
+    const id = String(row.team_id ?? '').trim();
+    if (id) teamNameMap[id] = row.team_name?.trim() || id;
+  }
+
+  // Podium entries by competition (from Results sheet)
+  const podiumByComp = {};
+  for (const row of resultRows) {
+    const compId = String(row.competition_id ?? '').trim();
+    const teamId = String(row.team_id ?? '').trim();
+    const place  = parseInt(row.place);
+    if (!compId || !teamId || !place) continue;
+    if (!podiumByComp[compId]) podiumByComp[compId] = [];
+    podiumByComp[compId].push({
+      league:   row.league?.trim() || 'OPL',
+      place,
+      teamId,
+      teamName: teamNameMap[teamId] || teamId,
+    });
+  }
+
+  // Participating teams by competition (from Teams.participations column)
+  const participantsByComp = {};
+  for (const row of teamRows) {
+    const teamId = String(row.team_id ?? '').trim();
+    if (!teamId) continue;
+    const teamName = row.team_name?.trim() || teamId;
+    for (const compId of splitList(row.participations)) {
+      if (!participantsByComp[compId]) participantsByComp[compId] = [];
+      participantsByComp[compId].push({ teamId, teamName });
+    }
+  }
+
+  // Drive from the Competitions sheet — every row gets processed
+  const sheetCompIds = compRows
+    .map(r => String(r.competition_id ?? '').trim())
+    .filter(id => id && !adminCreatedIds.has(id));
+
+  // Also pick up any IDs that only appear in Results/participations but not in Competitions sheet
+  const extraIds = [...new Set([
+    ...Object.keys(podiumByComp),
+    ...Object.keys(participantsByComp),
+  ])].filter(id => id && !adminCreatedIds.has(id) && !sheetCompIds.includes(id));
+
+  const compIds = [...sheetCompIds, ...extraIds];
+
+  if (!compIds.length) {
+    log('No competitions to backfill.', 'dim');
+    return;
+  }
+
+  // Build competition name lookup from Competitions sheet
+  const compNameMap = {};
+  for (const row of compRows) {
+    const id = String(row.competition_id ?? '').trim();
+    if (id) compNameMap[id] = row;
+  }
+
+  let written = 0, skipped = 0;
+  const entries = [];
+
+  for (const compId of compIds) {
+    const podium = (podiumByComp[compId] || []).sort((a, b) => a.place - b.place);
+    const participatingTeams = (participantsByComp[compId] || [])
+      .sort((a, b) => a.teamName.localeCompare(b.teamName));
+
+    const data = { podium, participatingTeams };
+
+    // Also fill in basic info if competition row exists in sheet
+    const row = compNameMap[compId];
+    if (row) {
+      if (row.name?.trim())    data.name    = row.name.trim();
+      if (row.city?.trim())    data.city    = row.city.trim();
+      if (row.country?.trim()) data.country = row.country.trim();
+      if (row.year?.trim())    data.year    = parseInt(row.year) || null;
+    }
+
+    entries.push({ ref: doc(db, 'competitions', compId), data });
+
+    const podiumStr = podium.length
+      ? podium.map(e => `${e.place}. ${e.teamName}`).join(', ')
+      : 'no results';
+    log(`  ${compId}: ${podium.length} podium, ${participatingTeams.length} teams — ${podiumStr}`, 'dim');
+    written++;
+  }
+
+  const CHUNK = 500;
+  for (let i = 0; i < entries.length; i += CHUNK) {
+    const batch = writeBatch(db);
+    for (const { ref, data } of entries.slice(i, i + CHUNK)) {
+      batch.set(ref, data, { merge: true });
+    }
+    await batch.commit();
+  }
+  log(`✓ Written ${written} competitions`, 'ok');
+}
+
+document.getElementById('backfill-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('backfill-btn');
+  btn.disabled = true;
+  logEl.innerHTML = '';
+  logEl.hidden = false;
+
+  try {
+    log('Fetching sheets…', 'dim');
+    const [compRows, teamRows, resultRows] = await Promise.all([
+      fetchSheet('Competitions'),
+      fetchSheet('Teams'),
+      fetchSheet('Results'),
+    ]);
+    log(`Fetched — Competitions: ${compRows.length}, Teams: ${teamRows.length}, Results: ${resultRows.length}`, 'dim');
+    await backfillHistory(compRows, teamRows, resultRows);
+    log('', '');
+    log('Backfill complete.', 'ok');
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 document.getElementById('run-btn').addEventListener('click', async () => {
   const btn = document.getElementById('run-btn');
