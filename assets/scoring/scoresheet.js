@@ -715,6 +715,21 @@ function setSaveStatus(msg) {
 
 // ── TIMERS ────────────────────────────────────────────────────────────────────
 
+function playBeep(freq, duration) {
+  try {
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.35, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch (_) {}
+}
+
 function makeTimer(initialSecs, displayEl, startBtn, resetBtn, warningAt, syncFn) {
   if (!displayEl || !startBtn || !resetBtn) return { getElapsed: () => null };
   let remaining          = initialSecs;
@@ -760,6 +775,9 @@ function makeTimer(initialSecs, displayEl, startBtn, resetBtn, warningAt, syncFn
           startedAtMs = null;
           clearInterval(interval);
           interval = null;
+          playBeep(440, 0.6);   // long low beep at 0
+        } else if (remaining <= 3) {
+          playBeep(880, 0.12);  // short high beep at 3, 2, 1
         }
         render();
       }, 1000);

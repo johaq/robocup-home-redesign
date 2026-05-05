@@ -217,7 +217,7 @@ body {
 }
 
 #display-team-name {
-  font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+  font-size: clamp(2rem, 4vw, 3.5rem);
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;

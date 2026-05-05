@@ -79,9 +79,9 @@ body {
 
 #timer {
   font-family: 'Space Mono', monospace;
-  font-size: 1.3rem;
+  font-size: 2rem;
   color: var(--muted);
-  min-width: 44px;
+  min-width: 64px;
   text-align: right;
 }
 

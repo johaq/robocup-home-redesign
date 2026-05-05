@@ -158,6 +158,7 @@ async function showDashboard(compId) {
     snap.docs.forEach(d => { runs[d.id] = d.data(); });
     renderInspectionPanel(compId);
     renderSlots(compId);
+    renderDashLeaderboard();
   });
 
   onSnapshot(collection(db, 'competitions', compId, 'inspections'), snap => {
@@ -363,8 +364,13 @@ function renderSlotCard(slot, compId) {
           statusHtml = '<span class="run-status status-draft">Failed</span>';
         }
       } else {
-        const status = teamStatuses[idx];
-        statusHtml = `<span class="run-status status-${status}">${statusLabel(status)}</span>`;
+        const run    = runs[`${slot.id}_${team.teamId}`];
+        const status = run?.status || 'pending';
+        if (status === 'submitted' && run?.totalScore != null) {
+          statusHtml = `<span class="run-status status-submitted">${run.totalScore} pts</span>`;
+        } else {
+          statusHtml = `<span class="run-status status-${status}">${statusLabel(status)}</span>`;
+        }
       }
 
       const row = document.createElement('a');
@@ -382,6 +388,50 @@ function renderSlotCard(slot, compId) {
 
   return card;
 }
+
+// ── MINI LEADERBOARD ──────────────────────────────────────────────────────────
+
+function renderDashLeaderboard() {
+  const panel = document.getElementById('dash-lb-panel');
+  const list  = document.getElementById('dash-lb-list');
+
+  const submitted = Object.values(runs).filter(r => r.status === 'submitted');
+  if (!submitted.length) { panel.hidden = true; return; }
+
+  const best = {};
+  for (const run of submitted) {
+    const { teamId, teamName, testId, totalScore } = run;
+    if (!teamId || !testId) continue;
+    const key = `${teamId}__${testId}`;
+    if (!best[key] || (totalScore || 0) > best[key].score) {
+      best[key] = { teamId, teamName: teamName || teamId, score: totalScore || 0 };
+    }
+  }
+
+  const totals = {};
+  for (const { teamId, teamName, score } of Object.values(best)) {
+    if (!totals[teamId]) totals[teamId] = { teamName, total: 0 };
+    totals[teamId].total += score;
+  }
+
+  const ranked = Object.entries(totals)
+    .map(([id, d]) => ({ id, ...d }))
+    .sort((a, b) => b.total - a.total);
+
+  panel.hidden = false;
+  list.innerHTML = ranked.map((entry, i) => `
+    <div class="dash-lb-row">
+      <span class="dash-lb-rank">${i + 1}</span>
+      <span class="dash-lb-name">${entry.teamName}</span>
+      <span class="dash-lb-score">${entry.total} pts</span>
+    </div>
+  `).join('');
+}
+
+// Toggle open/closed
+document.getElementById('dash-lb-toggle').addEventListener('click', () => {
+  document.getElementById('dash-lb-panel').classList.toggle('open');
+});
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
 

@@ -383,3 +383,80 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* ── MINI LEADERBOARD ──────────────────────────────────────────── */
+
+.dash-lb-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.dash-lb-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dash-lb-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+
+.dash-lb-chevron {
+  font-size: 0.65rem;
+  color: var(--muted);
+  transition: transform 0.15s;
+}
+
+.dash-lb-panel.open .dash-lb-chevron { transform: rotate(180deg); }
+
+.dash-lb-list {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+
+.dash-lb-panel.open .dash-lb-list { display: flex; }
+
+.dash-lb-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.dash-lb-row:last-child { border-bottom: none; }
+
+.dash-lb-rank {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--muted);
+  width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.dash-lb-name { flex: 1; font-weight: 500; }
+
+.dash-lb-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  flex-shrink: 0;
+}
