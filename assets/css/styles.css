@@ -10,6 +10,7 @@
   --muted: #848891;
   --font-head: 'Space Mono', monospace;
   --font-body: 'DM Sans', sans-serif;
+  --banner-bg: rgba(30,31,34,0.92);
 }
 
 [data-theme="light"] {
@@ -20,6 +21,7 @@
   --accent2: #1a6fd4;
   --text: #1a1b1e;
   --muted: #5c5f66;
+  --banner-bg: rgba(255,255,255,0.92);
 }
   body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
 
@@ -59,14 +61,24 @@
   .robot-stat strong { color: var(--text); font-family: var(--font-head); }
 
   /* LIVE BANNER */
+  @keyframes banner-slide-up {
+    from { transform: translateY(100%); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
   #live-banner {
-    background: linear-gradient(135deg, rgba(0,229,160,0.12) 0%, rgba(0,229,160,0.05) 100%);
-    border-bottom: 1px solid rgba(0,229,160,0.3);
-    padding: 20px 3rem;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    background: var(--banner-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(0,229,160,0.3);
+    padding: 14px 3rem;
+    animation: banner-slide-up 0.35s ease-out;
   }
   .live-banner-inner { display: flex; align-items: center; gap: 16px; max-width: 1200px; margin: 0 auto; }
   .live-banner-dot {
-    width: 11px; height: 11px; border-radius: 50%;
+    width: 10px; height: 10px; border-radius: 50%;
     background: var(--accent); flex-shrink: 0; animation: pulse 2s infinite;
     box-shadow: 0 0 8px rgba(0,229,160,0.6);
   }
@@ -75,17 +87,17 @@
     text-transform: uppercase; color: var(--accent); flex-shrink: 0;
   }
   #live-banner-text {
-    font-family: var(--font-head); font-size: 16px; font-weight: 700;
+    font-family: var(--font-head); font-size: 15px; font-weight: 700;
     color: var(--text); flex: 1; letter-spacing: -0.01em;
   }
   .live-banner-btn {
     font-family: var(--font-head); font-size: 13px; font-weight: 700;
     color: #000; background: var(--accent); text-decoration: none;
-    padding: 10px 22px; border-radius: 6px; white-space: nowrap;
+    padding: 9px 20px; border-radius: 6px; white-space: nowrap;
     transition: opacity 0.15s;
   }
   .live-banner-btn:hover { opacity: 0.85; }
-  @media (max-width: 900px) { #live-banner { padding: 16px 1.5rem; } #live-banner-text { font-size: 14px; } }
+  @media (max-width: 900px) { #live-banner { padding: 12px 1.5rem; } #live-banner-text { font-size: 13px; } }
 
   /* STATS */
   .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--border); }

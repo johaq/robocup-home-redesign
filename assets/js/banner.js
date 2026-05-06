@@ -25,8 +25,7 @@ import {
       </div>
     `;
 
-    const navbar = document.getElementById('navbar');
-    if (navbar) navbar.after(banner);
-    else document.body.prepend(banner);
+    document.body.appendChild(banner);
+    document.body.style.paddingBottom = `${banner.offsetHeight + 8}px`;
   } catch (_) { /* non-critical — banner stays hidden */ }
 })();
