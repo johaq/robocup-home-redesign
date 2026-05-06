@@ -3,16 +3,9 @@
     "rules": "firestore.rules"
   },
   "hosting": {
-    "public": ".",
+    "public": "public",
     "ignore": [
-      "firebase.json",
-      "firestore.rules",
-      ".firebaserc",
-      "**/.*",
-      "node_modules/**",
-      "scripts/**",
-      "tex2test.js",
-      "README.md"
+      "**/.*"
     ],
     "rewrites": []
   }

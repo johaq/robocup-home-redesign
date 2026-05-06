@@ -1,0 +1,676 @@
+/* ── PAGE LOADING ─────────────────────────────────────────────────── */
+
+.comp-loading {
+  padding: 6rem 3rem;
+  text-align: center;
+  color: var(--muted);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+}
+
+/* ── PAGE HEADER ──────────────────────────────────────────────────── */
+
+.comp-page-header {
+  padding: 3rem 3rem 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-top: 0.75rem;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.comp-header-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ── TOP GRID ─────────────────────────────────────────────────────── */
+
+.comp-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  padding: 32px 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.comp-info-col,
+.comp-live-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── CARDS ────────────────────────────────────────────────────────── */
+
+.comp-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+}
+
+.comp-card-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+/* ── EVENT DETAILS ────────────────────────────────────────────────── */
+
+.comp-detail-row {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.comp-detail-row:last-child { border-bottom: none; }
+
+.comp-detail-key {
+  color: var(--muted);
+  min-width: 90px;
+  flex-shrink: 0;
+}
+
+.comp-detail-val { color: var(--text); }
+
+/* ── PARTICIPATING TEAMS ──────────────────────────────────────────── */
+
+.comp-teams-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.comp-team-chip {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 13px;
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+a.comp-team-chip:hover {
+  border-color: rgba(0,229,160,0.4);
+  background: rgba(0,229,160,0.07);
+  color: var(--accent);
+}
+
+.comp-teams-empty {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ── LIVE NOW CARD ────────────────────────────────────────────────── */
+
+.comp-live-card { position: relative; }
+
+.comp-live-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.comp-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: pulse-live 2s infinite;
+}
+
+@keyframes pulse-live { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+.comp-live-watch-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.comp-live-watch-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid rgba(0,229,160,0.35);
+  padding: 4px 10px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.comp-live-watch-btn:hover { background: rgba(0,229,160,0.1); }
+
+.comp-live-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.comp-live-slot:last-child { border-bottom: none; }
+
+.comp-live-slot-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.comp-live-slot-meta {
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  gap: 10px;
+}
+
+.comp-live-slot-progress {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.comp-run-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.comp-run-dot.done { background: var(--accent); border-color: var(--accent); }
+.comp-run-dot.active { background: rgba(0,229,160,0.4); border-color: var(--accent); animation: pulse-live 1.5s infinite; }
+
+.comp-live-empty {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 4px 0;
+}
+
+/* ── UPCOMING SLOT ────────────────────────────────────────────────── */
+
+.comp-upcoming-slot {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.comp-upcoming-slot:last-child { border-bottom: none; }
+.comp-upcoming-time { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); flex-shrink: 0; min-width: 44px; }
+.comp-upcoming-name { color: var(--text); }
+.comp-upcoming-arena { color: var(--muted); font-size: 12px; }
+
+/* ── LEADERBOARD ──────────────────────────────────────────────────── */
+
+.comp-leaderboard-section {
+  padding: 0 3rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.comp-leaderboard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  margin-bottom: 2rem;
+}
+
+.comp-lb-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.comp-lb-rank {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.comp-lb-team {
+  flex: 1;
+  min-width: 0;
+}
+
+.comp-lb-team-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  text-decoration: none;
+}
+.comp-lb-team-name:hover { color: var(--accent); }
+
+.comp-lb-bar-wrap {
+  margin-top: 6px;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.comp-lb-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  min-width: 2px;
+}
+
+.comp-lb-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.comp-lb-total {
+  font-family: 'Space Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.comp-lb-runs {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.comp-lb-row:first-child .comp-lb-total { color: var(--accent); }
+
+/* ── SCHEDULE SECTION ─────────────────────────────────────────────── */
+
+.comp-schedule-section {
+  padding: 0 3rem 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.comp-schedule-header {
+  padding: 2rem 0 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.comp-tz-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.comp-sched-nodates {
+  padding: 48px 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* ── SCHEDULE GRID (read-only, adapted from admin) ────────────────── */
+
+.comp-sched-outer {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.comp-sched-wrap { /* width set by JS */ }
+
+.comp-sched-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.comp-sched-corner {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.comp-sched-col-head {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 4px;
+  border-right: 1px solid var(--border);
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  gap: 2px;
+}
+.comp-sched-col-head.day-start { border-left-width: 2px; border-left-color: rgba(255,255,255,0.18); }
+
+.comp-sched-col-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+.comp-sched-col-arena { color: var(--muted); font-size: 11px; }
+
+.comp-sched-body { display: flex; }
+
+.comp-sched-time-col {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  left: 0;
+  z-index: 5;
+}
+
+.comp-sched-time-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.comp-sched-time-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  transform: translateY(-6px);
+}
+
+.comp-sched-day-col {
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+}
+.comp-sched-day-col.day-start { border-left-width: 2px; border-left-color: rgba(255,255,255,0.18); }
+
+.comp-sched-cell {
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  box-sizing: border-box;
+}
+.comp-sched-cell.hour { border-bottom-color: rgba(255,255,255,0.1); }
+
+/* ── SLOT BLOCKS ──────────────────────────────────────────────────── */
+
+.comp-sched-slot {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  background: rgba(0,229,160,0.14);
+  border: 1px solid rgba(0,229,160,0.35);
+  border-radius: 6px;
+  overflow: hidden;
+  padding: 5px 8px;
+  cursor: default;
+  box-sizing: border-box;
+  transition: background 0.15s;
+}
+
+.comp-sched-slot.slot-active {
+  background: rgba(0,229,160,0.26);
+  border-color: rgba(0,229,160,0.7);
+  box-shadow: 0 0 0 2px rgba(0,229,160,0.15);
+}
+
+.comp-sched-slot.slot-done {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.1);
+}
+
+/* Slot type variants */
+.comp-sched-slot.type-inspection {
+  background: rgba(77,159,255,0.14);
+  border-color: rgba(77,159,255,0.4);
+}
+.comp-sched-slot.type-inspection.slot-active {
+  background: rgba(77,159,255,0.26);
+  border-color: rgba(77,159,255,0.7);
+  box-shadow: 0 0 0 2px rgba(77,159,255,0.15);
+}
+.comp-sched-slot.type-inspection .comp-sched-slot-name { color: #4d9fff; }
+.comp-sched-slot.type-inspection.slot-done { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+
+.comp-sched-slot.type-poster {
+  background: rgba(255,160,60,0.14);
+  border-color: rgba(255,160,60,0.4);
+}
+.comp-sched-slot.type-poster.slot-active {
+  background: rgba(255,160,60,0.26);
+  border-color: rgba(255,160,60,0.7);
+  box-shadow: 0 0 0 2px rgba(255,160,60,0.15);
+}
+.comp-sched-slot.type-poster .comp-sched-slot-name { color: #ffa03c; }
+.comp-sched-slot.type-poster.slot-done { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.1); }
+
+.comp-sched-slot.type-other {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.18);
+}
+.comp-sched-slot.type-other.slot-active {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.35);
+}
+.comp-sched-slot.type-other .comp-sched-slot-name { color: var(--muted); }
+
+.comp-sched-slot-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.comp-sched-slot-meta {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.comp-sched-slot.slot-active .comp-sched-slot-name { color: var(--accent); }
+
+/* Clickable concluded slots */
+.comp-sched-slot.slot-clickable { cursor: pointer; }
+.comp-sched-slot.slot-clickable:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* ── SLOT DETAIL PANEL ────────────────────────────────────────────── */
+
+.slot-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+}
+
+.slot-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 201;
+  width: 420px;
+  max-width: calc(100vw - 32px);
+  max-height: 80vh;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.slot-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.slot-panel-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.slot-panel-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.slot-panel-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0 0 12px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.slot-panel-close:hover { color: var(--text); }
+
+.slot-panel-body {
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.slot-panel-empty {
+  padding: 24px 20px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.slot-panel-team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s;
+  gap: 12px;
+}
+.slot-panel-team-row:last-child { border-bottom: none; }
+.slot-panel-team-row:hover { background: rgba(255,255,255,0.04); }
+
+.slot-panel-team-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.slot-panel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.slot-panel-dot.done   { background: var(--accent); border-color: var(--accent); }
+.slot-panel-dot.active { background: rgba(0,229,160,0.4); border-color: var(--accent); }
+
+.slot-panel-team-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.slot-panel-team-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.slot-panel-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.slot-panel-status {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.slot-panel-arrow {
+  font-size: 1.1rem;
+  color: var(--muted);
+}
+
+/* ── TODAY LINE ───────────────────────────────────────────────────── */
+
+.comp-sched-now-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(0,229,160,0.6);
+  z-index: 4;
+  pointer-events: none;
+}
+.comp-sched-now-line::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .comp-page-header { padding: 2rem 1.5rem 1.5rem; }
+  .comp-top-grid {
+    grid-template-columns: 1fr;
+    padding: 20px 1.5rem;
+  }
+  .comp-leaderboard-section { padding: 0 1.5rem; }
+  .comp-schedule-section { padding: 0 1.5rem 3rem; }
+}

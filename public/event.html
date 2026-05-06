@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting…</title>
+  <script>
+    const id = new URLSearchParams(location.search).get('id');
+    location.replace('competition.html' + (id ? '?id=' + encodeURIComponent(id) : ''));
+  </script>
+</head>
+<body></body>
+</html>

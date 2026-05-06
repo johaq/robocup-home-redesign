@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — RoboCup@Home Scoring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/referee-tool/css/admin.css">
+</head>
+<body>
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="login-screen" hidden>
+    <div class="login-card">
+      <div class="login-logo">RoboCup@Home</div>
+      <div class="login-title">Admin</div>
+      <form id="login-form" autocomplete="on">
+        <div class="field">
+          <label>Email</label>
+          <input type="email" id="login-email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="login-password" autocomplete="current-password" required>
+        </div>
+        <div id="login-error" class="login-error" hidden></div>
+        <button type="submit" class="btn-primary" id="login-btn" style="width:100%">Sign in</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ADMIN APP (hidden until authenticated) -->
+  <div id="admin-app" hidden>
+  <div id="navbar"></div>
+  <header id="topbar">
+    <button id="back-btn" class="btn-icon" hidden title="Go back">←</button>
+    <span id="breadcrumb"></span>
+    <button id="logout-btn" class="btn-ghost btn-logout" title="Sign out">Sign out</button>
+  </header>
+
+  <!-- SCREEN: Competitions -->
+  <div id="screen-competitions" class="screen" hidden>
+    <div class="screen-header">
+      <h2>Competitions</h2>
+      <button class="btn-primary" id="new-comp-btn">+ New Competition</button>
+    </div>
+
+    <form id="comp-form" class="card form-card" hidden>
+      <h3 id="comp-form-title">New Competition</h3>
+      <div class="field" id="comp-id-field">
+        <label>Competition ID <span class="hint">(e.g. go2026)</span></label>
+        <input type="text" id="comp-id" placeholder="go2026" required>
+      </div>
+      <div class="field">
+        <label>Name</label>
+        <input type="text" id="comp-name" placeholder="German Open 2026" required>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>City</label>
+          <input type="text" id="comp-city" placeholder="Hannover">
+        </div>
+        <div class="field">
+          <label>Country</label>
+          <input type="text" id="comp-country" placeholder="Germany">
+        </div>
+        <div class="field field-narrow">
+          <label>Year</label>
+          <input type="number" id="comp-year" placeholder="2026">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Start date</label>
+          <input type="date" id="comp-start-date">
+        </div>
+        <div class="field">
+          <label>End date</label>
+          <input type="date" id="comp-end-date">
+        </div>
+      </div>
+      <div class="field">
+        <label>Timezone <span class="hint">(IANA — auto-filled from country)</span></label>
+        <input type="text" id="comp-timezone" placeholder="Europe/Berlin" list="timezone-list" autocomplete="off">
+        <datalist id="timezone-list">
+          <option value="Europe/Berlin">
+          <option value="Europe/London">
+          <option value="Europe/Paris">
+          <option value="Europe/Lisbon">
+          <option value="Europe/Madrid">
+          <option value="Europe/Rome">
+          <option value="Europe/Amsterdam">
+          <option value="Europe/Vienna">
+          <option value="Europe/Warsaw">
+          <option value="Europe/Prague">
+          <option value="Europe/Budapest">
+          <option value="Europe/Bucharest">
+          <option value="Europe/Istanbul">
+          <option value="Europe/Athens">
+          <option value="Europe/Helsinki">
+          <option value="Europe/Stockholm">
+          <option value="Europe/Oslo">
+          <option value="Europe/Copenhagen">
+          <option value="Europe/Zurich">
+          <option value="Europe/Brussels">
+          <option value="America/New_York">
+          <option value="America/Chicago">
+          <option value="America/Denver">
+          <option value="America/Los_Angeles">
+          <option value="America/Sao_Paulo">
+          <option value="America/Buenos_Aires">
+          <option value="America/Toronto">
+          <option value="America/Mexico_City">
+          <option value="America/Bogota">
+          <option value="America/Lima">
+          <option value="America/Santiago">
+          <option value="Asia/Tokyo">
+          <option value="Asia/Seoul">
+          <option value="Asia/Shanghai">
+          <option value="Asia/Hong_Kong">
+          <option value="Asia/Singapore">
+          <option value="Asia/Bangkok">
+          <option value="Asia/Dubai">
+          <option value="Asia/Kolkata">
+          <option value="Asia/Karachi">
+          <option value="Asia/Taipei">
+          <option value="Australia/Sydney">
+          <option value="Australia/Melbourne">
+          <option value="Pacific/Auckland">
+          <option value="Africa/Cairo">
+          <option value="Africa/Johannesburg">
+          <option value="Africa/Nairobi">
+          <option value="UTC">
+        </datalist>
+      </div>
+      <div class="field">
+        <label>Livestream URL <span class="hint">(e.g. https://www.youtube.com/@channel/live)</span></label>
+        <input type="url" id="comp-stream-url" placeholder="https://www.youtube.com/@RoboCupHome/live">
+      </div>
+      <div class="field">
+        <label>Referee PIN <span class="hint">(required to open the referee dashboard)</span></label>
+        <input type="text" id="comp-referee-pin" placeholder="e.g. robot2026" autocomplete="off" maxlength="32">
+      </div>
+      <div class="field">
+        <label class="checkbox-label">
+          <input type="checkbox" id="comp-active" checked>
+          <span>Active</span>
+        </label>
+        <div class="field-hint">Active competitions appear in the referee dashboard and live display.</div>
+      </div>
+      <div class="field" id="comp-podium-section" hidden>
+        <label>Podium <span class="hint">(legacy competitions without run data)</span></label>
+        <div id="comp-podium-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+        <button type="button" id="add-podium-btn" class="btn-ghost" style="font-size:0.8rem;padding:4px 10px">+ Add entry</button>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Create</button>
+        <button type="button" class="btn-ghost" id="cancel-comp-btn">Cancel</button>
+      </div>
+    </form>
+
+    <div id="comp-list" class="item-list"></div>
+    <div id="comp-inactive-toggle" class="inactive-toggle" hidden></div>
+  </div>
+
+  <!-- SCREEN: Schedule -->
+  <div id="screen-schedule" class="screen screen-schedule" hidden>
+
+    <!-- Controls bar -->
+    <div class="card form-card sched-controls-card">
+      <div class="field-row" style="align-items:flex-end">
+        <div class="field field-narrow">
+          <label>Venue opens</label>
+          <input type="time" id="venue-open">
+        </div>
+        <div class="field field-narrow">
+          <label>Venue closes</label>
+          <input type="time" id="venue-close">
+        </div>
+        <button type="button" class="btn-ghost" id="sched-apply-btn">Apply</button>
+        <div style="flex:1"></div>
+        <button type="button" class="btn-ghost" id="sched-settings-btn">⚙ Settings</button>
+      </div>
+    </div>
+
+    <!-- No dates warning -->
+    <div id="sched-no-dates" class="card" style="text-align:center;padding:48px 24px;color:var(--muted)" hidden>
+      <div style="margin-bottom:16px">Set competition start and end dates to build a schedule.</div>
+      <button type="button" class="btn-ghost" id="sched-edit-dates-btn">Edit competition dates</button>
+    </div>
+
+    <!-- Sidebar + grid -->
+    <div id="sched-main" class="sched-main" hidden>
+      <div class="sched-sidebar" id="sched-sidebar">
+        <div id="sched-test-cards" class="sched-test-cards"></div>
+      </div>
+      <div class="sched-grid-outer" id="sched-grid-outer"></div>
+    </div>
+
+  </div>
+
+  <!-- SCREEN: Slots (Settings) -->
+  <div id="screen-slots" class="screen" hidden>
+    <div class="screen-header">
+      <h2 id="slots-title">Slots</h2>
+      <button class="btn-primary" id="new-slot-btn">Edit Schedule</button>
+    </div>
+
+    <div class="card form-card" id="arenas-card">
+      <h3>Arenas</h3>
+      <div id="arena-chips" class="arena-chips"></div>
+      <div class="field-row" style="margin-top:10px">
+        <div class="field">
+          <input type="text" id="new-arena-name" placeholder="e.g. Arena Blue">
+        </div>
+        <button type="button" class="btn-ghost" id="add-arena-btn">+ Add</button>
+      </div>
+    </div>
+
+    <div class="card form-card" id="teams-card">
+      <h3>Participating Teams</h3>
+      <div id="comp-team-chips" class="arena-chips"></div>
+      <div class="field" style="margin-top:10px;position:relative">
+        <input type="text" id="comp-team-search" placeholder="Search team name…" autocomplete="off">
+        <div id="comp-team-results" class="team-search-dropdown" hidden></div>
+      </div>
+    </div>
+
+    <div class="card form-card" id="tests-card">
+      <h3>Tests</h3>
+      <div id="test-list" class="test-list"></div>
+      <label class="test-upload-btn">
+        + Upload .tex scoresheet
+        <input type="file" id="test-file-input" accept=".tex" style="display:none" multiple>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- SCREEN: Slot Teams -->
+  <div id="screen-teams" class="screen" hidden>
+    <div class="screen-header">
+      <h2 id="teams-title">Teams</h2>
+      <button class="btn-primary" id="add-team-btn">+ Add Team</button>
+    </div>
+
+    <div id="team-picker" class="card form-card" hidden>
+      <h3>Add Team</h3>
+      <div class="field">
+        <label>Search team</label>
+        <input type="text" id="team-search" placeholder="Type team name…" autocomplete="off">
+      </div>
+      <div id="team-results" class="team-results"></div>
+    </div>
+
+    <div id="team-list" class="item-list"></div>
+
+    <div class="card form-card" style="margin-top:24px">
+      <h3>Referee</h3>
+      <div class="field">
+        <input type="text" id="slot-referee-input" placeholder="Referee name (optional)" autocomplete="off">
+      </div>
+    </div>
+
+    <div id="slot-link-box" class="card" style="margin-top:24px">
+      <div class="slot-link-label">Referee link for this slot</div>
+      <div id="slot-link" class="slot-link-url"></div>
+    </div>
+  </div>
+
+  <!-- Test preview overlay (shared between "view" and "upload confirm") -->
+  <div id="test-preview-overlay" class="test-preview-overlay" hidden>
+    <div class="test-preview-modal">
+      <div class="test-preview-header">
+        <div>
+          <div id="test-preview-title" class="test-preview-title"></div>
+          <div id="test-preview-meta"  class="test-preview-meta"></div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn-ghost btn-sm" id="test-preview-json-toggle">{ } JSON</button>
+          <button class="btn-icon" id="test-preview-close" title="Close">×</button>
+        </div>
+      </div>
+      <div id="test-preview-body" class="test-preview-body"></div>
+      <pre id="test-preview-json" class="test-preview-json" hidden></pre>
+      <div id="test-preview-actions" class="test-preview-actions" hidden>
+        <button class="btn-primary" id="test-preview-save">Add to competition</button>
+        <button class="btn-ghost"   id="test-preview-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /#admin-app -->
+
+  <script src="assets/js/main.js"></script>
+  <script type="module" src="assets/referee-tool/js/admin.js"></script>
+</body>
+</html>
