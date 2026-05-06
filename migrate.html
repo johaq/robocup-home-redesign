@@ -179,12 +179,12 @@ function splitCSVLine(line) {
 
 // ── BATCH WRITE ───────────────────────────────────────────────────────────────
 
-async function batchWrite(entries) {
+async function batchWrite(entries, merge = false) {
   const CHUNK = 500;
   for (let i = 0; i < entries.length; i += CHUNK) {
     const batch = writeBatch(db);
     for (const { ref, data } of entries.slice(i, i + CHUNK)) {
-      batch.set(ref, data);
+      merge ? batch.set(ref, data, { merge: true }) : batch.set(ref, data);
     }
     await batch.commit();
   }
@@ -226,9 +226,15 @@ async function migrateTeams(rows) {
 
 async function migrateCompetitions(rows) {
   log('Competitions…', 'dim');
+
+  // Never overwrite adminCreated competition docs — they carry live scoring data
+  const snap = await getDocs(collection(db, 'competitions'));
+  const adminCreatedIds = new Set(snap.docs.filter(d => d.data().adminCreated).map(d => d.id));
+  if (adminCreatedIds.size) log(`  Skipping adminCreated: ${[...adminCreatedIds].join(', ')}`, 'dim');
+
   const entries = rows.flatMap(row => {
     const id = String(row.competition_id ?? '').trim();
-    if (!id) return [];
+    if (!id || adminCreatedIds.has(id)) return [];
     return [{
       ref: doc(db, 'competitions', id),
       data: {
@@ -240,48 +246,8 @@ async function migrateCompetitions(rows) {
       }
     }];
   });
-  await batchWrite(entries);
+  await batchWrite(entries, true);  // merge: true — preserves podium, participatingTeams, etc.
   log(`✓ ${entries.length} competitions`, 'ok');
-}
-
-// ── PARTICIPATIONS ────────────────────────────────────────────────────────────
-
-async function migrateParticipations(teamRows, resultRows) {
-  log('Participations…', 'dim');
-  const entries = new Map();
-
-  for (const row of resultRows) {
-    const teamId = String(row.team_id ?? '').trim();
-    const compId = String(row.competition_id ?? '').trim();
-    if (!teamId || !compId) continue;
-    const key = `${teamId}_${compId}`;
-    entries.set(key, {
-      ref: doc(db, 'participations', key),
-      data: {
-        teamId,
-        competitionId: compId,
-        league: row.league?.trim() || null,
-        place:  parseInt(row.place) || null,
-      }
-    });
-  }
-
-  for (const row of teamRows) {
-    const teamId = String(row.team_id ?? '').trim();
-    if (!teamId) continue;
-    for (const compId of splitList(row.participations)) {
-      const key = `${teamId}_${compId}`;
-      if (!entries.has(key)) {
-        entries.set(key, {
-          ref: doc(db, 'participations', key),
-          data: { teamId, competitionId: compId, league: null, place: null }
-        });
-      }
-    }
-  }
-
-  await batchWrite([...entries.values()]);
-  log(`✓ ${entries.size} participation records`, 'ok');
 }
 
 // ── MAIN ──────────────────────────────────────────────────────────────────────
@@ -429,16 +395,14 @@ document.getElementById('run-btn').addEventListener('click', async () => {
 
   try {
     log('Fetching sheets…', 'dim');
-    const [teamRows, compRows, resultRows] = await Promise.all([
+    const [teamRows, compRows] = await Promise.all([
       fetchSheet('Teams'),
       fetchSheet('Competitions'),
-      fetchSheet('Results'),
     ]);
-    log(`Fetched — Teams: ${teamRows.length}, Competitions: ${compRows.length}, Results: ${resultRows.length}`, 'dim');
+    log(`Fetched — Teams: ${teamRows.length}, Competitions: ${compRows.length}`, 'dim');
 
     await migrateTeams(teamRows);
     await migrateCompetitions(compRows);
-    await migrateParticipations(teamRows, resultRows);
 
     log('', '');
     log('Migration complete.', 'ok');
