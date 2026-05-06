@@ -25,8 +25,10 @@ export const db = initializeFirestore(app, {
 
 export const auth = getAuth(app);
 
-// Used by display, competition (public pages) — signs in anonymously if needed
+// Used by display, competition (public pages) — signs in anonymously if needed.
+// Must wait for authStateReady() so we don't overwrite an existing email session.
 export async function ensureAuth() {
+  await auth.authStateReady();
   if (!auth.currentUser) {
     await signInAnonymously(auth);
   }
@@ -37,9 +39,7 @@ export async function ensureAuth() {
 // Returns a Promise that resolves once an email-authenticated session exists.
 // Rejects if no login UI element is available.
 export async function ensureRefereeAuth() {
-  await new Promise(resolve => {
-    const unsub = onAuthStateChanged(auth, () => { unsub(); resolve(); });
-  });
+  await auth.authStateReady();
 
   if (auth.currentUser?.email) return auth.currentUser;
 

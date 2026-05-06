@@ -36,11 +36,23 @@
     </div>
   </div>
 
-  <!-- Waiting for an active run -->
+  <!-- Waiting for an active run (first load, no data yet) -->
   <div id="screen-waiting" hidden>
     <div id="waiting-arena-badge"></div>
     <div id="waiting-msg">Waiting for an active run…</div>
     <button class="picker-back" id="change-arena-btn">← Change Arena</button>
+  </div>
+
+  <!-- Idle rotation (between challenges) -->
+  <div id="screen-idle" hidden>
+    <header id="idle-header">
+      <span id="idle-arena-badge" class="arena-badge"></span>
+      <span id="idle-slide-title" class="idle-slide-title">—</span>
+      <div id="idle-dots" class="idle-dots"></div>
+      <button class="picker-back" id="idle-change-btn">← Arena</button>
+    </header>
+    <div id="idle-slide-body" class="idle-slide-body"></div>
+    <div id="idle-progress-bar"><div id="idle-progress-fill"></div></div>
   </div>
 
   <!-- Live display -->

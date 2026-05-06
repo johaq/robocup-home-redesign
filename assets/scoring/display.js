@@ -8,10 +8,10 @@ import {
 let selectedCompId   = null;
 let selectedArena    = null;
 let selectedCompTz   = null;   // IANA timezone string for the current competition
-let competitionSlots = {};   // slotId → slot data
-let currentRuns      = {};   // runId  → run data
+let availableTests   = [];     // [{id, name}] for test name lookup
+let competitionSlots = {};     // slotId → slot data
+let currentRuns      = {};     // runId  → run data
 let activeRunId      = null;
-let lastRunData      = null; // last known run to show while waiting for next
 let unsubSlots       = null;
 let unsubRuns        = null;
 
@@ -21,11 +21,17 @@ let timerState    = null;
 let lastScore     = null;
 let lastFeedLen   = 0;
 
+// Idle rotation state
+let idleInterval      = null;
+let idleSlideIdx      = 0;
+let idleSlides        = [];
+const IDLE_SLIDE_SECS = 9;
+
 // ── SCREENS ───────────────────────────────────────────────────────────────────
 
 function showScreen(id) {
   for (const el of document.querySelectorAll(
-    '#screen-loading, #screen-comp, #screen-arena, #screen-waiting, #screen-live'
+    '#screen-loading, #screen-comp, #screen-arena, #screen-waiting, #screen-idle, #screen-live'
   )) {
     el.hidden = el.id !== id;
   }
@@ -103,6 +109,9 @@ async function selectCompetition(comp) {
     timeZone: selectedCompTz, hour: '2-digit', minute: '2-digit', hour12: false
   }).format(new Date()).replace('.', ':');
 
+  const testsSnap   = await getDocs(collection(db, 'competitions', comp.id, 'tests'));
+  availableTests    = testsSnap.docs.map(d => ({ id: d.id, name: d.data().name || d.id }));
+
   const slotsSnap   = await getDocs(collection(db, 'competitions', comp.id, 'slots'));
   const todaySlots  = slotsSnap.docs
     .map(d => ({ id: d.id, ...d.data() }))
@@ -158,12 +167,12 @@ function selectArena(arena) {
   teardownListeners();
   selectedArena  = arena;
   activeRunId    = null;
-  lastRunData    = null;
   lastScore      = null;
   lastFeedLen    = 0;
 
   document.getElementById('waiting-arena-badge').textContent = arena;
-  document.getElementById('display-arena-badge').textContent  = arena;
+  document.getElementById('idle-arena-badge').textContent    = arena;
+  document.getElementById('display-arena-badge').textContent = arena;
 
   showScreen('screen-waiting');
 
@@ -197,6 +206,7 @@ function teardownListeners() {
   clearInterval(restartInterval);
   restartInterval = null;
   restartState    = null;
+  stopIdleRotation();
 }
 
 function checkActiveRun() {
@@ -215,10 +225,6 @@ function checkActiveRun() {
   const newActiveRunId = candidates[0]?.[0] ?? null;
 
   if (newActiveRunId !== activeRunId) {
-    // Save last run data before switching away
-    if (activeRunId && currentRuns[activeRunId]) {
-      lastRunData = currentRuns[activeRunId];
-    }
     activeRunId   = newActiveRunId;
     lastScore     = null;
     lastFeedLen   = 0;
@@ -231,37 +237,160 @@ function checkActiveRun() {
   }
 
   if (activeRunId) {
-    setStatusBar(false);
+    stopIdleRotation();
     renderRun(currentRuns[activeRunId]);
     showScreen('screen-live');
     return;
   }
 
-  // No active run — find the most recently updated submitted run if we don't
-  // already have one from this session.
-  if (!lastRunData) {
-    const submitted = Object.entries(currentRuns)
-      .filter(([, r]) => r.status === 'submitted' && r.slotId && arenaSlotIds.has(r.slotId))
-      .sort(([, a], [, b]) => (b.updatedAt?.seconds ?? 0) - (a.updatedAt?.seconds ?? 0));
-    if (submitted.length) lastRunData = submitted[0][1];
-  }
-
-  if (lastRunData) {
-    setStatusBar(true);
-    renderRun(lastRunData);
-    showScreen('screen-live');
+  // No active run — idle rotation
+  const slides = buildIdleSlides();
+  if (slides.length > 0) {
+    startIdleRotation(slides);
   } else {
+    stopIdleRotation();
     showScreen('screen-waiting');
   }
 }
 
-function setStatusBar(visible) {
-  document.getElementById('run-status-bar').hidden = !visible;
+// ── IDLE ROTATION ─────────────────────────────────────────────────────────────
+
+function buildIdleSlides() {
+  const slides = [];
+
+  // Per-task leaderboards — best run per team per test, across all arenas
+  const submittedRuns = Object.values(currentRuns)
+    .filter(r => r.status === 'submitted' && r.teamId && r.testId);
+
+  const byTest = {};
+  for (const { testId, testName, teamId, teamName, totalScore } of submittedRuns) {
+    if (!byTest[testId]) byTest[testId] = { testName: testName || testId, best: {} };
+    const score = totalScore || 0;
+    if (!byTest[testId].best[teamId] || score > byTest[testId].best[teamId].score) {
+      byTest[testId].best[teamId] = { teamName: teamName || teamId, score };
+    }
+  }
+
+  const overallTotals = {};
+  for (const [, { testName, best }] of Object.entries(byTest)) {
+    const ranked = Object.values(best).sort((a, b) => b.score - a.score);
+    slides.push({ type: 'task', testName, ranked });
+    for (const [teamId, { teamName, score }] of Object.entries(best)) {
+      if (!overallTotals[teamId]) overallTotals[teamId] = { teamName, score: 0 };
+      overallTotals[teamId].score += score;
+    }
+  }
+
+  // Overall standings (only useful with ≥ 2 tests or if one test shows differently)
+  const overall = Object.values(overallTotals).sort((a, b) => b.score - a.score);
+  if (overall.length >= 2 && slides.length >= 1) {
+    slides.push({ type: 'overall', ranked: overall });
+  }
+
+  // Next scheduled test in this arena
+  const nowDate = new Intl.DateTimeFormat('sv', { timeZone: selectedCompTz }).format(new Date());
+  const nowTime = new Intl.DateTimeFormat('en-GB', {
+    timeZone: selectedCompTz, hour: '2-digit', minute: '2-digit', hour12: false
+  }).format(new Date()).replace('.', ':');
+
+  const nextSlot = Object.values(competitionSlots)
+    .filter(s => s.arena === selectedArena && (s.type || 'test') === 'test'
+              && (s.date > nowDate || (s.date === nowDate && s.time > nowTime)))
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0] ?? null;
+
+  if (nextSlot) slides.push({ type: 'nextup', slot: nextSlot });
+
+  return slides;
+}
+
+function startIdleRotation(slides) {
+  idleSlides = slides;
+  document.getElementById('idle-arena-badge').textContent = selectedArena;
+
+  if (idleInterval) {
+    // Already rotating: refresh data for current slide without resetting timer
+    if (idleSlideIdx >= idleSlides.length) idleSlideIdx = 0;
+    renderIdleSlide(false);
+    return;
+  }
+
+  idleSlideIdx = 0;
+  showScreen('screen-idle');
+  renderIdleSlide(true);
+
+  idleInterval = setInterval(() => {
+    idleSlideIdx = (idleSlideIdx + 1) % idleSlides.length;
+    renderIdleSlide(true);
+  }, IDLE_SLIDE_SECS * 1000);
+}
+
+function stopIdleRotation() {
+  clearInterval(idleInterval);
+  idleInterval = null;
+  idleSlideIdx = 0;
+  idleSlides   = [];
+}
+
+function renderIdleSlide(animate) {
+  const slide = idleSlides[idleSlideIdx];
+  if (!slide) return;
+
+  // Dots
+  document.getElementById('idle-dots').innerHTML = idleSlides
+    .map((_, i) => `<span class="idle-dot${i === idleSlideIdx ? ' active' : ''}"></span>`)
+    .join('');
+
+  const titleEl = document.getElementById('idle-slide-title');
+  const bodyEl  = document.getElementById('idle-slide-body');
+
+  if (slide.type === 'task') {
+    titleEl.textContent = slide.testName;
+    bodyEl.innerHTML    = buildRankHtml(slide.ranked.slice(0, 8));
+  } else if (slide.type === 'overall') {
+    titleEl.textContent = 'Overall Standings';
+    bodyEl.innerHTML    = buildRankHtml(slide.ranked.slice(0, 8));
+  } else if (slide.type === 'nextup') {
+    const { slot } = slide;
+    const testName = availableTests.find(t => t.id === slot.testId)?.name || slot.testId || '—';
+    const teams    = (slot.teams || []).map(t => t.teamName).join(' · ');
+    titleEl.textContent = 'Up Next';
+    bodyEl.innerHTML = `
+      <div class="idle-nextup">
+        <div class="idle-nextup-time">${slot.time || '—'}</div>
+        <div class="idle-nextup-test">${testName}</div>
+        ${teams ? `<div class="idle-nextup-teams">${teams}</div>` : ''}
+      </div>
+    `;
+  }
+
+  if (animate) {
+    bodyEl.classList.remove('slide-in');
+    void bodyEl.offsetWidth;
+    bodyEl.classList.add('slide-in');
+
+    const fill = document.getElementById('idle-progress-fill');
+    fill.style.transition = 'none';
+    fill.style.width      = '0%';
+    void fill.offsetWidth;
+    fill.style.transition = `width ${IDLE_SLIDE_SECS}s linear`;
+    fill.style.width      = '100%';
+  }
+}
+
+function buildRankHtml(ranked) {
+  return ranked.map((entry, i) => `
+    <div class="idle-rank-item">
+      <span class="idle-rank-pos">${i + 1}</span>
+      <span class="idle-rank-name">${entry.teamName}</span>
+      <span class="idle-rank-score">${entry.score} pts</span>
+    </div>
+  `).join('');
 }
 
 // ── CHANGE ARENA BUTTONS ──────────────────────────────────────────────────────
 
 document.getElementById('change-arena-btn').addEventListener('click', backToArenaPicker);
+document.getElementById('idle-change-btn').addEventListener('click', backToArenaPicker);
 document.getElementById('live-change-btn').addEventListener('click', backToArenaPicker);
 
 function backToArenaPicker() {
