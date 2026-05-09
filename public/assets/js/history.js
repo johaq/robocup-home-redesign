@@ -3,6 +3,8 @@ import {
   collection, getDocs
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
+const base = window.__siteBase || '';
+
 const LEAGUE_LABELS = {
   OPL:  'Open Platform League',
   DSPL: 'Domestic Standard Platform League',
@@ -88,7 +90,7 @@ function renderTimeline() {
         card.innerHTML = `
           <div class="tl-card-header">
             <div class="tl-comp-name">
-              <a href="competition.html?id=${comp.id}&from=history" class="tl-comp-link">${comp.name}</a>
+              <a href="${base}/competition?id=${comp.id}&from=history" class="tl-comp-link">${comp.name}</a>
             </div>
             ${loc ? `<div class="tl-comp-loc">${loc}</div>` : ''}
           </div>`;
@@ -111,7 +113,7 @@ function renderTimeline() {
             const placesHTML = byLeague[league].map(entry => {
               const team = teamMap[String(entry.teamId)];
               const teamName = team?.name || entry.teamName || entry.teamId;
-              const teamLink = `<a href="team.html?id=${encodeURIComponent(entry.teamId)}&from=history" class="tl-team-link">${teamName}</a>`;
+              const teamLink = `<a href="${base}/team?id=${encodeURIComponent(entry.teamId)}&from=history" class="tl-team-link">${teamName}</a>`;
               return `<div class="tl-place">
                 <div class="tl-medal ${medalClass(entry.place)}">${placeLabel(entry.place)}</div>
                 ${teamLink}

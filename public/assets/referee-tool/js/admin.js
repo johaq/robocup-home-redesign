@@ -280,7 +280,85 @@ async function loadCompetitions() {
 }
 
 async function toggleCompActive(comp) {
-  await updateDoc(doc(db, 'competitions', comp.id), { active: !comp.active });
+  const updates = { active: !comp.active };
+
+  if (comp.active) {
+    // Deactivating — build podium from final scores, then merge all teams into participatingTeams
+    const [runsSnap, slotsSnap] = await Promise.all([
+      getDocs(collection(db, 'competitions', comp.id, 'runs')),
+      getDocs(collection(db, 'competitions', comp.id, 'slots')),
+    ]);
+
+    const slotLeague = {};
+    for (const d of slotsSnap.docs) {
+      slotLeague[d.id] = d.data().league || 'OPL';
+    }
+
+    const submittedRuns = runsSnap.docs.map(d => d.data()).filter(r => r.status === 'submitted');
+
+    if (submittedRuns.length) {
+      // Best score per team+test, track league via slot
+      const bestByTeamTest = {};
+      for (const run of submittedRuns) {
+        const { teamId, teamName, testId, totalScore, slotId } = run;
+        if (!teamId || !testId) continue;
+        const key = `${teamId}__${testId}`;
+        if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
+          bestByTeamTest[key] = {
+            teamId, teamName: teamName || teamId,
+            score: totalScore || 0,
+            league: slotLeague[slotId] || 'OPL',
+          };
+        }
+      }
+
+      // Sum per team, keep league (use most-seen league per team)
+      const totals = {};
+      for (const { teamId, teamName, score, league } of Object.values(bestByTeamTest)) {
+        if (!totals[teamId]) totals[teamId] = { teamName, total: 0, leagueCounts: {} };
+        totals[teamId].total += score;
+        totals[teamId].leagueCounts[league] = (totals[teamId].leagueCounts[league] || 0) + 1;
+      }
+
+      // Rank within each league
+      const byLeague = {};
+      for (const [teamId, d] of Object.entries(totals)) {
+        const league = Object.entries(d.leagueCounts).sort((a, b) => b[1] - a[1])[0][0];
+        if (!byLeague[league]) byLeague[league] = [];
+        byLeague[league].push({ teamId, teamName: d.teamName, total: d.total, league });
+      }
+
+      const podium = [];
+      for (const [league, teams] of Object.entries(byLeague)) {
+        teams.sort((a, b) => b.total - a.total);
+        teams.forEach((t, i) => podium.push({ place: i + 1, league, teamId: t.teamId, teamName: t.teamName }));
+      }
+      updates.podium = podium.sort((a, b) => a.place - b.place || a.league.localeCompare(b.league));
+
+      // Merge all ranked teams into participatingTeams
+      const existing = comp.participatingTeams || [];
+      const existingIds = new Set(existing.map(t => t.teamId));
+      const toAdd = Object.entries(totals)
+        .filter(([id]) => !existingIds.has(id))
+        .map(([teamId, d]) => ({ teamId, teamName: d.teamName }));
+      updates.participatingTeams = [...existing, ...toAdd]
+        .sort((a, b) => a.teamName.localeCompare(b.teamName));
+    } else {
+      // No runs — fall back to merging any existing podium into participatingTeams
+      const podium = comp.podium || [];
+      const existing = comp.participatingTeams || [];
+      const existingIds = new Set(existing.map(t => t.teamId));
+      const toAdd = podium
+        .filter(p => p.teamId && !existingIds.has(p.teamId))
+        .map(p => ({ teamId: p.teamId, teamName: p.teamName }));
+      if (toAdd.length) {
+        updates.participatingTeams = [...existing, ...toAdd]
+          .sort((a, b) => a.teamName.localeCompare(b.teamName));
+      }
+    }
+  }
+
+  await updateDoc(doc(db, 'competitions', comp.id), updates);
   await loadCompetitions();
 }
 
@@ -302,13 +380,8 @@ function startEditCompetition(comp) {
   document.getElementById('comp-referee-pin').value = comp.refereePin  || '';
 
   const podiumSection = document.getElementById('comp-podium-section');
-  if (!comp.adminCreated) {
-    podiumSection.hidden = false;
-    renderPodiumList(comp.podium || []);
-  } else {
-    podiumSection.hidden = true;
-    document.getElementById('comp-podium-list').innerHTML = '';
-  }
+  podiumSection.hidden = false;
+  renderPodiumList(comp.podium || []);
 
   document.getElementById('comp-form').hidden = false;
   document.getElementById('new-comp-btn').hidden = true;

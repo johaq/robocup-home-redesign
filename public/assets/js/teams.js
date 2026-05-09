@@ -9,7 +9,7 @@ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
 
 const markerIcon = L.divIcon({
   className: '',
-  html: `<div style="width:12px;height:12px;border-radius:50%;background:#00e5a0;border:2px solid #fff;box-shadow:0 0 6px rgba(0,229,160,0.6);"></div>`,
+  html: `<div style="width:12px;height:12px;border-radius:50%;background:#3b82f6;border:2px solid #fff;box-shadow:0 0 6px rgba(59,130,246,0.6);"></div>`,
   iconSize: [12, 12],
   iconAnchor: [6, 6]
 });
@@ -102,10 +102,10 @@ async function load() {
 
     const lastSeen    = teamLastYear[team.id] ? `Last participated: ${teamLastYear[team.id]}` : '';
     const websiteLink = team.website
-      ? `<a href="${team.website}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">Website ↗</a>` : '';
+      ? `<a href="${team.website}" target="_blank" style="color:#3b82f6;font-family:monospace;font-size:12px;">Website ↗</a>` : '';
     const tdpLink     = team.tdp && team.tdp !== 'Placeholder'
-      ? `<a href="${team.tdp}" target="_blank" style="color:#00e5a0;font-family:monospace;font-size:12px;">TDP ↗</a>` : '';
-    const profileLink = `<a href="team.html?id=${team.id}&from=teams" style="color:#00e5a0;font-family:monospace;font-size:12px;">View profile ↗</a>`;
+      ? `<a href="${team.tdp}" target="_blank" style="color:#3b82f6;font-family:monospace;font-size:12px;">TDP ↗</a>` : '';
+    const profileLink = `<a href="team.html?id=${team.id}&from=teams" style="color:#3b82f6;font-family:monospace;font-size:12px;">View profile ↗</a>`;
     const links       = [websiteLink, tdpLink].filter(Boolean).join(' &nbsp;·&nbsp; ');
 
     const popup = `

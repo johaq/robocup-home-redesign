@@ -1,0 +1,12 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="RoboCup@Home — Team" description="Team profile page.">
+
+  <div class="container">
+    <a id="back-link" href={`${import.meta.env.BASE_URL}teams`} class="back-link">← Back to all teams</a>
+    <div id="team-content"><p class="loading">Loading team...</p></div>
+  </div>
+</Base>
+
+<script is:inline type="module" src={`${import.meta.env.BASE_URL}assets/js/team.js`}></script>

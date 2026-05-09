@@ -7,6 +7,7 @@ import {
   timeToMinutes, minutesToTime, schedDate
 } from '../referee-tool/js/comp-utils.js';
 
+const base     = window.__siteBase || '';
 const params   = new URLSearchParams(window.location.search);
 const compId   = params.get('id');
 const fromPage = params.get('from');
@@ -17,11 +18,11 @@ const backLink = document.getElementById('back-link');
 if (fromPage === 'team') {
   const teamId = params.get('teamId');
   if (teamId) {
-    backLink.href        = `team.html?id=${encodeURIComponent(teamId)}`;
+    backLink.href        = `${base}/team?id=${encodeURIComponent(teamId)}`;
     backLink.textContent = '← Back to team';
   }
 } else {
-  backLink.href        = 'history.html';
+  backLink.href        = `${base}/history`;
   backLink.textContent = '← Back to history';
 }
 
@@ -192,7 +193,7 @@ function renderModernInfo() {
   if (teams.length) {
     teamsEl.innerHTML = `<div class="comp-teams-grid">${
       teams.map(t =>
-        `<a href="team.html?id=${encodeURIComponent(t.teamId)}&from=competition&compId=${compId}" class="comp-team-chip">${t.teamName}</a>`
+        `<a href="${base}/team?id=${encodeURIComponent(t.teamId)}&from=competition&compId=${compId}" class="comp-team-chip">${t.teamName}</a>`
       ).join('')
     }</div>`;
   } else {
@@ -323,7 +324,7 @@ function renderLeaderboard() {
       <div class="comp-lb-row">
         <div class="comp-lb-rank">${medal || (i + 1)}</div>
         <div class="comp-lb-team">
-          <a href="team.html?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
+          <a href="${base}/team?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
           <div class="comp-lb-bar-wrap">
             <div class="comp-lb-bar" style="width:${pct}%"></div>
           </div>
@@ -562,7 +563,7 @@ function openSlotPanel(slot) {
         team:        t.teamId,
         teamName:    t.teamName,
         test:        slot.testId,
-        back:        `competition.html?id=${compId}`
+        back:        `${base}/competition?id=${compId}`
       });
 
       const statusCls  = status === 'submitted' ? 'done' : status === 'draft' ? 'active' : '';
@@ -630,7 +631,7 @@ function renderLegacy() {
     podiumHTML = allLeagues.map(league => {
       const rows = byLeague[league].map(entry => {
         const teamName = teamNameMap[String(entry.teamId)] || entry.teamName || entry.teamId;
-        const teamHref = `team.html?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${encodeURIComponent(compId)}`;
+        const teamHref = `/team?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${encodeURIComponent(compId)}`;
         return `
           <div class="comp-detail-result-row">
             <div class="tl-medal ${medalClass(entry.place)}">${placeLabel(entry.place)}</div>
@@ -656,7 +657,7 @@ function renderLegacy() {
     const items = nonPodium
       .slice().sort((a, b) => a.teamName.localeCompare(b.teamName))
       .map(t => `<div class="comp-detail-participant">
-        <a href="team.html?id=${encodeURIComponent(t.teamId)}&from=competition&compId=${encodeURIComponent(compId)}" class="comp-detail-team-link">${t.teamName}</a>
+        <a href="${base}/team?id=${encodeURIComponent(t.teamId)}&from=competition&compId=${encodeURIComponent(compId)}" class="comp-detail-team-link">${t.teamName}</a>
       </div>`).join('');
     participantsHTML = `
       <div class="comp-detail-block">

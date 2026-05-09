@@ -1,0 +1,76 @@
+---
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+const navLinks = [
+  { href: base + '/',              label: 'About' },
+  { href: base + '/news',          label: 'News' },
+  { href: base + '/teams',         label: 'Teams' },
+  { href: base + '/history',       label: 'History' },
+  { href: base + '/competitions',  label: 'Competitions' },
+  { href: base + '/rules',         label: 'Rules' },
+  { href: base + '/media',         label: 'Media' },
+  { href: base + '/committee',     label: 'Committees' },
+];
+---
+<nav>
+  <a href={base + '/'} class="nav-logo">
+    <img src={`${import.meta.env.BASE_URL}assets/img/logo.png`} alt="RoboCup@Home" style="height:100px;width:auto;display:block;background:none;" />
+  </a>
+
+  <ul class="nav-links" id="nav-links">
+    {navLinks.map(({ href, label }) => (
+      <li>
+        <a href={href} class={currentPath === href ? 'nav-active' : ''}>
+          {label}
+        </a>
+      </li>
+    ))}
+    <li class="nav-mobile-only">
+      <a href="https://athome.robocup.org/call-for-participation/" class="nav-cta" style="display:inline-block;margin-top:0.5rem;">
+        Join 2026 →
+      </a>
+    </li>
+  </ul>
+
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <button id="theme-toggle" aria-label="Toggle theme" style="background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;">
+      🌙
+    </button>
+    <a href="https://athome.robocup.org/call-for-participation/" class="nav-cta nav-desktop-only">
+      Join 2026 →
+    </a>
+    <button id="nav-hamburger" aria-label="Toggle menu" style="display:none;background:transparent;border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:6px;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;gap:5px;padding:0;">
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+      <span class="ham-bar"></span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.getElementById('theme-toggle')!;
+  const hamburger = document.getElementById('nav-hamburger')!;
+  const navLinks = document.getElementById('nav-links')!;
+
+  function applyTheme(light: boolean) {
+    document.documentElement.dataset.theme = light ? 'light' : '';
+    toggle.textContent = light ? '☀️' : '🌙';
+    localStorage.setItem('theme', light ? 'light' : 'dark');
+  }
+
+  // Sync button icon with current theme on load
+  applyTheme(localStorage.getItem('theme') === 'light');
+
+  toggle.addEventListener('click', () => {
+    applyTheme(document.documentElement.dataset.theme !== 'light');
+  });
+
+  hamburger.addEventListener('click', () => {
+    navLinks.classList.toggle('nav-open');
+  });
+</script>

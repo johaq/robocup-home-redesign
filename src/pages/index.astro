@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="RoboCup@Home — Where the best domestic service robots test themselves"
+  description="The world's premier competition for autonomous domestic service robots."
+>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow">RoboCup@Home</div>
+      <h1>The real world<br/><span class="accent">is the</span><br/>hardest test.</h1>
+      <p class="hero-desc">The world's premier competition for autonomous domestic service robots. Advancing human-robot cooperation, navigation, vision, and interaction since 2006.</p>
+      <div class="hero-actions">
+        <a href="https://github.com/RoboCupAtHome/AtHomeCommunityWiki" class="btn-primary">Get started →</a>
+        <a href="https://athome.robocup.org/call-for-participation/" class="btn-secondary" style="border-color:rgba(255,255,255,0.25);color:#fff;">Join 2026 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEXT EVENT -->
+  <section class="next-event-section">
+    <div class="next-event-left">
+      <div class="page-tag">Upcoming Events</div>
+      <h2 class="next-event-heading">Join the competition.</h2>
+      <p class="next-event-desc">In addition to the yearly RoboCup event, Robocup@Home features several local competitions all over the world throughout the year. Visit the page below to view all upcoming events and stay informed about how to participate.</p>
+      <a href={`${import.meta.env.BASE_URL}competitions`} class="btn-primary">View all competitions →</a>
+    </div>
+    <div class="next-event-right">
+      <div class="next-event-label-tag">Next Event</div>
+      <div class="next-event-title">RoboCup 2026<br/><span>Incheon, South Korea</span></div>
+      <div class="robot-card">
+        <div class="robot-card-img" style="background:#0e1218;">
+          <img src="/assets/img/1-daon_Basic_Final.png" style="height:280px;width:auto;object-fit:contain;display:block;margin:0 auto;" alt="Competition robot" />
+        </div>
+        <div class="robot-card-footer">
+          <div class="live-badge" style="color:#ff6b6b;">Registration Closed</div>
+          <a href="https://2026.robocup.org/" style="font-size:13px;color:var(--accent);text-decoration:none;font-family:var(--font-head);">Competition website →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-cell">
+      <div class="stat-number">20<span class="plus">+</span></div>
+      <div class="stat-label">Years of @Home</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">40<span class="plus">+</span></div>
+      <div class="stat-label">Teams worldwide</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">6<span class="plus">+</span></div>
+      <div class="stat-label">Local competitions</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-number">1k<span class="plus">+</span></div>
+      <div class="stat-label">Researchers involved</div>
+    </div>
+  </div>
+
+  <!-- NEWS -->
+  <section class="section">
+    <div class="section-header">
+      <div>
+        <div class="section-tag">Latest Updates</div>
+        <div class="section-title">Stay in the loop.</div>
+      </div>
+      <a href="https://athome.robocup.org/" class="see-all">All posts →</a>
+    </div>
+    <div class="news-grid">
+      <div class="news-main">
+        <div class="news-tag">Announcement</div>
+        <div class="news-headline">2026 Qualified Teams have been announced.</div>
+        <p style="font-size:14px;color:var(--muted);margin:0.75rem 0 1.25rem;line-height:1.7;">The organizing committee has reviewed all submissions and published the final list of teams cleared to compete at RoboCup 2026 in Incheon, South Korea.</p>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div class="news-date">March 2026</div>
+          <a href="https://athome.robocup.org/2026-qualified-teams/" style="font-size:13px;color:var(--accent);text-decoration:none;font-family:var(--font-head);">Read more →</a>
+        </div>
+      </div>
+      <div class="news-sidebar">
+        <div class="news-item">
+          <div class="news-item-title">Second Call for Participation | RoboCup@Home 2026</div>
+          <div class="news-item-meta">Feb 2026</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">SCR 2026 — Shared Challenges in Human-Centered Robotic Autonomy</div>
+          <div class="news-item-meta">Jan 2026</div>
+        </div>
+        <div class="news-item">
+          <div class="news-item-title">ICSR Robot Software &amp; Design Competition</div>
+          <div class="news-item-meta">Nov 2025</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <div class="cta-title">Ready to compete?</div>
+    <p class="cta-sub">Join the global community of robotics researchers and engineers pushing the frontier of domestic service robots.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="https://athome.robocup.org/call-for-participation/" class="btn-primary">View 2026 Call for Participation ↗</a>
+      <a href="https://lists.robocup.org/mm/lists/robocup-athome.lists.robocup.org/" class="btn-secondary">Join the Mailing List</a>
+    </div>
+  </section>
+</Base>

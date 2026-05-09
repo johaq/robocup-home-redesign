@@ -1,0 +1,25 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="RoboCup@Home — History" description="Every RoboCup@Home competition since 2006 — the teams, the leagues, and the results.">
+
+  <div class="page-header">
+    <div class="page-tag">Competition History</div>
+    <div class="page-title">20 years of @Home.</div>
+    <p class="page-desc">Every RoboCup@Home competition since 2006 — the teams, the leagues, and the results.</p>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="history-filters-wrap">
+    <div id="history-filters"></div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="history-section">
+    <div class="timeline" id="timeline">
+      <div class="loading" style="padding: 2rem 0;">Loading history...</div>
+    </div>
+  </div>
+</Base>
+
+<script is:inline type="module" src={`${import.meta.env.BASE_URL}assets/js/history.js`}></script>

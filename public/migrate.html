@@ -86,6 +86,10 @@
     <h1>Step 2 — Backfill History</h1>
     <p>Writes <code>podium</code> and <code>participatingTeams</code> onto existing Firestore competition docs from the Google Sheet. Skips competitions with <code>adminCreated: true</code>. Safe to re-run.</p>
     <button id="backfill-btn">Backfill History Data</button>
+    <hr style="border-color:rgba(255,255,255,0.1);margin:8px 0">
+    <h1>Step 3 — Merge Podium into Participants</h1>
+    <p>For every competition in Firestore that has a <code>podium</code>, adds any missing podium teams into <code>participatingTeams</code>. Idempotent — safe to re-run.</p>
+    <button id="merge-podium-btn">Merge Podium into Participants</button>
   </div>
 
   <div id="log" hidden></div>
@@ -380,6 +384,63 @@ document.getElementById('backfill-btn').addEventListener('click', async () => {
     await backfillHistory(compRows, teamRows, resultRows);
     log('', '');
     log('Backfill complete.', 'ok');
+  } catch (err) {
+    log(`Error: ${err.message}`, 'err');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('merge-podium-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('merge-podium-btn');
+  btn.disabled = true;
+  logEl.innerHTML = '';
+  logEl.hidden = false;
+
+  try {
+    log('Reading all Firestore competitions…', 'dim');
+    const snap = await getDocs(collection(db, 'competitions'));
+
+    let updated = 0, skipped = 0;
+    const entries = [];
+
+    for (const docSnap of snap.docs) {
+      const data = docSnap.data();
+      const podium = data.podium || [];
+      const existing = data.participatingTeams || [];
+
+      if (!podium.length) { skipped++; continue; }
+
+      const existingIds = new Set(existing.map(t => t.teamId));
+      const toAdd = podium
+        .filter(p => p.teamId && !existingIds.has(p.teamId))
+        .map(p => ({ teamId: p.teamId, teamName: p.teamName }));
+
+      if (!toAdd.length) {
+        log(`  ${docSnap.id}: already complete`, 'dim');
+        skipped++;
+        continue;
+      }
+
+      const merged = [...existing, ...toAdd]
+        .sort((a, b) => a.teamName.localeCompare(b.teamName));
+
+      log(`  ${docSnap.id}: adding ${toAdd.map(t => t.teamName).join(', ')}`, 'dim');
+      entries.push({ ref: doc(db, 'competitions', docSnap.id), data: { participatingTeams: merged } });
+      updated++;
+    }
+
+    const CHUNK = 500;
+    for (let i = 0; i < entries.length; i += CHUNK) {
+      const batch = writeBatch(db);
+      for (const { ref, data } of entries.slice(i, i + CHUNK)) {
+        batch.set(ref, data, { merge: true });
+      }
+      await batch.commit();
+    }
+
+    log(`✓ Updated ${updated} competitions, skipped ${skipped}`, 'ok');
   } catch (err) {
     log(`Error: ${err.message}`, 'err');
     console.error(err);

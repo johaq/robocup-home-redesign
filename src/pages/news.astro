@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="RoboCup@Home — News" description="Calls for participation, competition results, rule updates and more.">
+
+  <div class="page-header">
+    <div class="page-tag">News &amp; Announcements</div>
+    <div class="page-title">Latest from @Home.</div>
+    <p class="page-desc">Calls for participation, competition results, rule updates and more. Stay informed about everything happening in the RoboCup@Home community.</p>
+  </div>
+
+  <div class="news-page-section">
+    <div class="news-page-inner">
+      <div class="news-page-grid" id="news-grid">
+        <div class="news-loading">Loading posts...</div>
+      </div>
+    </div>
+  </div>
+</Base>
+
+<script is:inline type="module" src={`${import.meta.env.BASE_URL}assets/js/news.js`}></script>

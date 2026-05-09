@@ -1,0 +1,37 @@
+---
+---
+<!-- Populated client-side if a competition is live today -->
+<div id="live-banner-root"></div>
+
+<script>
+  import { db, ensureAuth } from '../lib/firebase';
+  import { getDocs, collection } from 'firebase/firestore';
+
+  const siteBase = import.meta.env.BASE_URL.slice(0, -1);
+
+  (async () => {
+    try {
+      await ensureAuth();
+      const snap  = await getDocs(collection(db, 'competitions'));
+      const today = new Intl.DateTimeFormat('sv').format(new Date());
+      const live  = snap.docs
+        .map(d => ({ id: d.id, ...d.data() as Record<string, any> }))
+        .find(c => c.active && c.startDate <= today && today <= c.endDate);
+
+      if (!live) return;
+
+      const banner = document.createElement('div');
+      banner.id = 'live-banner';
+      banner.innerHTML = `
+        <div class="live-banner-inner">
+          <span class="live-banner-dot"></span>
+          <span class="live-banner-label">Live now</span>
+          <span id="live-banner-text">${live.name} is happening right now.</span>
+          <a id="live-banner-link" href="${siteBase}/competition?id=${live.id}" class="live-banner-btn">Follow live →</a>
+        </div>`;
+
+      document.body.appendChild(banner);
+      document.body.style.paddingBottom = `${banner.offsetHeight + 8}px`;
+    } catch (_) { /* non-critical */ }
+  })();
+</script>

@@ -1,1 +1,4 @@
 .firebaserc
+dist/
+node_modules/
+.astro/

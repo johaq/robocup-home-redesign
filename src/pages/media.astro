@@ -1,0 +1,132 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="RoboCup@Home — Media" description="Robots navigating real homes, teams pushing the frontier of AI, and a global community united by a shared challenge.">
+
+  <div class="page-header">
+    <div class="page-tag">Media</div>
+    <div class="page-title">See what we do.</div>
+    <p class="page-desc">Robots navigating real homes, teams pushing the frontier of AI, and a global community united by a shared challenge.</p>
+  </div>
+
+  <!-- HERO VIDEO -->
+  <div class="media-hero-section">
+    <div class="media-inner">
+      <div class="section-label" style="margin-bottom:1rem;">Featured</div>
+      <div class="media-video-featured">
+        <iframe
+          src="https://www.youtube.com/embed/zJ1PYqVOYVA"
+          title="RoboCup@Home highlight reel"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+        </iframe>
+      </div>
+      <div class="media-video-caption">RoboCup@Home — League Trailer</div>
+    </div>
+  </div>
+
+  <!-- HIGHLIGHTS GRID -->
+  <div class="media-section">
+    <div class="media-inner">
+      <div class="section-label" style="margin-bottom:1rem;">Competition highlights</div>
+      <div class="media-video-grid">
+
+        <div class="media-video-card">
+          <div class="media-video-thumb">
+            <iframe
+              src="https://www.youtube.com/embed/S2J-zHyiZMs"
+              title="RoboCup@Home highlight reel"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="media-video-title">RoboCup 2025 — @Home Finals</div>
+        </div>
+
+        <div class="media-video-card">
+          <div class="media-video-thumb">
+            <iframe
+              src="https://www.youtube.com/embed/NriB4o2AwrU"
+              title="RoboCup@Home highlight reel"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="media-video-title">RoboCup 2025 — Highlights</div>
+        </div>
+
+        <div class="media-video-card">
+          <div class="media-video-thumb">
+            <iframe
+              src="https://www.youtube.com/embed/7qEJnMaSKko"
+              title="RoboCup@Home highlight reel"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </div>
+          <div class="media-video-title">RoboCup 2025 — Highlights</div>
+        </div>
+
+      </div>
+      <div style="text-align:center;margin-top:1.5rem;">
+        <a href="https://www.youtube.com/@RoboCupAtHome" target="_blank" class="btn-secondary">View all videos on YouTube ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO GALLERY -->
+  <div class="media-section media-section-alt">
+    <div class="media-inner">
+      <div class="section-label" style="margin-bottom:0.25rem;">Photos</div>
+      <div class="media-gallery-header">
+        <div class="rules-hero-title">From the competition floor.</div>
+        <div class="media-gallery-tabs" id="gallery-tabs">
+          <button class="media-tab active" data-category="all">All</button>
+          <button class="media-tab" data-category="competition">Competition</button>
+          <button class="media-tab" data-category="community">Community</button>
+          <button class="media-tab" data-category="robots">Robots</button>
+        </div>
+      </div>
+
+      <div class="media-photo-grid" id="photo-grid">
+        <div class="media-photo" data-category="competition" style="background-image:url('https://athome.robocup.org/wp-content/uploads/2018/09/cropped-logo_RoboCupAtHome.jpg')">
+          <div class="media-photo-overlay"><span>RoboCup 2024 — Eindhoven</span></div>
+        </div>
+        <div class="media-photo media-photo-tall" data-category="robots" style="background-image:url('/assets/img/1-daon_Basic_Final.png')">
+          <div class="media-photo-overlay"><span>Daon — RoboCup 2026 mascot</span></div>
+        </div>
+        <div class="media-photo" data-category="community" style="background-image:url('https://athome.robocup.org/wp-content/uploads/2018/09/cropped-logo_RoboCupAtHome.jpg')">
+          <div class="media-photo-overlay"><span>Team photo — RoboCup 2023</span></div>
+        </div>
+        <div class="media-photo" data-category="competition" style="background-image:url('https://athome.robocup.org/wp-content/uploads/2018/09/cropped-logo_RoboCupAtHome.jpg')">
+          <div class="media-photo-overlay"><span>Competition arena setup</span></div>
+        </div>
+        <div class="media-photo media-photo-wide" data-category="community" style="background-image:url('https://athome.robocup.org/wp-content/uploads/2018/09/cropped-logo_RoboCupAtHome.jpg')">
+          <div class="media-photo-overlay"><span>Award ceremony — RoboCup 2024</span></div>
+        </div>
+        <div class="media-photo" data-category="robots" style="background-image:url('https://athome.robocup.org/wp-content/uploads/2018/09/cropped-logo_RoboCupAtHome.jpg')">
+          <div class="media-photo-overlay"><span>Robot in action</span></div>
+        </div>
+      </div>
+
+      <p style="font-size:13px;color:var(--muted);margin-top:1.5rem;">Have photos to contribute? Send them to <a href="mailto:rc-home-oc@lists.robocup.org" style="color:var(--accent);">rc-home-oc@lists.robocup.org</a> — we'd love to feature your team.</p>
+    </div>
+  </div>
+</Base>
+
+<script>
+  document.getElementById('gallery-tabs')!.addEventListener('click', e => {
+    const btn = (e.target as HTMLElement).closest('.media-tab') as HTMLButtonElement | null;
+    if (!btn) return;
+    const category = btn.dataset.category!;
+    document.querySelectorAll('.media-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll<HTMLElement>('.media-photo').forEach(p => {
+      p.style.display = (category === 'all' || p.dataset.category === category) ? '' : 'none';
+    });
+  });
+</script>

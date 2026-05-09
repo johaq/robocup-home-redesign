@@ -1,15 +1,16 @@
 import { db, ensureAuth } from '../referee-tool/js/firebase.js';
 import { getDoc, getDocs, doc, collection } from 'https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js';
 
+const base     = window.__siteBase || '';
 const params   = new URLSearchParams(window.location.search);
 const teamId   = params.get('id');
 const fromPage = params.get('from');
 
 const BACK_LINKS = {
-  history:     { href: 'history.html',                                                          label: '← Back to history' },
-  teams:       { href: 'teams.html',                                                            label: '← Back to all teams' },
-  competition: { href: `competition.html?id=${params.get('compId')}`,                           label: '← Back to competition' },
-  event:       { href: `competition.html?id=${params.get('compId')}`,                           label: '← Back to competition' },
+  history:     { href: `${base}/history`,                                                          label: '← Back to history' },
+  teams:       { href: `${base}/teams`,                                                            label: '← Back to all teams' },
+  competition: { href: `${base}/competition?id=${params.get('compId')}`,                           label: '← Back to competition' },
+  event:       { href: `${base}/competition?id=${params.get('compId')}`,                           label: '← Back to competition' },
 };
 const backLink = BACK_LINKS[fromPage] || BACK_LINKS.teams;
 
@@ -41,7 +42,7 @@ let compMap         = {};
 let activeLeague    = 'all';
 
 function compLink(compId, label) {
-  return `<a href="competition.html?id=${compId}&from=team&teamId=${teamId}" class="tl-comp-link">${label}</a>`;
+  return `<a href="${base}/competition?id=${compId}&from=team&teamId=${teamId}" class="tl-comp-link">${label}</a>`;
 }
 
 function renderTeamTimeline() {
