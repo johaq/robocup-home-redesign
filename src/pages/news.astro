@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base title="RoboCup@Home — News" description="Calls for participation, competition results, rule updates and more.">
 
@@ -18,4 +19,4 @@ import Base from '../layouts/Base.astro';
   </div>
 </Base>
 
-<script is:inline type="module" src={`${import.meta.env.BASE_URL}assets/js/news.js`}></script>
+<script is:inline type="module" src={`${base}/assets/js/news.js`}></script>

@@ -7,7 +7,7 @@
   import { db, ensureAuth } from '../lib/firebase';
   import { getDocs, collection } from 'firebase/firestore';
 
-  const siteBase = import.meta.env.BASE_URL.slice(0, -1);
+  const siteBase = import.meta.env.BASE_URL.replace(/\/$/, '');
 
   (async () => {
     try {

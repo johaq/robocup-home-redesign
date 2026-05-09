@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 <Base
   title="RoboCup@Home — Where the best domestic service robots test themselves"
@@ -24,7 +25,7 @@ import Base from '../layouts/Base.astro';
       <div class="page-tag">Upcoming Events</div>
       <h2 class="next-event-heading">Join the competition.</h2>
       <p class="next-event-desc">In addition to the yearly RoboCup event, Robocup@Home features several local competitions all over the world throughout the year. Visit the page below to view all upcoming events and stay informed about how to participate.</p>
-      <a href={`${import.meta.env.BASE_URL}competitions`} class="btn-primary">View all competitions →</a>
+      <a href={`${base}/competitions`} class="btn-primary">View all competitions →</a>
     </div>
     <div class="next-event-right">
       <div class="next-event-label-tag">Next Event</div>
