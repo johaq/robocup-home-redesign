@@ -433,7 +433,7 @@ function renderLeaderboard() {
     if (!teamId || !testId) continue;
     const key = `${teamId}__${testId}`;
     if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
-      bestByTeamTest[key] = { teamId, teamName: teamName || teamId, score: totalScore || 0 };
+      bestByTeamTest[key] = { teamId, teamName: teamName || teamId, score: Math.max(0, totalScore || 0) };
     }
   }
 

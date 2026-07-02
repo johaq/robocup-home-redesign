@@ -364,7 +364,7 @@ async function toggleCompActive(comp) {
         if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
           bestByTeamTest[key] = {
             teamId, teamName: teamName || teamId,
-            score: totalScore || 0,
+            score: Math.max(0, totalScore || 0),
             league: slotLeague[slotId] || 'OPL',
           };
         }
