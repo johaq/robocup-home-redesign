@@ -89,7 +89,7 @@ function renderOverall(submitted) {
         <tr>
           <th class="col-rank">#</th>
           <th class="col-team">Team</th>
-          ${testNames.map(n => `<th class="col-test">${n}</th>`).join('')}
+          ${testNames.map(n => `<th class="col-test" title="${n}">${abbrev(n)}</th>`).join('')}
           <th class="col-total">Total</th>
         </tr>
       </thead>
@@ -188,6 +188,17 @@ function renderPerTest(submitted) {
 }
 
 // ── HELPERS ───────────────────────────────────────────────────────────────────
+
+const TEST_ABBREVS = {
+  'doing laundry':                       'DL',
+  'gpsr':                                'GPSR',
+  'human robot interaction challenge':   'HRI',
+  'pick and place challenge':            'PnP',
+};
+
+function abbrev(name) {
+  return TEST_ABBREVS[name.toLowerCase()] || name;
+}
 
 function showError(msg) {
   document.getElementById('results-loading').textContent = msg;

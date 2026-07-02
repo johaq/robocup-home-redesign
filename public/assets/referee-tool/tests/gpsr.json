@@ -28,19 +28,28 @@
           "id": "solve_command_1",
           "type": "boolean",
           "points": 250,
-          "label": "Solving the first command"
+          "label": "Solving the first command",
+          "penalties": [
+            { "id": "partial_solution_1", "type": "percentage", "label": "Partial solving" }
+          ]
         },
         {
           "id": "solve_command_2",
           "type": "boolean",
           "points": 250,
-          "label": "Solving the second command"
+          "label": "Solving the second command",
+          "penalties": [
+            { "id": "partial_solution_2", "type": "percentage", "label": "Partial solving" }
+          ]
         },
         {
           "id": "solve_command_3",
           "type": "boolean",
           "points": 250,
-          "label": "Solving the third command"
+          "label": "Solving the third command",
+          "penalties": [
+            { "id": "partial_solution_3", "type": "percentage", "label": "Partial solving" }
+          ]
         },
         {
           "id": "partial_solution_note",
