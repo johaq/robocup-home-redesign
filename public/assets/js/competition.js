@@ -6,6 +6,7 @@ import {
   todayInZone, nowTimeInZone, utcOffsetLabel, formatDateRange,
   timeToMinutes, minutesToTime, schedDate
 } from '../referee-tool/js/comp-utils.js';
+import { bestRunsPerTeamTest } from '../referee-tool/js/score-utils.js';
 
 const base     = window.__siteBase || '';
 const params   = new URLSearchParams(window.location.search);
@@ -427,20 +428,12 @@ function renderLeaderboard() {
   if (!submittedRuns.length && !hasPoster) { section.hidden = true; return; }
 
   // Best test score per team+test
-  const bestByTeamTest = {};
-  for (const run of submittedRuns) {
-    const { teamId, teamName, testId, totalScore } = run;
-    if (!teamId || !testId) continue;
-    const key = `${teamId}__${testId}`;
-    if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
-      bestByTeamTest[key] = { teamId, teamName: teamName || teamId, score: Math.max(0, totalScore || 0) };
-    }
-  }
+  const bestByTeamTest = bestRunsPerTeamTest(submittedRuns);
 
   const totals = {};
-  for (const { teamId, teamName, score } of Object.values(bestByTeamTest)) {
-    if (!totals[teamId]) totals[teamId] = { teamName, total: 0, runCount: 0, posterScore: null };
-    totals[teamId].total    += score;
+  for (const { teamId, teamName, flooredScore } of Object.values(bestByTeamTest)) {
+    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, runCount: 0, posterScore: null };
+    totals[teamId].total    += flooredScore;
     totals[teamId].runCount += 1;
   }
 

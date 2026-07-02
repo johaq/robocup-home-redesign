@@ -2,6 +2,7 @@ import { db, ensureAuth } from './firebase.js';
 import {
   doc, collection, getDoc, getDocs, onSnapshot, query, where
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { bestRunsPerTeamTest } from './score-utils.js';
 
 // ── URL PARAMS ────────────────────────────────────────────────────────────────
 
@@ -66,22 +67,14 @@ function renderOverall(submitted) {
   }
 
   // Aggregate by team: best run per test, summed across tests
-  const bestByTeamTest = {}; // `${teamId}__${testId}` → run
-  for (const run of submitted) {
-    const { teamId, testId, totalScore } = run;
-    if (!teamId || !testId) continue;
-    const key = `${teamId}__${testId}`;
-    if (!bestByTeamTest[key] || (totalScore || 0) > (bestByTeamTest[key].totalScore || 0)) {
-      bestByTeamTest[key] = run;
-    }
-  }
+  const bestByTeamTest = bestRunsPerTeamTest(submitted);
   const totals = {};
   for (const run of Object.values(bestByTeamTest)) {
-    const { teamId, teamName, testId, totalScore } = run;
+    const { teamId, teamName, testId, flooredScore } = run;
     if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, byTest: {} };
-    totals[teamId].total += totalScore || 0;
+    totals[teamId].total += flooredScore;
     const tName = tests.find(t => t.id === testId)?.name || testId || '—';
-    totals[teamId].byTest[tName] = totalScore || 0;
+    totals[teamId].byTest[tName] = flooredScore;
   }
 
   const ranked = Object.entries(totals)

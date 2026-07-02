@@ -4,6 +4,7 @@ import {
   writeBatch, query, where, onSnapshot, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 import { convertTexToTest } from './admin-tex.js';
+import { bestRunsPerTeamTest } from './score-utils.js';
 
 // Slot types not scored via /scoresheet — mirrors display.js so "Now on display"
 // reflects exactly what the live screen picks.
@@ -356,25 +357,15 @@ async function toggleCompActive(comp) {
 
     if (submittedRuns.length || Object.keys(posterFinal).length) {
       // Best score per team+test, track league via slot
-      const bestByTeamTest = {};
-      for (const run of submittedRuns) {
-        const { teamId, teamName, testId, totalScore, slotId } = run;
-        if (!teamId || !testId) continue;
-        const key = `${teamId}__${testId}`;
-        if (!bestByTeamTest[key] || (totalScore || 0) > bestByTeamTest[key].score) {
-          bestByTeamTest[key] = {
-            teamId, teamName: teamName || teamId,
-            score: Math.max(0, totalScore || 0),
-            league: slotLeague[slotId] || 'OPL',
-          };
-        }
-      }
+      const bestByTeamTest = bestRunsPerTeamTest(submittedRuns);
 
       // Sum per team (test runs)
       const totals = {};
-      for (const { teamId, teamName, score, league } of Object.values(bestByTeamTest)) {
-        if (!totals[teamId]) totals[teamId] = { teamName, total: 0, leagueCounts: {} };
-        totals[teamId].total += score;
+      for (const run of Object.values(bestByTeamTest)) {
+        const { teamId, teamName, slotId, flooredScore } = run;
+        const league = slotLeague[slotId] || 'OPL';
+        if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, leagueCounts: {} };
+        totals[teamId].total += flooredScore;
         totals[teamId].leagueCounts[league] = (totals[teamId].leagueCounts[league] || 0) + 1;
       }
 
