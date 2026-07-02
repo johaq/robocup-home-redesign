@@ -30,7 +30,7 @@
           "points": 250,
           "label": "Solving the first command",
           "penalties": [
-            { "id": "partial_solution_1", "type": "percentage", "label": "Partial solving" }
+            { "id": "partial_solution_1", "type": "percentage", "label": "Partial — % of command NOT solved" }
           ]
         },
         {
@@ -39,7 +39,7 @@
           "points": 250,
           "label": "Solving the second command",
           "penalties": [
-            { "id": "partial_solution_2", "type": "percentage", "label": "Partial solving" }
+            { "id": "partial_solution_2", "type": "percentage", "label": "Partial — % of command NOT solved" }
           ]
         },
         {
@@ -48,13 +48,13 @@
           "points": 250,
           "label": "Solving the third command",
           "penalties": [
-            { "id": "partial_solution_3", "type": "percentage", "label": "Partial solving" }
+            { "id": "partial_solution_3", "type": "percentage", "label": "Partial — % of command NOT solved" }
           ]
         },
         {
           "id": "partial_solution_note",
           "type": "info",
-          "label": "Solving part of a command will apply a percentage penalty according to similar scores in other tests. Note in the remarks below."
+          "label": "Partial scoring: check the command as solved, then enter the percentage NOT completed in its % field to deduct it proportionally."
         }
       ]
     },
