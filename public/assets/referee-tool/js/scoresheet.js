@@ -850,9 +850,11 @@ function itemPts(item) {
 }
 
 function calculateTotal() {
-  return testDef.sections
+  const total = testDef.sections
     .flatMap(s => s.items)
     .reduce((sum, item) => sum + itemPts(item), 0);
+  // A team's score can never be negative — penalties bring the total down to 0 at most.
+  return Math.max(0, total);
 }
 
 function updateTotal() {
