@@ -151,6 +151,16 @@ async function init() {
 
   document.getElementById('test-name').textContent = testDef.name;
   document.getElementById('team-name').textContent = teamName;
+
+  // Team banner at the very top of the scrolling body. On mobile the header team name
+  // shrinks to keep the timer visible; this (CSS: mobile-only) makes the team unmistakable
+  // when you start scoring. It scrolls away with the content, as requested.
+  const teamBanner = document.createElement('div');
+  teamBanner.className = 'sheet-body-team';
+  teamBanner.textContent = teamName;
+  const bodyEl = document.getElementById('sheet-body');
+  bodyEl.insertBefore(teamBanner, bodyEl.firstChild);
+
   document.getElementById('notes').addEventListener('input', () => scheduleSave());
   document.getElementById('submit-btn').addEventListener('click', submitRun);
 
@@ -563,7 +573,7 @@ function renderCount(item) {
     <span class="item-label">${item.label}</span>
     <div class="count-controls">
       <button class="count-btn minus" aria-label="decrease">−</button>
-      <span class="count-value">0</span>
+      <span class="count-value">0</span>${item.maxCount ? `<span class="count-max">/ ${item.maxCount}</span>` : ''}
       <button class="count-btn plus" aria-label="increase">+</button>
     </div>
     <span class="item-pts">+0</span>
@@ -747,7 +757,7 @@ function renderStandalonePenalty(item) {
     <span class="item-label">${item.label}</span>
     <div class="count-controls">
       <button class="count-btn minus" aria-label="decrease">−</button>
-      <span class="count-value">0</span>
+      <span class="count-value">0</span>${item.maxCount ? `<span class="count-max">/ ${item.maxCount}</span>` : ''}
       <button class="count-btn plus" aria-label="increase">+</button>
     </div>
     <span class="item-pts">−0</span>
@@ -1161,11 +1171,15 @@ function makeTimer(initialSecs, displayEl, startBtn, resetBtn, warningAt, syncFn
   // payload despite having different durations.
   function resumeFrom(startedAt, elapsedBefore) {
     elapsedBeforePause = elapsedBefore;
+    // Anchor to the ORIGINAL start timestamp from the run doc — NOT Date.now(). Re-anchoring
+    // to now dropped the elapsed-since-start, so a reload (or a second referee opening the run)
+    // made the countdown jump back toward full on the next tick. Keeping the server timestamp
+    // makes tick()/pause()/getElapsed() lock-step with /display, which derives time the same way.
+    startedAtMs = startedAt;
     const elapsedSecs = Math.round((Date.now() - startedAt) / 1000);
     remaining = Math.max(0, initialSecs - elapsedBeforePause - elapsedSecs);
 
     if (remaining > 0) {
-      startedAtMs = Date.now();
       interval = setInterval(tick, 1000);
     } else {
       startedAtMs = null;

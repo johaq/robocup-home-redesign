@@ -2,6 +2,7 @@ import { db, ensureAuth } from './firebase.js';
 import {
   collection, doc, getDoc, getDocs, getDocsFromCache, onSnapshot, query, where, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { todayInZone, nowTimeInZone, schedDate } from './comp-utils.js';
 
 // Stream overlay — a transparent variant of the /display page, built for an OBS
 // Browser source. It subscribes to the same live run data, but renders only five
@@ -25,6 +26,9 @@ let unsubComp        = null;
 let unsubFeed        = null;   // live listener on the active run's feed subcollection
 let feedRunId        = null;   // which run unsubFeed is currently following
 let finalResultSecs  = 20;     // post-submit "Final" flash duration (set on /referee)
+let selectedCompTz   = null;   // competition timezone (for "now" in the schedule)
+let availableTests   = [];     // [{id, name}] for the "Up Next" test name
+let nextUpInterval   = null;   // periodic refresh of the idle "Up Next" card
 
 let timerInterval = null;
 let timerState    = null;
@@ -92,10 +96,19 @@ function startArena() {
   hideOverlay();
 
   // Configurable "Final" flash duration + overlay text width, kept live (set on /referee).
+  // Test id → name, loaded once for the "Up Next" idle card.
+  getDocs(collection(db, 'competitions', selectedCompId, 'tests'))
+    .then(snap => {
+      availableTests = snap.docs.map(d => ({ id: d.id, name: d.data().name || d.id }));
+      if (!activeRunId && !finalResultTimer) showNextUp();  // refresh idle card with names
+    })
+    .catch(() => { /* names fall back to testId */ });
+
   unsubComp = onSnapshot(doc(db, 'competitions', selectedCompId), snap => {
     const data = snap.data() || {};
     const v = Number(data.finalResultSecs);
     finalResultSecs = Number.isFinite(v) && v >= 0 ? v : 20;
+    selectedCompTz  = data.timezone || null;
 
     const overlayEl = document.getElementById('overlay');
 
@@ -145,6 +158,7 @@ function teardownListeners() {
   timerState    = null;
   clearTimeout(finalResultTimer);
   finalResultTimer = null;
+  if (nextUpInterval) { clearInterval(nextUpInterval); nextUpInterval = null; }
 }
 
 function checkActiveRun() {
@@ -193,21 +207,75 @@ function checkActiveRun() {
   }
 
   if (activeRunId) {
+    clearNextUp();
     renderRun(currentRuns[activeRunId]);
     subscribeFeed(activeRunId);
     showOverlay();
     return;
   }
 
-  // No active run — overlay disappears.
+  // No active run — show the "Up Next" card (or go transparent if nothing's scheduled).
   subscribeFeed(null);
-  hideOverlay();
+  showNextUp();
+}
+
+// ── UP NEXT (idle) ──────────────────────────────────────────────────────────────
+
+// The next upcoming test slot for this arena — same selection as /display's idle "Up Next".
+function computeNextSlot() {
+  const tz = selectedCompTz || undefined;   // undefined → system tz; null would throw in Intl
+  const nowDate = todayInZone(tz);
+  const nowTime = nowTimeInZone(tz);
+  return Object.values(competitionSlots)
+    .filter(s => s.arena === selectedArena && (s.type || 'test') === 'test'
+      && (s.date > nowDate || (s.date === nowDate && s.time > nowTime)))
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0] || null;
+}
+
+function to12h(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12  = h % 12 || 12;
+  return `${h12}:${String(m ?? 0).padStart(2, '0')} ${ampm}`;
+}
+
+function showNextUp() {
+  const overlay = document.getElementById('overlay');
+  const card    = document.getElementById('ov-nextup');
+  const slot    = competitionSlots && Object.keys(competitionSlots).length ? computeNextSlot() : null;
+
+  if (!slot) { clearNextUp(); hideOverlay(); return; }
+
+  const testName = availableTests.find(t => t.id === slot.testId)?.name || slot.testId || '—';
+  const teams    = (slot.teams || []).map(t => t.teamName).filter(Boolean).join(' · ');
+  const when     = [to12h(slot.time), schedDate(slot.date)].filter(Boolean).join('  ·  ');
+
+  document.getElementById('ov-nextup-test').textContent  = testName;
+  document.getElementById('ov-nextup-when').textContent  = when;
+  document.getElementById('ov-nextup-teams').textContent = teams;
+
+  card.hidden = false;
+  overlay.classList.add('idle-nextup');   // CSS hides the live pills, shows only this card
+  showOverlay();
+
+  if (!nextUpInterval) {
+    // "Next" advances with wall-clock even without a Firestore change; recompute periodically.
+    nextUpInterval = setInterval(() => { if (!activeRunId && !finalResultTimer) showNextUp(); }, 30000);
+  }
+}
+
+function clearNextUp() {
+  document.getElementById('overlay').classList.remove('idle-nextup');
+  document.getElementById('ov-nextup').hidden = true;
+  if (nextUpInterval) { clearInterval(nextUpInterval); nextUpInterval = null; }
 }
 
 // Show a run's final result for the configured duration, then re-evaluate (idle or next run).
 function showFinalResult(run) {
   clearInterval(timerInterval);
   timerInterval = null;
+  clearNextUp();   // final card must not be hidden by the idle-nextup rule
 
   // Freeze the corner blocks on the run's final values, then swap feed → final card.
   renderRun(run);

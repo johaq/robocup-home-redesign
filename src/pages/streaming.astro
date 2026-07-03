@@ -64,6 +64,14 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <div id="ov-feed-list"></div>
     </div>
 
+    <!-- Idle "Up Next" card (center) — shown between runs when a test is scheduled next -->
+    <div id="ov-nextup" class="ov-pill" hidden>
+      <div id="ov-nextup-label">Up Next</div>
+      <div id="ov-nextup-test"></div>
+      <div id="ov-nextup-when"></div>
+      <div id="ov-nextup-teams"></div>
+    </div>
+
     <!-- Final-result flash (bottom-center) — shown ~10s after a run is submitted -->
     <div id="ov-final" class="ov-pill" hidden>
       <div id="ov-final-label">Final</div>
