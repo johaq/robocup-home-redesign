@@ -29,12 +29,14 @@ const USE_EMULATOR =
   typeof location !== 'undefined' &&
   (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 
+// The two long-polling flags are mutually exclusive — setting both makes the SDK throw
+// at import (perpetual "loading…"). Force it against the emulator (WebChannel is flaky
+// there); auto-detect in production (covers old Android WebViews / buggy XHR streaming).
 export const db = initializeFirestore(app, {
   localCache: memoryLocalCache(),
-  // Auto-detects when WebChannel (XHR streaming) is broken and falls back to long-polling.
-  // Covers old Android WebViews and tablets with buggy XHR streaming implementations.
-  experimentalAutoDetectLongPolling: true,
-  ...(USE_EMULATOR ? { experimentalForceLongPolling: true } : {})
+  ...(USE_EMULATOR
+    ? { experimentalForceLongPolling: true }
+    : { experimentalAutoDetectLongPolling: true })
 });
 
 export const auth = initializeAuth(app, {
