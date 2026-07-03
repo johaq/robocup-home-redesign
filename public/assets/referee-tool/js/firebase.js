@@ -32,10 +32,14 @@ const USE_EMULATOR =
 // on some Safari/iOS versions (empty console, perpetual loading), so we use the same
 // in-memory approach as firebase-public.js. Referee pages use onSnapshot listeners
 // for live data, so no persistent cache is needed within a session.
+// Long-polling flags are mutually exclusive — the SDK throws if both are set (which
+// crashes the whole module at import → perpetual "loading…"). Force it against the
+// emulator (WebChannel is flaky there); auto-detect in production.
 export const db = initializeFirestore(app, {
   localCache: memoryLocalCache(),
-  experimentalAutoDetectLongPolling: true,
-  ...(USE_EMULATOR ? { experimentalForceLongPolling: true } : {})
+  ...(USE_EMULATOR
+    ? { experimentalForceLongPolling: true }
+    : { experimentalAutoDetectLongPolling: true })
 });
 
 // initializeAuth without a popupRedirectResolver prevents Firebase from loading

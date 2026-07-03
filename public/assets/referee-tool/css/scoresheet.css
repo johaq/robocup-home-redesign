@@ -211,6 +211,22 @@ body {
   gap: 28px;
 }
 
+/* Team banner at the top of the scrollable body. Hidden on desktop (the header shows the
+   full team name there); shown on mobile where the header team name is squeezed/truncated. */
+.sheet-body-team {
+  display: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  overflow-wrap: anywhere;
+}
+@media (max-width: 640px) {
+  .sheet-body-team { display: block; }
+}
+
 /* ── SECTION ─────────────────────────────────────────────────────── */
 
 .score-section { display: flex; flex-direction: column; gap: 8px; }
@@ -386,6 +402,15 @@ body {
   min-width: 34px;
   text-align: center;
   cursor: pointer;
+  user-select: none;
+}
+
+/* "/ N" cap next to the current count — conveys the maxCount to the referee. */
+.count-max {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-left: -4px;
   user-select: none;
 }
 
