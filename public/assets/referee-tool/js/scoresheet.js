@@ -806,9 +806,12 @@ function refreshAll() {
 
 function instancePts(item, inst) {
   let pts = item.points;
+  // Fixed penalties first, then percentage applies to the reduced pts
   for (const pen of (item.penalties || [])) {
-    if (pen.type === 'fixed'      && inst[pen.id]) pts -= pen.points;
-    if (pen.type === 'percentage' && inst[pen.id]) pts -= Math.round(inst[pen.id] / 100 * item.points);
+    if (pen.type === 'fixed' && inst[pen.id]) pts -= pen.points;
+  }
+  for (const pen of (item.penalties || [])) {
+    if (pen.type === 'percentage' && inst[pen.id]) pts -= Math.round(inst[pen.id] / 100 * pts);
   }
   for (const mod of (item.modifiers || [])) {
     if (mod.type === 'boolean' && inst[mod.id]) pts += mod.points;
@@ -821,9 +824,12 @@ function itemPts(item) {
   if (item.type === 'boolean') {
     if (!scores[item.id]) return 0;
     let pts = item.points;
+    // Fixed penalties first, then percentage applies to the reduced pts
     for (const pen of (item.penalties || [])) {
-      if (pen.type === 'fixed'      && scores[pen.id]) pts -= pen.points;
-      if (pen.type === 'percentage' && scores[pen.id]) pts -= Math.round(scores[pen.id] / 100 * item.points);
+      if (pen.type === 'fixed' && scores[pen.id]) pts -= pen.points;
+    }
+    for (const pen of (item.penalties || [])) {
+      if (pen.type === 'percentage' && scores[pen.id]) pts -= Math.round(scores[pen.id] / 100 * pts);
     }
     for (const mod of (item.modifiers || [])) {
       if (mod.type === 'boolean' && scores[mod.id]) pts += mod.points;
