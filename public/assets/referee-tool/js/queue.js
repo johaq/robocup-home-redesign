@@ -2,6 +2,7 @@ import { db, ensureAuth } from './firebase.js';
 import {
   collection, doc, getDoc, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { todayInZone, nowTimeInZone, timeToMinutes } from './comp-utils.js';
 
 const params        = new URLSearchParams(window.location.search);
 const competitionId = params.get('competition');
@@ -11,8 +12,11 @@ let runs        = {};
 let inspections = {};
 let filterArena = null;
 let currentCompId = null;
+let compTz      = null;   // competition timezone — set once compData loads
 
-const today = new Date().toISOString().slice(0, 10);
+// "Today" in the competition's zone (set in showQueue). Defaults to the viewer's local
+// zone; NEVER UTC — toISOString would mis-date a venue in e.g. Seoul early in the morning.
+let today = todayInZone(undefined);
 
 async function init() {
   await ensureAuth();
@@ -73,6 +77,8 @@ async function showQueue(compId) {
 
   const compSnap = await getDoc(doc(db, 'competitions', compId));
   const compData = compSnap.exists() ? compSnap.data() : {};
+  compTz = compData.timezone || null;
+  today  = todayInZone(compTz || undefined);
   document.getElementById('queue-comp-name').textContent = compData.name || compId;
 
   // Each listener updates state then requests one coalesced re-render, so a burst of
@@ -130,8 +136,9 @@ function render() {
   const content = document.getElementById('queue-content');
   content.innerHTML = '';
 
-  const now = new Date();
-  const nowMin = now.getHours() * 60 + now.getMinutes();
+  // "Now" in the competition's timezone, so the current/next highlight is correct
+  // regardless of where the referee's device is.
+  const nowMin = timeToMinutes(nowTimeInZone(compTz || undefined));
 
   // Get today's test slots sorted by time
   const todaySlots = Object.values(slots)
