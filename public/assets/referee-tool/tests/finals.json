@@ -25,9 +25,9 @@
           "points": 650,
           "label": "Solve a problem",
           "penalties": [
-            { "id": "solved_repeat_2nd", "type": "fixed",      "points": 300, "label": "Solving repeated problem category for the 2nd time" },
-            { "id": "solved_repeat_3rd", "type": "fixed",      "points": 500, "label": "Solving repeated problem category for the 3rd (or more) time" },
-            { "id": "instructing_human", "type": "percentage",                "label": "Instructing a human to perform parts of the task (% of item score)" }
+            { "id": "solved_repeat_2nd",    "type": "fixed",      "points": 300, "label": "Solving repeated problem category for the 2nd time" },
+            { "id": "solved_repeat_3rd",    "type": "fixed",      "points": 500, "label": "Solving repeated problem category for the 3rd (or more) time" },
+            { "id": "ha_or_partial_solving","type": "percentage",               "label": "Human assistance or partial solving penalty" }
           ]
         },
         {
@@ -53,18 +53,13 @@
           "points": 300,
           "label": "Closing the Dishwasher"
         },
-        {
-          "id": "custom_note",
-          "type": "info",
-          "label": "Custom tasks (approved by the TC) are scored at their agreed point value — record them in the remarks; the fixed-point sheet cannot represent arbitrary custom points."
-        }
       ]
     },
     {
       "id": "penalties",
       "heading": "Penalties",
       "items": [
-        { "id": "restart", "type": "standalone_penalty", "maxCount": 1, "points": 50, "label": "Restart (only applies if the robot continues scoring afterwards)" }
+        { "id": "restart", "type": "standalone_penalty", "points": 50, "label": "Restart (only applies if the robot continues scoring afterwards)" }
       ]
     }
   ]
