@@ -423,59 +423,102 @@ function renderLeaderboard() {
   const section = document.getElementById('comp-leaderboard-section');
   const el      = document.getElementById('comp-leaderboard');
 
-  const submittedRuns  = Object.values(runs).filter(r => r.status === 'submitted');
-  const hasPoster      = Object.keys(posterScoresByTeam).length > 0;
+  const submittedRuns = Object.values(runs).filter(r => r.status === 'submitted');
+  const hasPoster     = Object.keys(posterScoresByTeam).length > 0;
   if (!submittedRuns.length && !hasPoster) { section.hidden = true; return; }
 
-  // Best test score per team+test
-  const bestByTeamTest = bestRunsPerTeamTest(submittedRuns);
+  const finalsRuns    = submittedRuns.filter(r => r.testId === 'finals');
+  const preFinalsRuns = submittedRuns.filter(r => r.testId !== 'finals');
+  const hasFinalsRuns = finalsRuns.length > 0;
+
+  const teamNameMap = {};
+  (comp.participatingTeams || []).forEach(t => { teamNameMap[String(t.teamId)] = t.teamName; });
+
+  // Best pre-finals score per team+test
+  const bestByTeamTest = bestRunsPerTeamTest(preFinalsRuns);
 
   const totals = {};
   for (const { teamId, teamName, flooredScore } of Object.values(bestByTeamTest)) {
-    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, runCount: 0, posterScore: null };
-    totals[teamId].total    += flooredScore;
-    totals[teamId].runCount += 1;
+    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, preTotal: 0, runCount: 0, posterScore: null, finalsScore: 0 };
+    totals[teamId].preTotal  += flooredScore;
+    totals[teamId].runCount  += 1;
   }
 
-  // Add poster scores
-  const teamNameMap = {};
-  (comp.participatingTeams || []).forEach(t => { teamNameMap[t.teamId] = t.teamName; });
+  // Add poster scores to pre-finals total
   for (const [teamId, score] of Object.entries(posterScoresByTeam)) {
-    if (!totals[teamId]) totals[teamId] = { teamName: teamNameMap[teamId] || teamId, total: 0, runCount: 0, posterScore: null };
-    totals[teamId].total       += score;
+    if (!totals[teamId]) totals[teamId] = { teamName: teamNameMap[teamId] || teamId, preTotal: 0, runCount: 0, posterScore: null, finalsScore: 0 };
+    totals[teamId].preTotal    += score;
     totals[teamId].posterScore  = score;
   }
 
-  const ranked = Object.entries(totals)
-    .map(([teamId, d]) => ({ teamId, ...d }))
-    .sort((a, b) => b.total - a.total);
+  // Best finals score per team
+  for (const run of finalsRuns) {
+    const id = String(run.teamId);
+    const s  = Math.max(0, run.totalScore || 0);
+    if (!totals[id]) totals[id] = { teamName: run.teamName || teamNameMap[id] || id, preTotal: 0, runCount: 0, posterScore: null, finalsScore: 0 };
+    if (s > totals[id].finalsScore) totals[id].finalsScore = s;
+  }
 
   section.hidden = false;
   document.getElementById('comp-results-link').href = `${base}/results?id=${compId}`;
 
-  const topScore = ranked[0]?.total || 1;
-  el.innerHTML = ranked.map((entry, i) => {
-    const pct        = Math.max(0, Math.round((entry.total / topScore) * 100));
-    const medal      = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
-    const runLabel   = entry.runCount ? `${entry.runCount} run${entry.runCount !== 1 ? 's' : ''}` : null;
-    const postLabel  = entry.posterScore != null ? `poster ${entry.posterScore.toFixed(1)}` : null;
-    const scoreLabel = [runLabel, postLabel].filter(Boolean).join(' + ');
-    return `
-      <div class="comp-lb-row">
-        <div class="comp-lb-rank">${medal || (i + 1)}</div>
-        <div class="comp-lb-team">
-          <a href="${base}/team?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
-          <div class="comp-lb-bar-wrap">
-            <div class="comp-lb-bar" style="width:${pct}%"></div>
+  if (hasFinalsRuns) {
+    const maxPreFinals = Math.max(1, ...Object.values(totals).map(t => t.preTotal));
+    const maxFinals    = Math.max(1, ...Object.values(totals).map(t => t.finalsScore));
+    const ranked = Object.entries(totals)
+      .map(([teamId, d]) => ({ teamId, ...d, combined: d.preTotal / maxPreFinals * 0.5 + d.finalsScore / maxFinals * 0.5 }))
+      .sort((a, b) => b.combined - a.combined);
+
+    el.innerHTML = ranked.map((entry, i) => {
+      const pct        = Math.round(entry.combined * 100);
+      const medal      = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+      const prePts     = entry.preTotal % 1 === 0 ? entry.preTotal : entry.preTotal.toFixed(1);
+      const scoreLabel = `pre-finals ${prePts} pts`;
+      return `
+        <div class="comp-lb-row">
+          <div class="comp-lb-rank">${medal || (i + 1)}</div>
+          <div class="comp-lb-team">
+            <a href="${base}/team?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
+            <div class="comp-lb-bar-wrap">
+              <div class="comp-lb-bar" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <div class="comp-lb-score">
+            <span class="comp-lb-total">${pct}%</span>
+            <span class="comp-lb-runs">${scoreLabel}</span>
           </div>
         </div>
-        <div class="comp-lb-score">
-          <span class="comp-lb-total">${entry.total % 1 === 0 ? entry.total : entry.total.toFixed(1)}</span>
-          <span class="comp-lb-runs">${scoreLabel}</span>
+      `;
+    }).join('');
+  } else {
+    const ranked = Object.entries(totals)
+      .map(([teamId, d]) => ({ teamId, ...d, total: d.preTotal }))
+      .sort((a, b) => b.total - a.total);
+
+    const topScore = ranked[0]?.total || 1;
+    el.innerHTML = ranked.map((entry, i) => {
+      const pct        = Math.max(0, Math.round((entry.total / topScore) * 100));
+      const medal      = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '';
+      const runLabel   = entry.runCount ? `${entry.runCount} run${entry.runCount !== 1 ? 's' : ''}` : null;
+      const postLabel  = entry.posterScore != null ? `poster ${entry.posterScore.toFixed(1)}` : null;
+      const scoreLabel = [runLabel, postLabel].filter(Boolean).join(' + ');
+      return `
+        <div class="comp-lb-row">
+          <div class="comp-lb-rank">${medal || (i + 1)}</div>
+          <div class="comp-lb-team">
+            <a href="${base}/team?id=${encodeURIComponent(entry.teamId)}&from=competition&compId=${compId}" class="comp-lb-team-name">${entry.teamName}</a>
+            <div class="comp-lb-bar-wrap">
+              <div class="comp-lb-bar" style="width:${pct}%"></div>
+            </div>
+          </div>
+          <div class="comp-lb-score">
+            <span class="comp-lb-total">${entry.total % 1 === 0 ? entry.total : entry.total.toFixed(1)}</span>
+            <span class="comp-lb-runs">${scoreLabel}</span>
+          </div>
         </div>
-      </div>
-    `;
-  }).join('');
+      `;
+    }).join('');
+  }
 }
 
 // ── SCHEDULE GRID ─────────────────────────────────────────────────────────────

@@ -37,7 +37,13 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 1rem;
+  margin-bottom: 0.4rem;
+}
+
+.results-section-sub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 0 0 1rem;
 }
 
 .results-empty {
