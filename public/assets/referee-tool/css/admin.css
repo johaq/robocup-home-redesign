@@ -383,6 +383,25 @@ select option { background: #1e1f22; }
 }
 .arena-chip-remove:hover { color: var(--penalty); }
 
+/* Humanoid toggle on a participating-team chip (for the Humanoid award). */
+.team-humanoid-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 0;
+  filter: grayscale(1);
+  opacity: 0.4;
+  transition: filter 0.15s, opacity 0.15s;
+}
+.team-humanoid-toggle:hover { opacity: 0.75; }
+.arena-chip.humanoid .team-humanoid-toggle { filter: none; opacity: 1; }
+.arena-chip.humanoid {
+  background: rgba(120,180,255,0.12);
+  border-color: rgba(120,180,255,0.4);
+}
+
 .badge {
   font-size: 0.75rem;
   padding: 2px 8px;

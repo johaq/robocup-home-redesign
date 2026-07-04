@@ -1,0 +1,104 @@
+#loading { padding: 40px; text-align: center; color: var(--muted); }
+#app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ──────────────────────────────────────────────────────── */
+#awards-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+#awards-title-wrap { flex: 1; min-width: 0; }
+#awards-comp-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+#awards-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── BODY ────────────────────────────────────────────────────────── */
+#awards-body {
+  flex: 1;
+  padding: 16px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Competition picker (no ?competition=) */
+.awards-comp-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.15s, color 0.15s;
+}
+.awards-comp-item:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── AWARD SECTIONS ──────────────────────────────────────────────── */
+.award-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.award-head {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.award-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.award-sub { font-size: 0.78rem; color: var(--muted); margin-top: 3px; }
+
+.award-rows { display: flex; flex-direction: column; }
+
+.award-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.award-row:last-child { border-bottom: none; }
+.award-row.winner { background: rgba(0,229,160,0.08); }
+
+.award-rank {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  min-width: 22px;
+  text-align: right;
+  flex-shrink: 0;
+}
+.award-row.winner .award-rank { color: var(--accent); font-weight: 700; }
+.award-team { flex: 1; min-width: 0; font-size: 0.95rem; color: var(--text); }
+.award-row.winner .award-team { font-weight: 700; }
+.award-pts {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.award-empty {
+  padding: 14px 16px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}

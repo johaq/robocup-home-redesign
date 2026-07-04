@@ -1090,7 +1090,8 @@ function renderCompTeamChips() {
     return;
   }
   el.innerHTML = compTeams.map(t => `
-    <span class="arena-chip">
+    <span class="arena-chip${t.humanoid ? ' humanoid' : ''}">
+      <button class="team-humanoid-toggle" data-id="${t.teamId}" title="Mark as a humanoid robot (for the Humanoid award)">🤖</button>
       ${t.teamName}
       <button class="arena-chip-remove" data-id="${t.teamId}" title="Remove">×</button>
     </span>
@@ -1098,6 +1099,15 @@ function renderCompTeamChips() {
   el.querySelectorAll('.arena-chip-remove').forEach(btn => {
     btn.addEventListener('click', () => removeCompTeam(btn.dataset.id));
   });
+  el.querySelectorAll('.team-humanoid-toggle').forEach(btn => {
+    btn.addEventListener('click', () => toggleCompTeamHumanoid(btn.dataset.id));
+  });
+}
+
+async function toggleCompTeamHumanoid(teamId) {
+  compTeams = compTeams.map(t => t.teamId === teamId ? { ...t, humanoid: !t.humanoid } : t);
+  await updateDoc(doc(db, 'competitions', currentCompetitionId), { participatingTeams: compTeams });
+  renderCompTeamChips();
 }
 
 function setupCompTeamSearch() {
