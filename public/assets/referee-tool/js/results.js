@@ -14,8 +14,46 @@ const compId  = params.get('id');
 let comp  = null;
 let tests = [];   // [{id, name}] — loaded from Firestore
 let runs  = {};   // runId → run data
+let posterScoresByTeam = {};  // teamId → final score out of 50
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+
+const POSTER_OUTLIER_N = 2;
+
+async function loadPosterScores() {
+  const slotsSnap = await getDocs(collection(db, 'competitions', compId, 'slots'));
+  const posterSlots = slotsSnap.docs.filter(d => d.data().type === 'poster');
+  if (!posterSlots.length) { posterScoresByTeam = {}; return; }
+
+  const rawByPresenter = {};
+  for (const slotDoc of posterSlots) {
+    const snap = await getDocs(
+      collection(db, 'competitions', compId, 'slots', slotDoc.id, 'posterScores')
+    );
+    snap.docs.forEach(d => {
+      const { judgeTeamId, scores = {} } = d.data();
+      for (const [presenterTeamId, raw] of Object.entries(scores)) {
+        if (presenterTeamId === judgeTeamId) continue;
+        if (!rawByPresenter[presenterTeamId]) rawByPresenter[presenterTeamId] = [];
+        rawByPresenter[presenterTeamId].push(raw);
+      }
+    });
+  }
+
+  posterScoresByTeam = {};
+  for (const [teamId, raws] of Object.entries(rawByPresenter)) {
+    const scaled = raws.map(s => s * 5);
+    let final;
+    if (scaled.length <= 2 * POSTER_OUTLIER_N) {
+      final = scaled.reduce((a, b) => a + b, 0) / scaled.length;
+    } else {
+      const sorted  = [...scaled].sort((a, b) => a - b);
+      const trimmed = sorted.slice(POSTER_OUTLIER_N, sorted.length - POSTER_OUTLIER_N);
+      final = trimmed.reduce((a, b) => a + b, 0) / trimmed.length;
+    }
+    posterScoresByTeam[teamId] = final;
+  }
+}
 
 async function init() {
   await ensureAuth();
@@ -30,7 +68,10 @@ async function init() {
   document.getElementById('results-comp-title').textContent = comp.name;
   document.getElementById('results-back-link').href = `${window.__siteBase || ''}/competition?id=${compId}`;
 
-  const testsSnap = await getDocs(collection(db, 'competitions', compId, 'tests'));
+  const [testsSnap] = await Promise.all([
+    getDocs(collection(db, 'competitions', compId, 'tests')),
+    loadPosterScores(),
+  ]);
   tests = testsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
   document.getElementById('results-loading').hidden = true;
@@ -60,8 +101,9 @@ function render() {
 
 function renderOverall(submitted) {
   const el = document.getElementById('results-overall');
+  const hasPoster = Object.keys(posterScoresByTeam).length > 0;
 
-  if (!submitted.length) {
+  if (!submitted.length && !hasPoster) {
     el.innerHTML = '<div class="results-empty">No submitted runs yet.</div>';
     return;
   }
@@ -71,10 +113,19 @@ function renderOverall(submitted) {
   const totals = {};
   for (const run of Object.values(bestByTeamTest)) {
     const { teamId, teamName, testId, flooredScore } = run;
-    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, byTest: {} };
+    if (!totals[teamId]) totals[teamId] = { teamName: teamName || teamId, total: 0, byTest: {}, posterScore: null };
     totals[teamId].total += flooredScore;
     const tName = tests.find(t => t.id === testId)?.name || testId || '—';
     totals[teamId].byTest[tName] = flooredScore;
+  }
+
+  // Fold in poster scores
+  const participatingMap = {};
+  (comp.participatingTeams || []).forEach(t => { participatingMap[t.teamId] = t.teamName; });
+  for (const [teamId, score] of Object.entries(posterScoresByTeam)) {
+    if (!totals[teamId]) totals[teamId] = { teamName: participatingMap[teamId] || teamId, total: 0, byTest: {}, posterScore: null };
+    totals[teamId].posterScore = score;
+    totals[teamId].total      += score;
   }
 
   const ranked = Object.entries(totals)
@@ -90,6 +141,7 @@ function renderOverall(submitted) {
           <th class="col-rank">#</th>
           <th class="col-team">Team</th>
           ${testNames.map(n => `<th class="col-test" title="${n}">${abbrev(n)}</th>`).join('')}
+          ${hasPoster ? `<th class="col-test" title="Poster Session">Poster</th>` : ''}
           <th class="col-total">Total</th>
         </tr>
       </thead>
@@ -111,6 +163,7 @@ function renderOverall(submitted) {
                 const url = (window.__siteBase || '') + '/scoreview?' + new URLSearchParams({ competition: compId, slot: run.slotId, team: run.teamId, teamName: run.teamName, test: run.testId, back: `${window.__siteBase || ''}/results?id=${compId}` });
                 return `<td class="col-test"><a href="${url}" target="_blank" rel="noopener" class="results-score-link">${score}</a></td>`;
               }).join('')}
+              ${hasPoster ? `<td class="col-test">${entry.posterScore != null ? entry.posterScore.toFixed(1) : '—'}</td>` : ''}
               <td class="col-total">${entry.total}</td>
             </tr>
           `;
