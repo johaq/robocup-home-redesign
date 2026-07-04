@@ -81,6 +81,13 @@
               "label": "Human assistance: Asking the Barman to handover object to the robot",
               "points": 100,
               "maxCount": 4
+            },
+            {
+              "id": "ha_object_repositioned",
+              "type": "fixed",
+              "label": "Human assistance: object repositioned by a person",
+              "points": 30,
+              "maxCount": 4
             }
           ]
         },

@@ -482,7 +482,7 @@ function refreshBoolean(item) {
       const inp = el.querySelector(`[data-pen="${pen.id}"]`);
       if (inp) {
         inp.value = scores[pen.id] || 0;
-        syncPctDisplay(pen.id, scores[pen.id] || 0, item.points);
+        syncPctDisplay(pen.id, scores[pen.id] || 0, afterFixedPts(item, scores));
       }
     }
   }
@@ -508,6 +508,11 @@ function renderPenRow(pen, parentItem) {
       scores[pen.id] = e.target.checked;
       const ptsEl1 = itemEl(parentItem.id)?.querySelector('.item-pts');
       if (ptsEl1) ptsEl1.textContent = `+${itemPts(parentItem)}`;
+      // Fixed penalty changes the base for percentage penalties — refresh their displays
+      const base = afterFixedPts(parentItem, scores);
+      for (const p of (parentItem.penalties || [])) {
+        if (p.type === 'percentage') syncPctDisplay(p.id, scores[p.id] || 0, base);
+      }
       updateTotal();
       scheduleSave({ label: pen.label, delta: e.target.checked ? -pen.points : pen.points, kind: e.target.checked ? undefined : 'undo' });
     });
@@ -524,11 +529,12 @@ function renderPenRow(pen, parentItem) {
       const oldPct = scores[pen.id] || 0;
       const pct    = clamp(parseInt(e.target.value) || 0, 0, 100);
       scores[pen.id] = pct;
-      syncPctDisplay(pen.id, pct, parentItem.points);
+      const base = afterFixedPts(parentItem, scores);
+      syncPctDisplay(pen.id, pct, base);
       const ptsEl2 = itemEl(parentItem.id)?.querySelector('.item-pts');
       if (ptsEl2) ptsEl2.textContent = `+${itemPts(parentItem)}`;
       updateTotal();
-      const delta = Math.round((oldPct - pct) / 100 * parentItem.points);
+      const delta = Math.round((oldPct - pct) / 100 * base);
       scheduleSave(delta !== 0 ? { label: pen.label, delta, kind: delta > 0 ? 'undo' : undefined } : undefined);
     });
   }
@@ -554,6 +560,16 @@ function renderModRow(mod) {
 function syncPctDisplay(penId, pct, basePoints) {
   const el = document.querySelector(`[data-pct-display="${penId}"]`);
   if (el) el.textContent = `−${Math.round(pct / 100 * basePoints)}`;
+}
+
+// Points remaining on an item after its fixed penalties are applied.
+// Percentage penalties use this as their base so they compound on top of fixed deductions.
+function afterFixedPts(item, scoreObj) {
+  let pts = item.points;
+  for (const pen of (item.penalties || [])) {
+    if (pen.type === 'fixed' && scoreObj[pen.id]) pts -= pen.points;
+  }
+  return pts;
 }
 
 // ── COUNT ─────────────────────────────────────────────────────────────────────
@@ -687,28 +703,40 @@ function renderInstance(item, idx) {
       `;
       penRow.querySelector('input').addEventListener('change', e => {
         scores[item.id][idx][pen.id] = e.target.checked;
+        // Fixed penalty changes the base — refresh percentage displays in this instance
+        const instNow = scores[item.id][idx];
+        const base = afterFixedPts(item, instNow);
+        for (const p of (item.penalties || [])) {
+          if (p.type === 'percentage') {
+            const span = penContainer.querySelector(`[data-pen-pct="${p.id}"]`);
+            if (span) span.textContent = `−${Math.round((instNow[p.id] || 0) / 100 * base)}`;
+          }
+        }
         updateInstanceSummary(item, idx);
         updateTotal();
         scheduleSave({ label: pen.label, delta: e.target.checked ? -pen.points : pen.points, kind: e.target.checked ? undefined : 'undo' });
       });
     } else if (pen.type === 'percentage') {
       const pct = inst[pen.id] || 0;
+      const base = afterFixedPts(item, inst);
       penRow.innerHTML = `
         <span class="penalty-label">${pen.label}</span>
         <div class="pct-group">
           <input type="number" class="pct-input" min="0" max="100" value="${pct}">
           <span class="pct-unit">%</span>
-          <span class="penalty-pts">−${Math.round(pct / 100 * item.points)}</span>
+          <span class="penalty-pts" data-pen-pct="${pen.id}">−${Math.round(pct / 100 * base)}</span>
         </div>
       `;
       penRow.querySelector('input').addEventListener('input', e => {
         const oldPct = scores[item.id][idx][pen.id] || 0;
         const v = clamp(parseInt(e.target.value) || 0, 0, 100);
         scores[item.id][idx][pen.id] = v;
-        penRow.querySelector('.penalty-pts').textContent = `−${Math.round(v / 100 * item.points)}`;
+        const instNow = scores[item.id][idx];
+        const b = afterFixedPts(item, instNow);
+        penRow.querySelector(`[data-pen-pct="${pen.id}"]`).textContent = `−${Math.round(v / 100 * b)}`;
         updateInstanceSummary(item, idx);
         updateTotal();
-        const delta = Math.round((oldPct - v) / 100 * item.points);
+        const delta = Math.round((oldPct - v) / 100 * b);
         scheduleSave(delta !== 0 ? { label: pen.label, delta, kind: delta > 0 ? 'undo' : undefined } : undefined);
       });
     }
