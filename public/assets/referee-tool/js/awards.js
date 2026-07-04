@@ -14,15 +14,15 @@ let testMap      = {};    // testId → test definition
 let humanoidIds  = new Set();
 
 // GPSR award: solved commands + interleaved bonus (partial-% already baked into itemPoints).
-const GPSR_ITEMS = ['solve_command_1', 'solve_command_2', 'solve_command_3', 'interleaved_bonus'];
+const GPSR_ITEMS = ['solving_the_first_command', 'solving_the_second_command', 'solving_the_third_command', 'interleaved_task_bonus'];
 
 // Curated "manipulation" line-items per test (net of their own modifiers/penalties).
 const MANIPULATION_ITEMS = {
-  pick_and_place: ['pick_object', 'place_object', 'dishwasher_rack', 'dishwasher_door', 'open_milk', 'pour_cereal_milk'],
-  doing_laundry:  ['pickup_clothing', 'fold_clothing', 'open_washer_door', 'remove_from_washer', 'basket_transport', 'fold_additional', 'stack_folded'],
-  restaurant:     ['picking_up_the_requested_items_from_the_kitchen_ba', 'serve_the_order_to_the_customer', 'use_an_unattached_tray_to_transport'],
-  finals:         ['moving_basket', 'open_door', 'close_dishwasher'],
-  hri_challenge:  ['grab_bag'],
+  pick_and_place_challenge: ['picking_up_an_object_for_transportation', 'place_an_object_in_its_designated_location', 'pull_or_push_the_dishwasher_rack', 'open_or_close_the_dishwasher_door_without_assistan', 'open_milk_container_without_assistance', 'pour_cereal_or_milk_into_the_bowl_without_assistan'],
+  doing_laundry:            ['picking_up_a_piece_of_clothing_from_the_basket', 'folding_a_piece_of_clothing', 'opening_the_washing_machine_door', 'removing_one_or_more_pieces_of_clothing_from_the_w', 'using_the_basket_for_transportation', 'folding_additional_clothes_per_item', 'stacking_folded_clothes_neatly_per_item'],
+  restaurant:               ['picking_up_the_requested_items_from_the_kitchen_ba', 'serve_the_order_to_the_customer', 'use_an_unattached_tray_to_transport'],
+  finals:                   ['moving_the_laundry_basket', 'opening_the_door_of_the_apartment', 'closing_the_dishwasher'],
+  human_robot_interaction_challenge: ['receive_the_bag_from_the_guest_via_handover'],
 };
 
 async function init() {
@@ -130,7 +130,7 @@ function render(runs) {
     if (manipIds && def) {
       accumulate(manip, run, sumItems(def, run.scores, manipIds));
     }
-    if (run.testId === 'hri_challenge') {
+    if (run.testId === 'human_robot_interaction_challenge') {
       accumulate(hri, run, Math.max(0, run.totalScore || 0));
     }
   }
