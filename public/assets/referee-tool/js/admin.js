@@ -1380,9 +1380,15 @@ function renderTeamList(slot) {
     });
 
     row.querySelector('[data-action="remove"]').addEventListener('click', async () => {
+      const removedTeam = teams[idx];
       const t = teams.filter((_, i) => i !== idx);
       await saveTeams(t);
       slot.teams = t;
+      // Delete any draft run this team had in this slot so it doesn't linger on the display
+      if (removedTeam?.teamId) {
+        const runRef = doc(db, 'competitions', currentCompetitionId, 'runs', `${slot.id}_${removedTeam.teamId}`);
+        deleteDoc(runRef).catch(() => {}); // best-effort; run may not exist yet
+      }
       renderTeamList(slot);
       updateSlotLink(slot);
       if (_onTeamListChanged) _onTeamListChanged();
