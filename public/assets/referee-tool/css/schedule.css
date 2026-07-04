@@ -1,0 +1,129 @@
+#loading {
+  padding: 40px;
+  text-align: center;
+  color: var(--muted);
+}
+
+#app { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* ── HEADER ──────────────────────────────────────────────────────── */
+
+#sched-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+#sched-title-wrap { flex: 1; min-width: 0; }
+
+#sched-comp-name {
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+#sched-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── BODY ────────────────────────────────────────────────────────── */
+
+#sched-body {
+  flex: 1;
+  padding: 16px;
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sched-empty { color: var(--muted); text-align: center; padding: 40px 0; }
+
+/* Competition picker (when no ?competition=) */
+.sched-comp-item {
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: border-color 0.15s, color 0.15s;
+}
+.sched-comp-item:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── DAY GROUPS ──────────────────────────────────────────────────── */
+
+.sched-day { margin-bottom: 26px; }
+
+.sched-day-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+.sched-day-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+.sched-day.today .sched-day-date { color: var(--accent); }
+.sched-today-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #000;
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* ── ROWS ────────────────────────────────────────────────────────── */
+
+.sched-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 9px 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.sched-row:last-child { border-bottom: none; }
+
+.sched-time {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 52px;
+  flex-shrink: 0;
+}
+.sched-name {
+  flex: 1;
+  min-width: 140px;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+.sched-arenas { display: flex; gap: 5px; flex-wrap: wrap; }
+.sched-arena {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+.sched-teams {
+  font-size: 0.78rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
