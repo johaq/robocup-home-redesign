@@ -1,0 +1,30 @@
+---
+import RefLayout from '../layouts/RefLayout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<RefLayout
+  title="Schedule — RoboCup@Home"
+  fonts="Space+Mono:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400"
+  cacheControl={true}
+>
+  <link slot="head" rel="stylesheet" href={`${base}/assets/referee-tool/css/shared.css`} />
+  <link slot="head" rel="stylesheet" href={`${base}/assets/referee-tool/css/schedule.css`} />
+
+  <div id="loading">Loading…</div>
+
+  <div id="app" hidden>
+    <header id="sched-header">
+      <a class="ref-menu-link" href={`${base}/referee`}>← Menu</a>
+      <div id="sched-title-wrap">
+        <div id="sched-comp-name">—</div>
+        <div id="sched-subtitle">Schedule</div>
+      </div>
+    </header>
+
+    <div id="sched-body">
+      <div id="sched-content"></div>
+    </div>
+  </div>
+
+  <script is:inline type="module" src={`${base}/assets/referee-tool/js/schedule.js`}></script>
+</RefLayout>

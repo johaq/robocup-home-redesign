@@ -2,6 +2,7 @@ import { db, ensureRefereeAuth, signOut, auth } from './firebase.js';
 import {
   collection, doc, getDoc, getDocs, getDocsFromCache, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+import { todayInZone } from './comp-utils.js';
 
 const params        = new URLSearchParams(window.location.search);
 const competitionId = params.get('competition');
@@ -17,7 +18,10 @@ let filterReferee = null;
 let currentCompId = null;
 let hasInspectionSlot = false;
 
-const today = new Date().toISOString().slice(0, 10);  // YYYY-MM-DD
+// "Today" in the competition's timezone — set once compData loads (see showDashboard).
+// Defaults to the viewer's local zone; NEVER UTC (toISOString would mis-date a venue in
+// e.g. Seoul as still the previous day early in the morning).
+let today = todayInZone(undefined);  // YYYY-MM-DD
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 
@@ -130,6 +134,9 @@ async function showDashboard(compId) {
 
   const compSnap = await getDoc(doc(db, 'competitions', compId));
   const compData = compSnap.exists() ? compSnap.data() : {};
+
+  // Use the competition's local date for "today" ordering/highlighting.
+  today = todayInZone(compData.timezone || undefined);
 
   document.getElementById('comp-name').textContent = compData.name || compId;
 
