@@ -21,8 +21,13 @@ const MANIPULATION_ITEMS = {
   pick_and_place_challenge: ['picking_up_an_object_for_transportation', 'place_an_object_in_its_designated_location', 'pull_or_push_the_dishwasher_rack', 'open_or_close_the_dishwasher_door_without_assistan', 'open_milk_container_without_assistance', 'pour_cereal_or_milk_into_the_bowl_without_assistan'],
   doing_laundry:            ['picking_up_a_piece_of_clothing_from_the_basket', 'folding_a_piece_of_clothing', 'opening_the_washing_machine_door', 'removing_one_or_more_pieces_of_clothing_from_the_w', 'using_the_basket_for_transportation', 'folding_additional_clothes_per_item', 'stacking_folded_clothes_neatly_per_item'],
   restaurant:               ['picking_up_the_requested_items_from_the_kitchen_ba', 'serve_the_order_to_the_customer', 'use_an_unattached_tray_to_transport'],
-  finals:                   ['moving_the_laundry_basket', 'opening_the_door_of_the_apartment', 'closing_the_dishwasher'],
-  human_robot_interaction_challenge: ['receive_the_bag_from_the_guest_via_handover'],
+};
+
+// Curated HRI-focused line-items per test.
+const HRI_ITEMS = {
+  gpsr:                          ['understand_the_spoken_command'],
+  human_robot_interaction_challenge: ['detect_the_doorbell_sound_as_a_signal_that_a_guest', 'look_at_the_person_talking_when_receiving_a_guest', 'offer_a_free_seat_to_the_new_guest', 'tell_a_visual_attribute_of_the_first_guest_to_the_', 'not_asking_non_essential_questions_to_confirm_or_c', 'say_name_and_favorite_drink_of_each_guest_during_i', 'while_introducing_guests_look_to_the_correct_guest', 'receive_the_bag_from_the_guest_via_handover', 'following_the_host_to_the_bag_drop_area'],
+  restaurant:                    ['detect_calling_or_waving_customer', 'understand_and_confirm_the_order_received_to_the_c', 'communicate_the_order_to_the_barman'],
 };
 
 async function init() {
@@ -130,8 +135,9 @@ function render(runs) {
     if (manipIds && def) {
       accumulate(manip, run, sumItems(def, run.scores, manipIds));
     }
-    if (run.testId === 'human_robot_interaction_challenge') {
-      accumulate(hri, run, Math.max(0, run.totalScore || 0));
+    const hriIds = HRI_ITEMS[run.testId];
+    if (hriIds && def) {
+      accumulate(hri, run, sumItems(def, run.scores, hriIds));
     }
   }
 
