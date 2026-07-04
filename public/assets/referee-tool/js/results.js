@@ -164,7 +164,7 @@ function renderOverall(submitted) {
                 return `<td class="col-test"><a href="${url}" target="_blank" rel="noopener" class="results-score-link">${score}</a></td>`;
               }).join('')}
               ${hasPoster ? `<td class="col-test">${entry.posterScore != null ? entry.posterScore.toFixed(1) : '—'}</td>` : ''}
-              <td class="col-total">${entry.total}</td>
+              <td class="col-total">${entry.total % 1 === 0 ? entry.total : entry.total.toFixed(1)}</td>
             </tr>
           `;
         }).join('')}
