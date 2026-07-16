@@ -1,0 +1,2108 @@
+{
+  "competition": {
+    "id": "rc2026",
+    "name": "Robocup 2026",
+    "totalTeams": 24
+  },
+  "generatedAt": "2026-07-16T07:25:46.146Z",
+  "tests": [
+    {
+      "id": "doing_laundry",
+      "name": "Doing Laundry",
+      "totalRuns": 61,
+      "totalTeams": 21,
+      "avgScore": 140.5737704918033,
+      "maxScore": 1415,
+      "minScore": 0,
+      "sections": [
+        {
+          "id": "main_goal",
+          "heading": "Main Goal",
+          "rewards": [
+            {
+              "id": "navigating_to_the_laundry_area",
+              "label": "Navigating to the laundry area",
+              "type": "boolean",
+              "points": 15,
+              "maxCount": null,
+              "all": {
+                "timesScored": 40,
+                "uniqueTeams": 19,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 19,
+                "uniqueTeams": 19,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "picking_up_a_piece_of_clothing_from_the_basket",
+              "label": "Picking up a piece of clothing from the basket",
+              "type": "boolean",
+              "points": 100,
+              "maxCount": null,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "picking_up_multiple_at_once",
+                  "label": "Picking up multiple at once",
+                  "type": "fixed",
+                  "points": 100,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "folding_a_piece_of_clothing",
+              "label": "Folding a piece of clothing",
+              "type": "boolean",
+              "points": 800,
+              "maxCount": null,
+              "all": {
+                "timesScored": 12,
+                "uniqueTeams": 7,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "ha_flatten",
+                  "label": "Human assistance: Flattening/Arranging clothing before folding",
+                  "type": "fixed",
+                  "points": 200,
+                  "all": {
+                    "timesScored": 10,
+                    "uniqueTeams": 7,
+                    "totalCount": 0,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 5,
+                    "uniqueTeams": 5,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "quality_penalties",
+                  "label": "Quality penalties",
+                  "type": "percentage",
+                  "points": 0,
+                  "all": {
+                    "timesScored": 12,
+                    "uniqueTeams": 7,
+                    "totalCount": 719,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 7,
+                    "uniqueTeams": 7,
+                    "totalCount": 418,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "extra_rewards",
+          "heading": "Extra Rewards",
+          "rewards": [
+            {
+              "id": "opening_the_washing_machine_door",
+              "label": "Opening the washing machine door",
+              "type": "boolean",
+              "points": 300,
+              "maxCount": null,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 3,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 3,
+                "uniqueTeams": 3,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "ha_unclicked_door",
+                  "label": "Human assistance: Unclicked the door",
+                  "type": "fixed",
+                  "points": 200,
+                  "all": {
+                    "timesScored": 2,
+                    "uniqueTeams": 1,
+                    "totalCount": 0,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "ha_swung_open_door",
+                  "label": "Human assistance: Swung open the door",
+                  "type": "fixed",
+                  "points": 100,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "removing_one_or_more_pieces_of_clothing_from_the_w",
+              "label": "Removing one or more pieces of clothing from the washing machine",
+              "type": "boolean",
+              "points": 300,
+              "maxCount": null,
+              "all": {
+                "timesScored": 5,
+                "uniqueTeams": 4,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "using_the_basket_for_transportation",
+              "label": "Using the basket for transportation",
+              "type": "boolean",
+              "points": 300,
+              "maxCount": null,
+              "all": {
+                "timesScored": 5,
+                "uniqueTeams": 4,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "folding_additional_clothes_per_item",
+              "label": "Folding additional clothes (per item)",
+              "type": "count",
+              "points": 400,
+              "maxCount": 5,
+              "all": {
+                "timesScored": 2,
+                "uniqueTeams": 2,
+                "totalCount": 2,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 2,
+                "uniqueTeams": 2,
+                "totalCount": 2,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "quality_penalties_2",
+                  "label": "Quality penalties",
+                  "type": "percentage",
+                  "points": 0,
+                  "all": {
+                    "timesScored": 2,
+                    "uniqueTeams": 2,
+                    "totalCount": 2,
+                    "totalRuns": 61
+                  },
+                  "best": {
+                    "timesScored": 2,
+                    "uniqueTeams": 2,
+                    "totalCount": 2,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "stacking_folded_clothes_neatly_per_item",
+              "label": "Stacking folded clothes neatly (per item)",
+              "type": "count",
+              "points": 100,
+              "maxCount": 6,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "penalties",
+          "heading": "Penalties",
+          "rewards": [],
+          "penalties": [
+            {
+              "id": "human_assistance_environment_changes_per_item",
+              "label": "Human assistance: environment changes (per item)",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": null,
+              "all": {
+                "timesScored": 3,
+                "uniqueTeams": 3,
+                "totalCount": 6,
+                "totalRuns": 61
+              },
+              "best": {
+                "timesScored": 2,
+                "uniqueTeams": 2,
+                "totalCount": 5,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ]
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-07-02",
+          "runCount": 21,
+          "avgScore": 86.38095238095238,
+          "itemRates": {
+            "navigating_to_the_laundry_area": 0.6666666666666666,
+            "picking_up_a_piece_of_clothing_from_the_basket": 0,
+            "folding_a_piece_of_clothing": 0.09523809523809523,
+            "opening_the_washing_machine_door": 0.09523809523809523,
+            "removing_one_or_more_pieces_of_clothing_from_the_w": 0.047619047619047616,
+            "using_the_basket_for_transportation": 0.047619047619047616,
+            "folding_additional_clothes_per_item": 0.047619047619047616,
+            "stacking_folded_clothes_neatly_per_item": 0
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "runCount": 19,
+          "avgScore": 217.89473684210526,
+          "itemRates": {
+            "navigating_to_the_laundry_area": 0.7368421052631579,
+            "picking_up_a_piece_of_clothing_from_the_basket": 0.05263157894736842,
+            "folding_a_piece_of_clothing": 0.3684210526315789,
+            "opening_the_washing_machine_door": 0.15789473684210525,
+            "removing_one_or_more_pieces_of_clothing_from_the_w": 0.15789473684210525,
+            "using_the_basket_for_transportation": 0.10526315789473684,
+            "folding_additional_clothes_per_item": 0,
+            "stacking_folded_clothes_neatly_per_item": 0
+          }
+        },
+        {
+          "date": "2026-07-04",
+          "runCount": 21,
+          "avgScore": 124.80952380952381,
+          "itemRates": {
+            "navigating_to_the_laundry_area": 0.5714285714285714,
+            "picking_up_a_piece_of_clothing_from_the_basket": 0,
+            "folding_a_piece_of_clothing": 0.14285714285714285,
+            "opening_the_washing_machine_door": 0.09523809523809523,
+            "removing_one_or_more_pieces_of_clothing_from_the_w": 0.047619047619047616,
+            "using_the_basket_for_transportation": 0.09523809523809523,
+            "folding_additional_clothes_per_item": 0.047619047619047616,
+            "stacking_folded_clothes_neatly_per_item": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "gpsr",
+      "name": "GPSR",
+      "totalRuns": 63,
+      "totalTeams": 21,
+      "avgScore": 413.6031746031746,
+      "maxScore": 1142,
+      "minScore": 0,
+      "sections": [
+        {
+          "id": "main_goal",
+          "heading": "Main Goal",
+          "rewards": [
+            {
+              "id": "understand_the_spoken_command",
+              "label": "Understand the spoken command",
+              "type": "count",
+              "points": 80,
+              "maxCount": 3,
+              "all": {
+                "timesScored": 48,
+                "uniqueTeams": 20,
+                "totalCount": 129,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 20,
+                "uniqueTeams": 20,
+                "totalCount": 58,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "using_a_custom_operator",
+                  "label": "Using a custom operator",
+                  "type": "fixed",
+                  "points": 20,
+                  "all": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 1,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "request_a_rephrasing",
+                  "label": "Request a rephrasing",
+                  "type": "fixed",
+                  "points": 30,
+                  "all": {
+                    "timesScored": 9,
+                    "uniqueTeams": 9,
+                    "totalCount": 11,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 5,
+                    "uniqueTeams": 5,
+                    "totalCount": 6,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "demonstrate_a_plan_has_been_generated",
+              "label": "Demonstrate a plan has been generated",
+              "type": "count",
+              "points": 100,
+              "maxCount": 3,
+              "all": {
+                "timesScored": 48,
+                "uniqueTeams": 20,
+                "totalCount": 122,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 20,
+                "uniqueTeams": 20,
+                "totalCount": 56,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "solving_the_first_command",
+              "label": "Solving the first command",
+              "type": "boolean",
+              "points": 250,
+              "maxCount": null,
+              "all": {
+                "timesScored": 38,
+                "uniqueTeams": 17,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 17,
+                "uniqueTeams": 17,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "partial_solution_1",
+                  "label": "Partial solving",
+                  "type": "percentage",
+                  "points": 0,
+                  "all": {
+                    "timesScored": 33,
+                    "uniqueTeams": 16,
+                    "totalCount": 2677,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 13,
+                    "uniqueTeams": 13,
+                    "totalCount": 1015,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "solving_the_second_command",
+              "label": "Solving the second command",
+              "type": "boolean",
+              "points": 250,
+              "maxCount": null,
+              "all": {
+                "timesScored": 13,
+                "uniqueTeams": 11,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 9,
+                "uniqueTeams": 9,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "partial_solution_2",
+                  "label": "Partial solving",
+                  "type": "percentage",
+                  "points": 0,
+                  "all": {
+                    "timesScored": 11,
+                    "uniqueTeams": 10,
+                    "totalCount": 944,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 7,
+                    "uniqueTeams": 7,
+                    "totalCount": 572,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "solving_the_third_command",
+              "label": "Solving the third command",
+              "type": "boolean",
+              "points": 250,
+              "maxCount": null,
+              "all": {
+                "timesScored": 5,
+                "uniqueTeams": 5,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "partial_solution_3",
+                  "label": "Partial solving",
+                  "type": "percentage",
+                  "points": 0,
+                  "all": {
+                    "timesScored": 5,
+                    "uniqueTeams": 5,
+                    "totalCount": 423,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 4,
+                    "uniqueTeams": 4,
+                    "totalCount": 329,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "extra_rewards",
+          "heading": "Extra Rewards",
+          "rewards": [
+            {
+              "id": "interleaved_task_bonus",
+              "label": "Interleaved Task Bonus",
+              "type": "boolean",
+              "points": 200,
+              "maxCount": null,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "penalties",
+          "heading": "Penalties",
+          "rewards": [],
+          "penalties": [
+            {
+              "id": "bypassing_speech_recognition",
+              "label": "Bypassing speech recognition",
+              "type": "standalone_penalty",
+              "points": 50,
+              "maxCount": 3,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ]
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-07-02",
+          "runCount": 21,
+          "avgScore": 322.6190476190476,
+          "itemRates": {
+            "understand_the_spoken_command": 0.7142857142857143,
+            "demonstrate_a_plan_has_been_generated": 0.7142857142857143,
+            "solving_the_first_command": 0.38095238095238093,
+            "solving_the_second_command": 0.047619047619047616,
+            "solving_the_third_command": 0,
+            "interleaved_task_bonus": 0
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "runCount": 21,
+          "avgScore": 502.42857142857144,
+          "itemRates": {
+            "understand_the_spoken_command": 0.8571428571428571,
+            "demonstrate_a_plan_has_been_generated": 0.8571428571428571,
+            "solving_the_first_command": 0.7619047619047619,
+            "solving_the_second_command": 0.3333333333333333,
+            "solving_the_third_command": 0.14285714285714285,
+            "interleaved_task_bonus": 0
+          }
+        },
+        {
+          "date": "2026-07-04",
+          "runCount": 21,
+          "avgScore": 415.76190476190476,
+          "itemRates": {
+            "understand_the_spoken_command": 0.7142857142857143,
+            "demonstrate_a_plan_has_been_generated": 0.7142857142857143,
+            "solving_the_first_command": 0.6666666666666666,
+            "solving_the_second_command": 0.23809523809523808,
+            "solving_the_third_command": 0.09523809523809523,
+            "interleaved_task_bonus": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "human_robot_interaction_challenge",
+      "name": "Human Robot Interaction Challenge",
+      "totalRuns": 63,
+      "totalTeams": 21,
+      "avgScore": 414.76190476190476,
+      "maxScore": 1290,
+      "minScore": 0,
+      "sections": [
+        {
+          "id": "greeting",
+          "heading": "Greeting",
+          "rewards": [
+            {
+              "id": "detect_the_doorbell_sound_as_a_signal_that_a_guest",
+              "label": "Detect the doorbell sound as a signal that a guest has arrived",
+              "type": "count",
+              "points": 30,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 20,
+                "uniqueTeams": 10,
+                "totalCount": 30,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 6,
+                "uniqueTeams": 6,
+                "totalCount": 9,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "open_the_entrance_door_for_a_guest",
+              "label": "Open the entrance door for a guest",
+              "type": "count",
+              "points": 200,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 11,
+                "uniqueTeams": 4,
+                "totalCount": 17,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 8,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "look_at_the_person_talking_when_receiving_a_guest",
+              "label": "Look at the person talking, when receiving a guest",
+              "type": "count",
+              "points": 50,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 42,
+                "uniqueTeams": 20,
+                "totalCount": 75,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 18,
+                "uniqueTeams": 18,
+                "totalCount": 34,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "offer_a_free_seat_to_the_new_guest",
+              "label": "Offer a free seat to the new guest",
+              "type": "count",
+              "points": 100,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 42,
+                "uniqueTeams": 19,
+                "totalCount": 70,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 19,
+                "uniqueTeams": 19,
+                "totalCount": 34,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "look_in_the_direction_of_navigation_or_at_the_navi",
+              "label": "Look in the direction of navigation or at the navigation goal",
+              "type": "count",
+              "points": 15,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 48,
+                "uniqueTeams": 20,
+                "totalCount": 83,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 19,
+                "uniqueTeams": 19,
+                "totalCount": 35,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "tell_a_visual_attribute_of_the_first_guest_to_the_",
+              "label": "Tell a visual attribute of the first guest to the second guest",
+              "type": "count",
+              "points": 0,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 32,
+                "uniqueTeams": 17,
+                "totalCount": 110,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 16,
+                "uniqueTeams": 16,
+                "totalCount": 57,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "incorrect_attribute",
+                  "label": "Incorrect attribute",
+                  "type": "fixed",
+                  "points": 20,
+                  "all": {
+                    "timesScored": 12,
+                    "uniqueTeams": 8,
+                    "totalCount": 14,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 4,
+                    "uniqueTeams": 4,
+                    "totalCount": 4,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "not_asking_non_essential_questions_to_confirm_or_c",
+              "label": "Not asking non-essential questions to confirm or correct information",
+              "type": "count",
+              "points": 15,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 38,
+                "uniqueTeams": 19,
+                "totalCount": 124,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 17,
+                "uniqueTeams": 17,
+                "totalCount": 57,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "introduction",
+          "heading": "Introduction",
+          "rewards": [
+            {
+              "id": "say_name_and_favorite_drink_of_each_guest_during_i",
+              "label": "Say name and favorite drink of each guest (during introduction)",
+              "type": "count",
+              "points": 30,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 36,
+                "uniqueTeams": 18,
+                "totalCount": 114,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 16,
+                "uniqueTeams": 16,
+                "totalCount": 59,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "while_introducing_guests_look_to_the_correct_guest",
+              "label": "While introducing guests, look to the correct guest while talking about the other guest",
+              "type": "count",
+              "points": 50,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 23,
+                "uniqueTeams": 15,
+                "totalCount": 39,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 15,
+                "uniqueTeams": 15,
+                "totalCount": 24,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "guiding",
+          "heading": "Guiding",
+          "rewards": [
+            {
+              "id": "receive_the_bag_from_the_guest_via_handover",
+              "label": "Receive the bag from the guest via handover",
+              "type": "boolean",
+              "points": 50,
+              "maxCount": null,
+              "all": {
+                "timesScored": 25,
+                "uniqueTeams": 14,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 14,
+                "uniqueTeams": 14,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "requesting_handover_assistance_from_the_guest",
+                  "label": "Requesting handover assistance from the guest",
+                  "type": "fixed",
+                  "points": 25,
+                  "all": {
+                    "timesScored": 5,
+                    "uniqueTeams": 5,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 4,
+                    "uniqueTeams": 4,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "bag_placed_on_the_robot_structure_instead_of_being",
+                  "label": "Bag placed on the robot structure instead of being handed over",
+                  "type": "fixed",
+                  "points": 50,
+                  "all": {
+                    "timesScored": 16,
+                    "uniqueTeams": 9,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 7,
+                    "uniqueTeams": 7,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "following_the_host_to_the_bag_drop_area",
+              "label": "Following the host to the bag drop area",
+              "type": "boolean",
+              "points": 200,
+              "maxCount": null,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 5,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 5,
+                "uniqueTeams": 5,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "drop_the_bag_while_following_the_host",
+                  "label": "Drop the bag while following the host",
+                  "type": "fixed",
+                  "points": 50,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "rediscovering_the_operator_by_natural_interaction",
+                  "label": "Rediscovering the operator by natural interaction",
+                  "type": "fixed",
+                  "points": 50,
+                  "all": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "asking_the_operator_to_wait",
+                  "label": "Asking the operator to wait",
+                  "type": "fixed",
+                  "points": 50,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "guiding_the_robot_with_physical_contact_take_by_th",
+                  "label": "Guiding the robot with physical contact (take by the hand)",
+                  "type": "fixed",
+                  "points": 150,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            },
+            {
+              "id": "drop_the_bag_in_the_correct_area",
+              "label": "Drop the bag in the correct area",
+              "type": "boolean",
+              "points": 50,
+              "maxCount": null,
+              "all": {
+                "timesScored": 4,
+                "uniqueTeams": 3,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 3,
+                "uniqueTeams": 3,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "penalties",
+          "heading": "Penalties",
+          "rewards": [],
+          "penalties": [
+            {
+              "id": "wrong_guest_information_was_memorized",
+              "label": "Wrong guest information was memorized",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 13,
+                "uniqueTeams": 10,
+                "totalCount": 18,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 4,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "alternative_hri",
+              "label": "Alternative HRI",
+              "type": "standalone_penalty",
+              "points": 20,
+              "maxCount": 6,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "not_acknowledging_people",
+              "label": "Not acknowledging people",
+              "type": "standalone_penalty",
+              "points": 200,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ]
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-07-02",
+          "runCount": 21,
+          "avgScore": 245.47619047619048,
+          "itemRates": {
+            "detect_the_doorbell_sound_as_a_signal_that_a_guest": 0.3333333333333333,
+            "open_the_entrance_door_for_a_guest": 0.19047619047619047,
+            "look_at_the_person_talking_when_receiving_a_guest": 0.5714285714285714,
+            "offer_a_free_seat_to_the_new_guest": 0.47619047619047616,
+            "look_in_the_direction_of_navigation_or_at_the_navi": 0.6666666666666666,
+            "tell_a_visual_attribute_of_the_first_guest_to_the_": 0.23809523809523808,
+            "not_asking_non_essential_questions_to_confirm_or_c": 0.38095238095238093,
+            "say_name_and_favorite_drink_of_each_guest_during_i": 0.5238095238095238,
+            "while_introducing_guests_look_to_the_correct_guest": 0.14285714285714285,
+            "receive_the_bag_from_the_guest_via_handover": 0.09523809523809523,
+            "following_the_host_to_the_bag_drop_area": 0.047619047619047616,
+            "drop_the_bag_in_the_correct_area": 0
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "runCount": 21,
+          "avgScore": 455.7142857142857,
+          "itemRates": {
+            "detect_the_doorbell_sound_as_a_signal_that_a_guest": 0.2857142857142857,
+            "open_the_entrance_door_for_a_guest": 0.14285714285714285,
+            "look_at_the_person_talking_when_receiving_a_guest": 0.6190476190476191,
+            "offer_a_free_seat_to_the_new_guest": 0.7142857142857143,
+            "look_in_the_direction_of_navigation_or_at_the_navi": 0.7142857142857143,
+            "tell_a_visual_attribute_of_the_first_guest_to_the_": 0.5714285714285714,
+            "not_asking_non_essential_questions_to_confirm_or_c": 0.7619047619047619,
+            "say_name_and_favorite_drink_of_each_guest_during_i": 0.6190476190476191,
+            "while_introducing_guests_look_to_the_correct_guest": 0.47619047619047616,
+            "receive_the_bag_from_the_guest_via_handover": 0.5714285714285714,
+            "following_the_host_to_the_bag_drop_area": 0.09523809523809523,
+            "drop_the_bag_in_the_correct_area": 0.047619047619047616
+          }
+        },
+        {
+          "date": "2026-07-04",
+          "runCount": 21,
+          "avgScore": 543.0952380952381,
+          "itemRates": {
+            "detect_the_doorbell_sound_as_a_signal_that_a_guest": 0.3333333333333333,
+            "open_the_entrance_door_for_a_guest": 0.19047619047619047,
+            "look_at_the_person_talking_when_receiving_a_guest": 0.8095238095238095,
+            "offer_a_free_seat_to_the_new_guest": 0.8095238095238095,
+            "look_in_the_direction_of_navigation_or_at_the_navi": 0.9047619047619048,
+            "tell_a_visual_attribute_of_the_first_guest_to_the_": 0.7142857142857143,
+            "not_asking_non_essential_questions_to_confirm_or_c": 0.6666666666666666,
+            "say_name_and_favorite_drink_of_each_guest_during_i": 0.5714285714285714,
+            "while_introducing_guests_look_to_the_correct_guest": 0.47619047619047616,
+            "receive_the_bag_from_the_guest_via_handover": 0.5238095238095238,
+            "following_the_host_to_the_bag_drop_area": 0.19047619047619047,
+            "drop_the_bag_in_the_correct_area": 0.14285714285714285
+          }
+        }
+      ]
+    },
+    {
+      "id": "pick_and_place_challenge",
+      "name": "Pick And Place Challenge",
+      "totalRuns": 63,
+      "totalTeams": 21,
+      "avgScore": 142.6984126984127,
+      "maxScore": 1555,
+      "minScore": 0,
+      "sections": [
+        {
+          "id": "general",
+          "heading": "General",
+          "rewards": [
+            {
+              "id": "navigate_to_the_table",
+              "label": "Navigate to the table",
+              "type": "boolean",
+              "points": 15,
+              "maxCount": null,
+              "all": {
+                "timesScored": 41,
+                "uniqueTeams": 19,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 19,
+                "uniqueTeams": 19,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "correctly_recognize_an_object",
+              "label": "Correctly recognize an object",
+              "type": "count",
+              "points": 10,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 29,
+                "uniqueTeams": 16,
+                "totalCount": 142,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 15,
+                "uniqueTeams": 15,
+                "totalCount": 84,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "perceive_objects_on_a_shelf_and_indicate_the_corre",
+              "label": "Perceive objects on a shelf and indicate the correct placement",
+              "type": "count",
+              "points": 30,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 8,
+                "uniqueTeams": 6,
+                "totalCount": 9,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 6,
+                "uniqueTeams": 6,
+                "totalCount": 7,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "picking",
+          "heading": "Picking",
+          "rewards": [
+            {
+              "id": "picking_up_an_object_for_transportation",
+              "label": "Picking up an object for transportation",
+              "type": "count",
+              "points": 50,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 18,
+                "uniqueTeams": 10,
+                "totalCount": 50,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 10,
+                "uniqueTeams": 10,
+                "totalCount": 27,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "common_object_from_auxiliary_table",
+                  "label": "Common object from auxiliary table",
+                  "type": "fixed",
+                  "points": 20,
+                  "all": {
+                    "timesScored": 2,
+                    "uniqueTeams": 2,
+                    "totalCount": 3,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 2,
+                    "uniqueTeams": 2,
+                    "totalCount": 3,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "placing",
+          "heading": "Placing",
+          "rewards": [
+            {
+              "id": "place_an_object_in_its_designated_location",
+              "label": "Place an object in its designated location",
+              "type": "count",
+              "points": 40,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 11,
+                "uniqueTeams": 7,
+                "totalCount": 34,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 6,
+                "uniqueTeams": 6,
+                "totalCount": 15,
+                "totalRuns": 21
+              },
+              "penalties": [
+                {
+                  "id": "area_around_breakfast_items_is_not_cleaned",
+                  "label": "Area around breakfast items is not cleaned",
+                  "type": "fixed",
+                  "points": 30,
+                  "all": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 1,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                },
+                {
+                  "id": "common_object_from_auxiliary_table_2",
+                  "label": "Common object from auxiliary table",
+                  "type": "fixed",
+                  "points": 20,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 63
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 21
+                  }
+                }
+              ]
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "extra_rewards",
+          "heading": "Extra Rewards",
+          "rewards": [
+            {
+              "id": "pull_or_push_the_dishwasher_rack",
+              "label": "Pull or push the dishwasher rack",
+              "type": "count",
+              "points": 100,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "open_or_close_the_dishwasher_door_without_assistan",
+              "label": "Open or close the dishwasher door without assistance",
+              "type": "count",
+              "points": 200,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 2,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "open_milk_container_without_assistance",
+              "label": "Open milk container without assistance",
+              "type": "boolean",
+              "points": 400,
+              "maxCount": null,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "pour_cereal_or_milk_into_the_bowl_without_assistan",
+              "label": "Pour cereal or milk into the bowl without assistance",
+              "type": "count",
+              "points": 200,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 2,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "penalties",
+          "heading": "Penalties",
+          "rewards": [],
+          "penalties": [
+            {
+              "id": "objects_thrown_or_dropped_while_placing",
+              "label": "Objects thrown or dropped while placing",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 3,
+                "uniqueTeams": 3,
+                "totalCount": 4,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 2,
+                "uniqueTeams": 2,
+                "totalCount": 2,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "breakfast_not_served_in_a_typical_meal_setting",
+              "label": "Breakfast not served in a typical meal setting",
+              "type": "standalone_penalty",
+              "points": 50,
+              "maxCount": null,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "objects_dropped_on_the_floor",
+              "label": "Objects dropped on the floor",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 5,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "spilling_cereal_and_milk_while_pouring",
+              "label": "Spilling cereal and milk while pouring",
+              "type": "standalone_penalty",
+              "points": 100,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_object_repositioned_by_a_person",
+              "label": "Human assistance: object repositioned by a person",
+              "type": "standalone_penalty",
+              "points": 30,
+              "maxCount": 12,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 4,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_handover",
+              "label": "Human assistance: handover",
+              "type": "standalone_penalty",
+              "points": 100,
+              "maxCount": 24,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_environment_changes_per_item",
+              "label": "Human assistance: environment changes (per item)",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": null,
+              "all": {
+                "timesScored": 15,
+                "uniqueTeams": 8,
+                "totalCount": 49,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 22,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_opening_milk_container",
+              "label": "Human assistance: opening milk container",
+              "type": "standalone_penalty",
+              "points": 0,
+              "maxCount": null,
+              "all": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 1,
+                "uniqueTeams": 1,
+                "totalCount": 1,
+                "totalRuns": 21
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_moving_dishwasher_door_or_rack",
+              "label": "Human assistance: moving dishwasher door or rack",
+              "type": "standalone_penalty",
+              "points": 0,
+              "maxCount": null,
+              "all": {
+                "timesScored": 6,
+                "uniqueTeams": 5,
+                "totalCount": 10,
+                "totalRuns": 63
+              },
+              "best": {
+                "timesScored": 4,
+                "uniqueTeams": 4,
+                "totalCount": 6,
+                "totalRuns": 21
+              },
+              "penalties": []
+            }
+          ]
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-07-02",
+          "runCount": 21,
+          "avgScore": 170.23809523809524,
+          "itemRates": {
+            "navigate_to_the_table": 0.5714285714285714,
+            "correctly_recognize_an_object": 0.5238095238095238,
+            "perceive_objects_on_a_shelf_and_indicate_the_corre": 0.14285714285714285,
+            "picking_up_an_object_for_transportation": 0.3333333333333333,
+            "place_an_object_in_its_designated_location": 0.23809523809523808,
+            "pull_or_push_the_dishwasher_rack": 0,
+            "open_or_close_the_dishwasher_door_without_assistan": 0.047619047619047616,
+            "open_milk_container_without_assistance": 0.047619047619047616,
+            "pour_cereal_or_milk_into_the_bowl_without_assistan": 0
+          }
+        },
+        {
+          "date": "2026-07-03",
+          "runCount": 21,
+          "avgScore": 86.9047619047619,
+          "itemRates": {
+            "navigate_to_the_table": 0.6190476190476191,
+            "correctly_recognize_an_object": 0.23809523809523808,
+            "perceive_objects_on_a_shelf_and_indicate_the_corre": 0.09523809523809523,
+            "picking_up_an_object_for_transportation": 0.19047619047619047,
+            "place_an_object_in_its_designated_location": 0.09523809523809523,
+            "pull_or_push_the_dishwasher_rack": 0,
+            "open_or_close_the_dishwasher_door_without_assistan": 0,
+            "open_milk_container_without_assistance": 0,
+            "pour_cereal_or_milk_into_the_bowl_without_assistan": 0
+          }
+        },
+        {
+          "date": "2026-07-04",
+          "runCount": 21,
+          "avgScore": 170.95238095238096,
+          "itemRates": {
+            "navigate_to_the_table": 0.7619047619047619,
+            "correctly_recognize_an_object": 0.6190476190476191,
+            "perceive_objects_on_a_shelf_and_indicate_the_corre": 0.14285714285714285,
+            "picking_up_an_object_for_transportation": 0.3333333333333333,
+            "place_an_object_in_its_designated_location": 0.19047619047619047,
+            "pull_or_push_the_dishwasher_rack": 0.047619047619047616,
+            "open_or_close_the_dishwasher_door_without_assistan": 0.047619047619047616,
+            "open_milk_container_without_assistance": 0,
+            "pour_cereal_or_milk_into_the_bowl_without_assistan": 0.047619047619047616
+          }
+        }
+      ]
+    },
+    {
+      "id": "restaurant",
+      "name": "Restaurant",
+      "totalRuns": 12,
+      "totalTeams": 12,
+      "avgScore": 580.8333333333334,
+      "maxScore": 1260,
+      "minScore": 0,
+      "sections": [
+        {
+          "id": "regular_rewards",
+          "heading": "Regular Rewards",
+          "rewards": [
+            {
+              "id": "detect_calling_or_waving_customer",
+              "label": "Detect calling or waving customer",
+              "type": "count",
+              "points": 80,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "penalties": []
+            },
+            {
+              "id": "reach_a_customer_s_table",
+              "label": "Reach a customer's table",
+              "type": "count",
+              "points": 80,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 8,
+                "uniqueTeams": 8,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 8,
+                "uniqueTeams": 8,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "penalties": [
+                {
+                  "id": "human_assistance_being_guided_to_a_table",
+                  "label": "Human Assistance: Being guided to a table",
+                  "type": "fixed",
+                  "points": 80,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  }
+                }
+              ]
+            },
+            {
+              "id": "understand_and_confirm_the_order_received_to_the_c",
+              "label": "Understand and confirm the order received to the customer",
+              "type": "count",
+              "points": 160,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 12,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 12,
+                "totalRuns": 12
+              },
+              "penalties": [
+                {
+                  "id": "alternative_hri",
+                  "label": "Alternative HRI",
+                  "type": "fixed",
+                  "points": 80,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  }
+                },
+                {
+                  "id": "not_making_eye_contact_when_taking_the_order",
+                  "label": "Not making eye-contact when taking the order",
+                  "type": "fixed",
+                  "points": 60,
+                  "all": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 0,
+                    "uniqueTeams": 0,
+                    "totalCount": 0,
+                    "totalRuns": 12
+                  }
+                }
+              ]
+            },
+            {
+              "id": "communicate_the_order_to_the_barman",
+              "label": "Communicate the order to the barman",
+              "type": "count",
+              "points": 80,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 8,
+                "uniqueTeams": 8,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 8,
+                "uniqueTeams": 8,
+                "totalCount": 13,
+                "totalRuns": 12
+              },
+              "penalties": []
+            },
+            {
+              "id": "picking_up_the_requested_items_from_the_kitchen_ba",
+              "label": "Picking up the requested items from the Kitchen-bar",
+              "type": "count",
+              "points": 100,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 24,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 24,
+                "totalRuns": 12
+              },
+              "penalties": [
+                {
+                  "id": "human_assistance_asking_the_barman_to_handover_obj",
+                  "label": "Human assistance: Asking the Barman to handover object to the robot",
+                  "type": "fixed",
+                  "points": 100,
+                  "all": {
+                    "timesScored": 7,
+                    "uniqueTeams": 7,
+                    "totalCount": 19,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 7,
+                    "uniqueTeams": 7,
+                    "totalCount": 19,
+                    "totalRuns": 12
+                  }
+                },
+                {
+                  "id": "ha_object_repositioned",
+                  "label": "Human assistance: object repositioned by a person",
+                  "type": "fixed",
+                  "points": 30,
+                  "all": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 1,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 1,
+                    "uniqueTeams": 1,
+                    "totalCount": 1,
+                    "totalRuns": 12
+                  }
+                }
+              ]
+            },
+            {
+              "id": "return_to_the_customer_table_with_the_order",
+              "label": "Return to the customer table with the order",
+              "type": "count",
+              "points": 80,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 12,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 12,
+                "totalRuns": 12
+              },
+              "penalties": []
+            },
+            {
+              "id": "serve_the_order_to_the_customer",
+              "label": "Serve the order to the customer",
+              "type": "count",
+              "points": 100,
+              "maxCount": 4,
+              "all": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 20,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 7,
+                "uniqueTeams": 7,
+                "totalCount": 20,
+                "totalRuns": 12
+              },
+              "penalties": [
+                {
+                  "id": "human_assistance_guest_needing_to_take_the_object_",
+                  "label": "Human assistance: Guest needing to take the object from a tray or the robot's hand",
+                  "type": "fixed",
+                  "points": 100,
+                  "all": {
+                    "timesScored": 6,
+                    "uniqueTeams": 6,
+                    "totalCount": 19,
+                    "totalRuns": 12
+                  },
+                  "best": {
+                    "timesScored": 6,
+                    "uniqueTeams": 6,
+                    "totalCount": 19,
+                    "totalRuns": 12
+                  }
+                }
+              ]
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "extra_rewards",
+          "heading": "Extra Rewards",
+          "rewards": [
+            {
+              "id": "use_an_unattached_tray_to_transport",
+              "label": "Use an unattached tray to transport",
+              "type": "count",
+              "points": 200,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "penalties": []
+            }
+          ],
+          "penalties": []
+        },
+        {
+          "id": "penalties",
+          "heading": "Penalties",
+          "rewards": [],
+          "penalties": [
+            {
+              "id": "not_reaching_the_bar_barman_has_to_move_from_behin",
+              "label": "Not reaching the bar (barman has to move from behind the bar to interact with the robot)",
+              "type": "standalone_penalty",
+              "points": 60,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_asking_for_directional_confirmati",
+              "label": "Human Assistance: Asking for directional confirmation",
+              "type": "standalone_penalty",
+              "points": 30,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "penalties": []
+            },
+            {
+              "id": "human_assistance_being_told_pointed_where_a_table_",
+              "label": "Human Assistance: Being told/pointed where a table/Kitchen-bar is located",
+              "type": "standalone_penalty",
+              "points": 40,
+              "maxCount": 2,
+              "all": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "best": {
+                "timesScored": 0,
+                "uniqueTeams": 0,
+                "totalCount": 0,
+                "totalRuns": 12
+              },
+              "penalties": []
+            }
+          ]
+        }
+      ],
+      "progression": [
+        {
+          "date": "2026-07-04",
+          "runCount": 12,
+          "avgScore": 580.8333333333334,
+          "itemRates": {
+            "detect_calling_or_waving_customer": 0.5833333333333334,
+            "reach_a_customer_s_table": 0.6666666666666666,
+            "understand_and_confirm_the_order_received_to_the_c": 0.5833333333333334,
+            "communicate_the_order_to_the_barman": 0.6666666666666666,
+            "picking_up_the_requested_items_from_the_kitchen_ba": 0.5833333333333334,
+            "return_to_the_customer_table_with_the_order": 0.5833333333333334,
+            "serve_the_order_to_the_customer": 0.5833333333333334,
+            "use_an_unattached_tray_to_transport": 0
+          }
+        }
+      ]
+    }
+  ]
+}

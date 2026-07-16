@@ -49,19 +49,46 @@ import Base from '../layouts/Base.astro';
   let teamLastYear: Record<string, number> = {};
   let markers: Record<string, L.Marker>   = {};
   let activeMinYear = 2022;
+  let selectedCompId: string | null = null;
+  let compsByYear: Record<number, Array<{id: string, name: string, teamIds: Set<string>}>> = {};
   const CURRENT_YEAR = new Date().getFullYear();
+
+  function renderCompButtons(minYear: number) {
+    const wrap = document.getElementById('comp-buttons-wrap')!;
+    if (minYear <= 2006) { wrap.innerHTML = ''; return; }
+    const comps = compsByYear[minYear] || [];
+    if (!comps.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = comps.map(c => `
+      <button class="comp-filter-btn${selectedCompId === c.id ? ' comp-filter-active' : ''}" data-id="${c.id}">
+        ${c.name}
+      </button>`).join('');
+    wrap.querySelectorAll<HTMLButtonElement>('.comp-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.id!;
+        selectedCompId = selectedCompId === id ? null : id;
+        renderCompButtons(minYear);
+        updateMapAndGrid(minYear);
+      });
+    });
+  }
 
   function updateMapAndGrid(minYear: number) {
     activeMinYear = minYear;
     const labelEl = document.getElementById('slider-label');
     if (labelEl) labelEl.textContent = minYear <= 2006 ? 'All time' : `Active since ${minYear}`;
 
+    const compTeamIds = selectedCompId
+      ? (Object.values(compsByYear).flat().find(c => c.id === selectedCompId)?.teamIds ?? new Set<string>())
+      : null;
+
     const grid = document.getElementById('teams-grid')!;
     grid.innerHTML = '';
 
     for (const team of allTeams) {
-      const lastYear = teamLastYear[team.id] ?? CURRENT_YEAR;
-      const visible  = lastYear >= minYear;
+      const lastYear = teamLastYear[team.id] ?? 0;
+      const visible  = compTeamIds
+        ? compTeamIds.has(team.id)
+        : (lastYear >= minYear || (lastYear === 0 && minYear <= 2006));
 
       if (markers[team.id]) {
         if (visible) markers[team.id].addTo(map);
@@ -98,12 +125,23 @@ import Base from '../layouts/Base.astro';
       const comp = d.data();
       const year = parseInt(comp.year) || 0;
       if (!year) continue;
+      const teamIds = new Set<string>();
       for (const t of (comp.participatingTeams || [])) {
+        if (t.teamId) teamIds.add(t.teamId);
         if (!teamLastYear[t.teamId] || year > teamLastYear[t.teamId]) teamLastYear[t.teamId] = year;
       }
       for (const p of (comp.podium || [])) {
-        if (p.teamId && (!teamLastYear[p.teamId] || year > teamLastYear[p.teamId])) teamLastYear[p.teamId] = year;
+        if (p.teamId) {
+          teamIds.add(p.teamId);
+          if (!teamLastYear[p.teamId] || year > teamLastYear[p.teamId]) teamLastYear[p.teamId] = year;
+        }
       }
+      if (!compsByYear[year]) compsByYear[year] = [];
+      compsByYear[year].push({ id: d.id, name: comp.name || d.id, teamIds });
+    }
+    // Sort each year's competitions alphabetically by name
+    for (const year of Object.keys(compsByYear)) {
+      compsByYear[+year].sort((a, b) => a.name.localeCompare(b.name));
     }
 
     allTeams = teamsSnap.docs
@@ -111,7 +149,7 @@ import Base from '../layouts/Base.astro';
       .filter((t: any) => t.name)
       .sort((a: any, b: any) => (a.name || '').localeCompare(b.name || ''));
 
-    // Build year slider
+    // Build year slider + competition buttons container
     const sliderWrap = document.getElementById('activity-slider-wrap')!;
     sliderWrap.innerHTML = `
       <div class="slider-row">
@@ -119,10 +157,15 @@ import Base from '../layouts/Base.astro';
         <input type="range" id="activity-slider" min="2005" max="${CURRENT_YEAR}" value="2022" step="1"
           style="flex:1;margin:0 1rem;" />
         <span id="slider-label" style="font-family:var(--font-head);font-size:13px;min-width:120px;">Active since 2022</span>
-      </div>`;
+      </div>
+      <div id="comp-buttons-wrap" class="comp-buttons-wrap"></div>`;
     document.getElementById('activity-slider')!.addEventListener('input', e => {
-      updateMapAndGrid(parseInt((e.target as HTMLInputElement).value));
+      const year = parseInt((e.target as HTMLInputElement).value);
+      selectedCompId = null;
+      renderCompButtons(year);
+      updateMapAndGrid(year);
     });
+    renderCompButtons(2022);
 
     // Build map markers
     for (const team of allTeams) {
