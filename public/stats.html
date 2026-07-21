@@ -147,7 +147,7 @@ const DATA = {
     "name": "Robocup 2026",
     "totalTeams": 24
   },
-  "generatedAt": "2026-07-16T07:25:46.146Z",
+  "generatedAt": "2026-07-21T08:20:10.282Z",
   "tests": [
     {
       "id": "doing_laundry",
@@ -2276,7 +2276,13 @@ function allPenalties(test) {
   for (const s of test.sections) {
     for (const item of s.rewards) {
       for (const pen of item.penalties) {
-        result.push({ ...pen, context: item.label });
+        result.push({
+          ...pen,
+          context: item.label,
+          parentType: item.type,
+          parentAllCount:  item.all.totalCount,
+          parentBestCount: item.best.totalCount,
+        });
       }
     }
     for (const pen of s.penalties) {
@@ -2577,22 +2583,31 @@ function renderRewardsTable(test) {
 function renderPenaltiesTable(test, penalties) {
   if (!penalties.length) return '';
   const rows = penalties.map(pen => {
-    const allTot  = pen.all.totalRuns;
-    const bestTot = pen.best.totalRuns;
-    const cntAll  = pen.all.totalCount > 0
+    const isCountParent = pen.parentType === 'count';
+
+    // For count-type parents, show per-instance rates (how often penalty fires per item attempt)
+    const allNum  = isCountParent ? pen.all.totalCount   : pen.all.timesScored;
+    const allDen  = isCountParent ? pen.parentAllCount   : pen.all.totalRuns;
+    const bestNum = isCountParent ? pen.best.totalCount  : pen.best.timesScored;
+    const bestDen = isCountParent ? pen.parentBestCount  : pen.best.totalRuns;
+
+    const cntAll  = (!isCountParent && pen.all.totalCount > 0)
       ? ` <span style="font-size:11px;color:var(--muted)">(${pen.all.totalCount}×)</span>` : '';
-    const cntBest = pen.best.totalCount > 0
+    const cntBest = (!isCountParent && pen.best.totalCount > 0)
       ? ` <span style="font-size:11px;color:var(--muted)">(${pen.best.totalCount}×)</span>` : '';
-    const pts = pen.type === 'percentage' ? '% of base' : (pen.points > 0 ? '−' + pen.points : pen.type === 'standalone_penalty' ? '−' + pen.points : '−' + pen.points);
+    const perItem = isCountParent
+      ? ' <span style="font-size:10px;color:var(--muted);font-style:italic">per item</span>' : '';
+
+    const pts = pen.type === 'percentage' ? '% of base' : '−' + pen.points;
     return `<tr>
-      <td class="item-label penalty">${escH(pen.label)}</td>
+      <td class="item-label penalty">${escH(pen.label)}${perItem}</td>
       <td class="context">${escH(pen.context === 'Standalone' ? '—' : pen.context)}</td>
       <td class="num" style="color:var(--accent);font-weight:700">${pts}</td>
-      <td class="num">${pen.all.timesScored} / ${allTot}${cntAll}</td>
-      ${heatCell(pen.all.timesScored, allTot)}
+      <td class="num">${allDen ? `${allNum} / ${allDen}` : '—'}${cntAll}</td>
+      ${heatCell(allNum, allDen)}
       <td class="num">${pen.all.uniqueTeams} / ${test.totalTeams}</td>
-      <td class="num">${pen.best.timesScored} / ${bestTot}${cntBest}</td>
-      ${heatCell(pen.best.timesScored, bestTot)}
+      <td class="num">${bestDen ? `${bestNum} / ${bestDen}` : '—'}${cntBest}</td>
+      ${heatCell(bestNum, bestDen)}
       <td class="num">${pen.best.uniqueTeams} / ${test.totalTeams}</td>
     </tr>`;
   }).join('');
