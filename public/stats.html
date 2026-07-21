@@ -2532,20 +2532,23 @@ function renderRewardsTable(test) {
     if (!section.rewards.length) continue;
     rows.push(`<tr class="section-row"><td colspan="9">${escH(section.heading)}</td></tr>`);
     for (const item of section.rewards) {
-      const allTot  = item.all.totalRuns;
-      const bestTot = item.best.totalRuns;
-      const typeTag = item.type === 'count' ? ' <span style="font-size:10px;color:var(--muted);font-weight:600">×' + (item.maxCount||'∞') + '</span>' : '';
-      const avgCnt  = item.type === 'count' && item.all.timesScored > 0
-        ? `<span style="font-size:11px;color:var(--muted);margin-left:.5rem">avg ${(item.all.totalCount / item.all.timesScored).toFixed(1)}/run</span>`
-        : '';
+      const isCount = item.type === 'count';
+      const maxC    = item.maxCount || null;
+
+      const allNum  = isCount ? item.all.totalCount  : item.all.timesScored;
+      const allDen  = isCount && maxC ? maxC * item.all.totalRuns  : item.all.totalRuns;
+      const bestNum = isCount ? item.best.totalCount : item.best.timesScored;
+      const bestDen = isCount && maxC ? maxC * item.best.totalRuns : item.best.totalRuns;
+
+      const typeTag = isCount ? ' <span style="font-size:10px;color:var(--muted);font-weight:600">×' + (maxC||'∞') + '</span>' : '';
       rows.push(`<tr>
-        <td class="item-label">${escH(item.label)}${typeTag}${avgCnt}</td>
+        <td class="item-label">${escH(item.label)}${typeTag}</td>
         <td class="pts">${item.points > 0 ? '+' + item.points : '—'}</td>
-        <td class="num">${item.all.timesScored} / ${allTot}</td>
-        ${heatCell(item.all.timesScored, allTot)}
+        <td class="num">${allNum} / ${allDen}</td>
+        ${heatCell(allNum, allDen)}
         <td class="num">${item.all.uniqueTeams} / ${test.totalTeams}</td>
-        <td class="num">${item.best.timesScored} / ${bestTot}</td>
-        ${heatCell(item.best.timesScored, bestTot)}
+        <td class="num">${bestNum} / ${bestDen}</td>
+        ${heatCell(bestNum, bestDen)}
         <td class="num">${item.best.uniqueTeams} / ${test.totalTeams}</td>
       </tr>`);
     }
