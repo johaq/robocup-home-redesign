@@ -2340,27 +2340,34 @@ function showPanel(id, btn) {
   btn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 }
 
+// Tests with a restricted/non-standard field — excluded from cross-test insight chips
+const RESTRICTED_TESTS = new Set(['restaurant']);
+
 // ── Overview ──────────────────────────────────────────────────────────────────
 function renderOverview() {
   const d = DATA;
   const el = document.getElementById('overview-panel');
 
-  // Compute insights
+  // Compute insights — exclude restricted tests from cross-test comparisons
   let topItem = null, topRate = 0;
   let bottomItem = null, bottomRate = 1;
   let topPen = null, topPenRate = 0;
   let highAvgTest = null, lowAvgTest = null;
   for (const test of d.tests) {
-    if (!highAvgTest || test.avgScore > highAvgTest.avgScore) highAvgTest = test;
-    if (!lowAvgTest || test.avgScore < lowAvgTest.avgScore) lowAvgTest = test;
+    if (!RESTRICTED_TESTS.has(test.id)) {
+      if (!highAvgTest || test.avgScore > highAvgTest.avgScore) highAvgTest = test;
+      if (!lowAvgTest  || test.avgScore < lowAvgTest.avgScore)  lowAvgTest  = test;
+    }
     for (const item of allRewards(test)) {
       const r = item.all.totalRuns ? item.all.timesScored / item.all.totalRuns : 0;
       if (r > topRate) { topRate = r; topItem = { label: item.label, test: test.name, rate: r }; }
       if (r > 0 && r < bottomRate) { bottomRate = r; bottomItem = { label: item.label, test: test.name, rate: r }; }
     }
-    for (const pen of allPenalties(test)) {
-      const r = pen.all.totalRuns ? pen.all.timesScored / pen.all.totalRuns : 0;
-      if (r > topPenRate) { topPenRate = r; topPen = { label: pen.label, test: test.name, rate: r }; }
+    if (!RESTRICTED_TESTS.has(test.id)) {
+      for (const pen of allPenalties(test)) {
+        const r = pen.all.totalRuns ? pen.all.timesScored / pen.all.totalRuns : 0;
+        if (r > topPenRate) { topPenRate = r; topPen = { label: pen.label, test: test.name, rate: r }; }
+      }
     }
   }
 
@@ -2396,8 +2403,9 @@ function renderOverview() {
                 const rewards = allRewards(t);
                 const everScored = rewards.filter(r => r.all.timesScored > 0).length;
                 const barW = Math.round(t.avgScore / maxAvg * 100);
+                const restricted = RESTRICTED_TESTS.has(t.id);
                 return `<tr class="summary-row">
-                  <td class="test-name">${escH(t.name)}</td>
+                  <td class="test-name">${escH(t.name)}${restricted ? ' <span style="font-size:10px;color:var(--muted);font-weight:400">*</span>' : ''}</td>
                   <td class="num">${t.totalRuns}</td>
                   <td class="num">${t.totalTeams}</td>
                   <td class="num">${Math.round(t.avgScore)} pts</td>
@@ -2413,6 +2421,7 @@ function renderOverview() {
           </table>
         </div>
       </div>
+      <p style="font-size:11px;color:var(--muted);margin-top:.6rem">* Restaurant was run with the top 12 qualified teams only and is excluded from cross-test comparisons above.</p>
     </div>
   `;
 }
